@@ -1,0 +1,30 @@
+@charset "UTF-8";
+
+
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f0f0;
+  overflow: hidden;
+}
+
+.container {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  border: 1px solid black;
+  transform: translate(-50%, -50%);
+}
+
+.box {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background-color: blue;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
