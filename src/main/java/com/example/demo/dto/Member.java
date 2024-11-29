@@ -7,14 +7,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Character {
+public class Member {
 	
 	private int id;
-	private String characterName;
-	private int userId;
-	private int characterHp;
-	private int characterAttackPower;
-	private int characterBerrior;
-	
+	private String loginId;
+	private String loginPw;
+	private int stageNum;
+	private String userName;
 	
 }

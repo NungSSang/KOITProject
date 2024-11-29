@@ -23,7 +23,5 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 </head>
+
 <body>
-	<section>
-			<div class="mx-3">${pageTitle }&nbsp;페이지</div>
-	</section>
