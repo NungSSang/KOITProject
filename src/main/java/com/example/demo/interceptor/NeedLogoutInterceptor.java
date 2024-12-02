@@ -1,4 +1,4 @@
-package com.example.demo.intercepter;
+package com.example.demo.interceptor;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
-public class NeedLoginInterceptor implements HandlerInterceptor {
+public class NeedLogoutInterceptor implements HandlerInterceptor {
 	
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -17,8 +17,8 @@ public class NeedLoginInterceptor implements HandlerInterceptor {
 		
 		Rq rq = (Rq) request.getAttribute("rq");
 		
-		if (rq.getLoginedMemberId() == -1) {
-			rq.jsPrintReplace("로그인 후 이용해주세요", "/");
+		if (rq.getLoginedMemberId() != -1) {
+			rq.jsPrintReplace("로그아웃 후 이용해주세요", "/");
 			return false;
 		} 
 		

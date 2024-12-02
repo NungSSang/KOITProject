@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpSession;
 import lombok.Getter;
 
 public class Rq {
-	
 	@Getter
 	private int loginedMemberId;
 	
@@ -19,13 +18,10 @@ public class Rq {
 	
 	public Rq(HttpServletRequest req, HttpServletResponse resp) {
 		this.session = req.getSession();
-		
 		int loginedMemberId = -1;
-		
 		if (this.session.getAttribute("loginedMemberId") != null) {
 			loginedMemberId = (int) this.session.getAttribute("loginedMemberId");
 		}
-		
 		this.loginedMemberId = loginedMemberId;
 		this.resp = resp;
 	}
@@ -43,7 +39,7 @@ public class Rq {
 	public void login(int loginedMemberId) {
 		this.session.setAttribute("loginedMemberId", loginedMemberId);
 	}
-
+	
 	public void logout() {
 		this.session.removeAttribute("loginedMemberId");
 	}

@@ -20,9 +20,9 @@ public class ItemService {
 		return itemDao.getItemsByCharacterId(id);
 	}
 
-	public Item getItemByCharacterId(int id, int index) {
-		
-		return itemDao.getItemsByCharacterId(id, index);
+	public void getItem() {
+		itemDao.getItem();
 	}
+
 
 }

@@ -2,6 +2,7 @@ package com.example.demo.dao;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -9,22 +10,20 @@ import com.example.demo.dto.Item;
 
 @Mapper
 public interface ItemDao {
-
 	@Select("""
-			SELECT  i.itemName
-					FROM item AS i
-					INNER JOIN `character` AS c
-					ON i.characterId = c.#{id}
+			SELECT * 
+					FROM item
+					WHERE characterId = #{id}
 			""")
-	public List<Item> getItemsByCharacterId(int id);
+	List<Item> getItemsByCharacterId(int id);
 
-	@Select("""
-			SELECT  i.itemName
-					FROM item AS i
-					INNER JOIN `character` AS c
-					ON i.characterId = c.#{id}
-					WHERE i.id = #{index}
+	@Insert("""
+			INSERT INTO item
+					SET itemName = 'test'
+				,itemType = 1
+				,enemyType = 0
+				,characterId = 1;
 			""")
-	public Item getItemsByCharacterId(int id, int index);
+	void getItem();
 
 }
