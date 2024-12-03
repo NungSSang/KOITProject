@@ -1,20 +1,27 @@
 package com.example.demo.dao;
 
-import org.apache.ibatis.annotations.Insert;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+
+import com.example.demo.dto.CharacterDto;
 
 @Mapper
 public interface CharacterDao {
-
-	@Insert("""
-			INSERT INTO `character`
-					SET characterName = #{characterName}
-						,userId = #{userId}
-						,characterHp = #{characterHp}
-						,characterAttackPower = #{characterAttackPower}
-						,characterBerrior = #{characterBerrior};
+	
+	@Select("""
+			SELECT *
+					FROM `character`
+					WHERE memberId = #{memberId}
 			""")
-	void addTestData(String characterName, int userId, int characterHp, int characterAttackPower, int characterBerrior);
+	List<CharacterDto> getCharacter(int memberId);
 
+	@Select("""
+			SELECT *
+				  FROM `character`
+				  WHERE memberId = #{memberId};
+			""")
+	CharacterDto getCharacterInfo(int memberId);
 	
 }

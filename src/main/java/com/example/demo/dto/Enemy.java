@@ -7,14 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Character {
-	
+public class Enemy {
 	private int id;
-	private String characterName;
-	private int userId;
-	private int characterHp;
-	private int characterAttackPower;
-	private int characterBerrior;
-	
-	
+	private String enemyName;
+	private int enemyHp;
+	private int enemyAttackPower;
+	private int enemyBerrior;
 }

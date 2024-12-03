@@ -1,20 +1,26 @@
 package com.example.demo.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dao.CharacterDao;
+import com.example.demo.dto.CharacterDto;
 
 @Service
 public class CharacterService {
+	CharacterDao characterDao;
 	
-		CharacterDao characterDao;
-		
-		public CharacterService(CharacterDao characterDao) {
-			this.characterDao = characterDao;
-		}
+	public CharacterService(CharacterDao characterDao) {
+		this.characterDao = characterDao;
+	}
 	
-	public void addTestData(String characterName, int userId, int characterHp, int characterAttackPower, int characterBerrior) {
-		characterDao.addTestData("test",1,100,10,0);
+	public List<CharacterDto> getCharacter(int memberId) {
+		return characterDao.getCharacter(memberId);
+	}
+	
+	public CharacterDto getCharacterInfo(int memberId) {
+		return characterDao.getCharacterInfo(memberId);
 	}
 
 }

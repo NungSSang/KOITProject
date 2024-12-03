@@ -5,11 +5,7 @@
 <%@ include file="../../common/header.jsp"%>
 
 
-<script>
-	const test = function(){
-		console.log("들어옴?");
-	}
-</script>
+
 <section>
 	<div>
 		<a class="btn" href="../game/field">필드</a>
@@ -19,7 +15,6 @@
 		</c:if>
 	</div>
 	<div>
-		<button class="btn" onclick="test()">테스트 버튼</button>
 	</div>
 </section>
 
