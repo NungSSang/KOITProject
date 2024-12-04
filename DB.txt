@@ -40,6 +40,14 @@ id INT AUTO_INCREMENT NOT NULL PRIMARY KEY
 ,enemyAttackPower INT NOT NULL
 ,enemyBerrior INT NOT NULL
 );
+CREATE TABLE enemyAttackPattern(
+id INT AUTO_INCREMENT NOT NULL PRIMARY KEY
+,firstAttack VARCHAR(50) NOT NULL
+,secondAttack VARCHAR(50) NOT NULL
+,thirdAttack VARCHAR(50) NOT NULL
+,defaultAttack VARCHAR(50) NOT NULL DEFAULT 'Basic Attack' 
+,enemyId INT NOT NULL
+);
 INSERT INTO `member`
 SET id = 1
 ,loginId = 'test1'
@@ -53,3 +61,18 @@ SET id = 1
 ,characterHp = 100
 ,characterAttackPower = 10
 ,characterBerrior = 10;
+INSERT INTO enemyAttackPattern
+SET firstAttack = 'Fireball'
+,secondAttack = 'Lightning Bolt'
+,thirdAttack = 'Magic Shield'
+,enemyId = 1
+INSERT INTO enemyAttackPattern
+SET firstAttack = 'Sword Slash'
+,secondAttack = 'Shield Block'
+,thirdAttack = 'Berserk'
+,enemyId = 2					
+INSERT INTO enemyAttackPattern
+SET firstAttack = 'Claw Swipe'
+,secondAttack = 'Roar'
+,thirdAttack = 'Tail Whip'
+,enemyId = 3

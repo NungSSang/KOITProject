@@ -32,7 +32,7 @@ public class BattleController {
        return "usr/game/field";
    }
    //HP바 만들기 
-   @GetMapping("/usr/game/getHPStatus")
+   @GetMapping("/usr/game/getHPStatus") // memberId , enemyId
    public Map<String, Integer> getHPStatus(int memberId, int id) {
        Map<String, Integer> hpStatus = new HashMap<>();
        int characterHp = characterService.getCharacterInfo(memberId).getCharacterHp();

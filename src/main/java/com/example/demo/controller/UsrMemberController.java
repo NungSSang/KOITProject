@@ -69,4 +69,13 @@ public class UsrMemberController {
 		rq.login(member.getId());
 		return Util.jsReturn(String.format("%s님 환영합니다~", member.getUserName()), "../home/main");
 	}
+	@GetMapping("/usr/member/doLogout")
+	@ResponseBody
+	public String doLogout(HttpServletRequest req) {
+		Rq rq = (Rq) req.getAttribute("rq");
+		
+		rq.logout();
+		
+		return Util.jsReturn("정상적으로 로그아웃 되었습니다", "../home/main");
+	}
 }

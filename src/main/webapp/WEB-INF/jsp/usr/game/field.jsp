@@ -5,12 +5,9 @@
 <%@ include file="../../common/header.jsp"%>
 
 <script>
-		let j = 0;
+		let j = 0; // 아이템 로드? 나중에 다시 확인
 		let currentIndex = 0; // 현재 선택된 요소의 인덱스
 		let items = [];
-		let x = 0;
-		let y = 0;
-		var i = 1;
 		$(document).ready(function() {
 			var hero = document.getElementById("hero");
 			items = $("#items div").toArray();
@@ -25,19 +22,15 @@
 			switch (event.key) {
 				case 'ArrowUp':    // 위쪽 방향키
 				currentIndex = (currentIndex - 2 + items.length) % items.length;
-				y += 10;
 				break;
 				case 'ArrowDown':  // 아래쪽 방향키
 				currentIndex = (currentIndex + 2) % items.length;
-				y -= 10;
 				break;
 				case 'ArrowLeft':  // 왼쪽 방향키
 				currentIndex = (currentIndex - 1) % items.length;
-				x -= 10;
 				break;
 				case 'ArrowRight': // 오른쪽 방향키
 				currentIndex = (currentIndex + 1) % items.length;
-				x += 10;
 				break;
 				default:
 				return; // 다른 키는 무시
@@ -112,91 +105,236 @@
 			});
 		});
 //==================게임 시작?=====================
-	 
+
 	 
 //게임시작 버튼 누르면 하단 박스 바뀌는것
-		const startBattleBtnClick = function(){
-			document.getElementById('UnderTextBox').classList.remove('flex');
-			document.getElementById('UnderTextBox').classList.add('hidden');
-			document.getElementById('underBattleBtn').classList.remove('hidden');
-			document.getElementById('underBattleBtn').classList.add('flex');
-		}
-		const finishBattleBtnClick = function(){
-			document.getElementById("enemyImg").classList.remove('flex');
-			document.getElementById("enemyImg").classList.add('hidden');
-			document.getElementById("heroImg").classList.remove('flex');
-			document.getElementById("heroImg").classList.add('hidden');
-			document.getElementById('UnderTextBox').classList.remove('hidden');
-			document.getElementById('UnderTextBox').classList.add('flex');
-			document.getElementById('underBattleBtn').classList.remove('flex');
-			document.getElementById('underBattleBtn').classList.add('hidden');
-		}
+		const startBattleBtnClick = function () {
+		    // 버튼 상태 전환
+		    document.getElementById('UnderTextBox').classList.remove('flex');
+		    document.getElementById('UnderTextBox').classList.add('hidden');
+		    document.getElementById('underBattleBtn').classList.remove('hidden');
+		    document.getElementById('underBattleBtn').classList.add('flex');
 		
-		const getCharacterStauts = function(){
-			$.ajax({
-				url: "/usr/character/getCharacter",
-				type: 'GET',
-				data: { memberId : 1 }, // memberId 값 전달
-				dataType: 'json',
-				success: function(data) {
-					console.log(data);
-					let content = `
-					    <div id="heroStatus" class="relative w-1/2 h-1/2 whitespace-nowrap">
-					        <!-- 캐릭터 이름 -->
-					        <div class="inline-block text-center">\${data[0].characterName}</div>
-					        
-					        <!-- HP Bar -->
-					        <div class="absolute bottom-[-20px] left-1/2 transform -translate-x-1/2 w-36 h-3 bg-gray-300 rounded-full">
-					            <div id="characterHPBar" class="h-full bg-green-500 rounded-full transition-all duration-300 ease-out" style="width: \${data[0].characterHp}%;"></div>
-					        </div>
-					    </div>
-					`;
-						$('#characterInfo').append(content);
-					
-				},
-				error: function(xhr, status, error) {
-					console.error(error);
+		    // 캐릭터 상태 다시 불러오기
+		    getCharacterStauts();
+		
+		    // 적 상태 다시 불러오기
+		    getEnemyStatus();
+		
+		    // 캐릭터와 적 이미지 표시 및 애니메이션 초기화
+		     const heroImg = document.getElementById("heroImg");
+		     const heroStatus = document.getElementById("characterInfo");
+		     const enemyImg = document.getElementById("enemyImg");
+		     const enemyStatus = document.getElementById("enemyInfo");
+		
+		    // 캐릭터 초기화
+		    heroImg.classList.remove("hidden");
+		    heroImg.classList.add("-translate-x-full"); // 초기 위치 왼쪽
+		    heroStatus.classList.remove("hidden");
+		    heroStatus.classList.add("-translate-x-full");
+		    // 적 초기화
+		    enemyImg.classList.remove("hidden");
+		    enemyImg.classList.add("translate-x-full"); // 초기 위치 오른쪽
+		    enemyStatus.classList.remove("hidden");
+		    enemyStatus.classList.add("translate-x-full");
+		    // 애니메이션 실행
+		    setTimeout(() => {
+		        heroImg.classList.remove("-translate-x-full");
+		        heroImg.classList.add("translate-x-0", "transition-transform", "duration-500", "ease-out");
+		        heroStatus.classList.remove("-translate-x-full");
+			    heroStatus.classList.add("translate-x-0", "transition-transform", "duration-500", "ease-out");
+		        
+		        enemyImg.classList.remove("translate-x-full");
+		        enemyImg.classList.add("translate-x-0", "transition-transform", "duration-500", "ease-out");
+			    enemyStatus.classList.remove("translate-x-full");
+		        enemyStatus.classList.add("translate-x-0", "transition-transform", "duration-500", "ease-out");
+		    }, 10); // 딜레이 후 애니메이션 실행
+		};
+		const finishBattleBtnClick = function () {
+		    const heroImg = document.getElementById("heroImg");
+		    const heroStatus = document.getElementById("characterInfo");
+		    const enemyImg = document.getElementById("enemyImg");
+		    const enemyStatus = document.getElementById("enemyInfo");
+
+		    // 캐릭터와 HP 바, 이름이 함께 이동
+		    heroImg.classList.remove("translate-x-0");
+		    heroImg.classList.add("transition-transform", "duration-500", "ease-out", "-translate-x-full");
+
+		    heroStatus.classList.remove("translate-x-0");
+		    heroStatus.classList.add("transition-transform", "duration-500", "ease-out", "-translate-x-full");
+
+		    // 적 정보와 이미지는 숨기기만 처리
+		    enemyImg.classList.add("hidden");
+		    enemyStatus.classList.add("hidden");
+
+		    // 애니메이션 후 숨기기
+		    setTimeout(() => {
+		        heroImg.classList.add("hidden");
+		        heroStatus.classList.add("hidden");
+		    }, 500); // 애니메이션 시간 (500ms)
+
+		    // 버튼 상태 전환
+		    document.getElementById('UnderTextBox').classList.remove('hidden');
+		    document.getElementById('UnderTextBox').classList.add('flex');
+		    document.getElementById('underBattleBtn').classList.remove('flex');
+		    document.getElementById('underBattleBtn').classList.add('hidden');
+		};
+		//=======캐릭터 정보 저장========
+		let id;
+		let characterName;
+		let memberId;
+		let characterHp;
+		let characterAttackPower;
+		let characterBerrior;	
+		let a = 1;
+		let enemyId;
+		let enemyName;
+		let enemyHp;
+		let enemyAttackPower;
+		let enemyBerrior;
+		let isBattle = true;
+		//=== 캐릭터와 적 스탯 불러오기 ===
+		const getCharacterStauts = function () {
+		    $.ajax({
+		        url: "/usr/character/getCharacter",
+		        type: "GET",
+		        data: { memberId: 1 }, // memberId 값 전달
+		        dataType: "json",
+		        success: function (data) {
+					id = data[0].id;
+					characterName = data[0].characterName;
+					memberId = data[0].memberId;
+					characterHp = data[0].characterHp;
+					characterAttackPower = data[0].characterAttackPower;
+					characterBerrior = data[0].characterBerrior;
+		            let content = `
+		                <div id="heroStatus" class="relative w-full flex flex-col items-center justify-center space-y-2">
+		                    <!-- 캐릭터 이름 -->
+		                    <div class="text-center font-bold text-lg text-black">\${data[0].characterName}</div>
+		                    
+		                    <!-- HP Bar -->
+		                    <div class="relative w-36 h-3 bg-gray-300 rounded-full">
+		                        <div id="characterHPBar" class="h-full bg-green-500 rounded-full transition-all duration-300 ease-out"
+		                            style="width: \${data[0].characterHp}%;"></div>
+		                    </div>
+		                </div>
+		            `;
+
+		            // 기존 캐릭터 정보 제거 후 새로 추가
+		            $('#characterInfo').empty().append(content);
+		        },
+		        error: function (xhr, status, error) {
+		            console.error(error);
+		        }
+		    });
+		}; 
+		
+		//=============== 전투 시작 적군 생성 후 while문 작성 ===============
+		const getEnemyStatus = async function () {
+			if (a > 5){
+				a = 1;
+			}
+		    $.ajax({
+		        url: "/usr/enemy/getEnemy",
+		        type: "GET",
+		        data: { id: a }, // Id 값 전달
+		        dataType: "json",
+		        success: function (data) {
+					enemyId = data[0].id;
+					enemyName = data[0].enemyName;
+					enemyHp = data[0].enemyHp;
+					enemyAttackPower = data[0].enemyAttackPower;
+					enemyBerrior = data[0].enemyBerrior;
+		            let content = `
+		                <div id="enemyStatus" class="relative w-full flex flex-col items-center justify-center space-y-2">
+		                    <!-- 적 이름 -->
+		                    <div class="text-center font-bold text-lg text-black">\${data[0].enemyName}</div>
+		                    
+		                    <!-- HP Bar -->
+		                    <div class="relative w-36 h-3 bg-gray-300 rounded-full">
+		                        <div id="enemyHPBar" class="h-full bg-red-500 rounded-full transition-all duration-300 ease-out"
+		                            style="width: \${data[0].enemyHp}%;"></div>
+		                    </div>
+		                </div>
+		            `;
+
+		            // 기존 적 정보 제거 후 새로 추가
+		            $('#enemyInfo').empty().append(content);
+		        },
+		        error: function (xhr, status, error) {
+		            console.error(error);
+		        }
+		    });  
+		    a = a + 1;
+		}; 
+// 		===넥스트 버튼 클릭 감지===
+	
+		window.onload = function () {
+			document.getElementById("next").addEventListener('click', function() {
+	 	    });
+		};	
+		// === battle 스크립트 ====
+		const battle = () => {
+			while (true){
+				if(characterHp <= 0){
+					 $.ajax({
+					        success: function (data) {
+					            let content = `
+					                <div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black">
+										<div>\${characterName}의 HP가 0이되어 게임을 종료합니다.</div> 	                    
+					                </div>
+					            `;
+					            //텍스트박스 업데이트
+					            $('#battleTextBox').empty().append(content);
+					        }
+					});
+					 break;
+				}else if(enemyHp <= 0){
+					 $.ajax({
+					        success: function (data) {
+					            let content = `
+					                <div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black">
+										<div>\${enemyName}의 HP가 0이되었습니다.</div> 	                    
+					                </div>
+					            `;
+					            //적 죽는 애니메이션 텍스트박스 업데이트
+					            dieAnimation();
+					            $('#battleTextBox').empty().append(content);
+					        }
+					});
+					 break;
 				}
-			});
-		} 
-		const getEnemyStatus = function(){
-			$.ajax({
-				url: "/usr/enemy/getEnemy",
-				type: 'GET',
-				data: { id : 1 }, // Id 값 전달
-				dataType: 'json',
-				success: function(data) {
-					console.log(data)
-						let content = `
-							<div id="enemyStatus" class="relative w-1/2 h-1/2 whitespace-nowrap">
-							<div class="inline-block text-center ml-8">\${data[0].enemyName}</div>
-							<div class="absolute bottom-[-20px] left-1/2 transform -translate-x-1/2 w-36 h-3 bg-gray-300 rounded-full">
-				            <div id="enemyHPBar" class="h-full bg-green-500 rounded-full transition-all duration-300 ease-out" style="width: \${data[0].enemyHp}%;"></div>
-				        </div>
-						</div>
-						`;
-						$('#enemyInfo').append(content);
-				},
-				error: function(xhr, status, error) {
-					console.error(error);
-				}
-			});
-			
-		} 
+				 $.ajax({
+				        success: function (data) {
+				        	enemyHp = enemyHp - characterAttackPower;
+				        	console.log("적의 HP는 = " + enemyHp);
+				            let content = `
+				                <div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black">
+									<div>\${characterName}가 \${enemyName}에게 \${characterAttackPower}만큼의 데미지를 입혔습니다.</div> 	                    
+				                </div>
+				            `;
+				            //텍스트박스 업데이트
+				            $('#battleTextBox').empty().append(content);
+				        },
+				        error: function (xhr, status, error) {
+				            console.error(error);
+				        }
+				    }); 
+			}
+		}
 		
 		const loadImages = () => {
-	        // AJAX 요청
 	        $.ajax({
-	            url: "${pageContext.request.contextPath}/images/testCharacter.png",
+ 	            //url: "${pageContext.request.contextPath}/images/testCharacter.png",
 	            type: "GET",
 	            success: function () {
 	                const enemyImg = document.getElementById("enemyImg");
-	                enemyImg.src = "${pageContext.request.contextPath}/images/testEnemyData.png"; // 이미지 경로 설정
+ 	                //enemyImg.src = "${pageContext.request.contextPath}/images/testEnemyData.png";
 	                enemyImg.classList.remove("hidden"); // 이미지 숨김 해제
 	                enemyImg.classList.add("translate-x-full"); // 초기 위치 설정 (화면 밖)
 	                
 	            	const heroImg = document.getElementById("heroImg");
-	                heroImg.src = "${pageContext.request.contextPath}/images/testCharacter.png"; // 이미지 경로 설정
+ 	                //heroImg.src = "${pageContext.request.contextPath}/images/testCharacter.png";
 	                heroImg.classList.remove("hidden"); // 이미지 숨김 해제
 	                heroImg.classList.add("-translate-x-full"); // 초기 위치 설정 (화면 밖)
 	                setTimeout(() => {
@@ -210,36 +348,23 @@
 	        });
 	    };
 	    const dieAnimation = () => {
-	        // AJAX 통신으로 이미지 로드
-	        $.ajax({
-	            url: "${pageContext.request.contextPath}/images/testEnemyData.png",
-	            type: "GET",
-	            success: function () {
-	                const enemyImg = document.getElementById("enemyImg");
+	        const enemyImg = document.getElementById("enemyImg");
 
-	                // 1. 위로 20px 올라가는 애니메이션
-	                enemyImg.classList.add("translate-y-[-30px]", "transition-transform", "duration-500", "ease-out");
+	        // 적 이미지가 위로 사라지는 애니메이션
+	        enemyImg.classList.add("translate-y-[-30px]", "transition-transform", "duration-500", "ease-out");
 
-	                // 2. 0.5초 후 아래로 내려오는 애니메이션
-	                setTimeout(() => {
-	                    enemyImg.classList.remove("translate-y-[-30px]");
-	                    enemyImg.classList.add("translate-y-[30px]", "ease-in");
-	                }, 500);
-
-	                // 3. 1초 후 숨김 처리 및 삭제
-	                setTimeout(() => {
-	                    enemyImg.classList.add("hidden");
-	                    enemyImg.src = ""; // 이미지 제거
-	                }, 700);
-	            },
-	            error: function (xhr, status, error) {
-	                console.error("이미지 로드 실패:", error);
-	            }
-	        });
+	        setTimeout(() => {
+	            enemyImg.classList.remove("translate-y-[-30px]");
+	            enemyImg.classList.add("hidden"); // 애니메이션 후 숨김 처리
+	            $('#enemyInfo').empty(); // 적 정보 삭제
+	        }, 500); // 애니메이션 시간 (500ms)
 	    };
 	    
-	    
 </script>
+
+<div class="w-full h-full absolute">
+	<img src="${pageContext.request.contextPath}/images/background.jpg" class="w-full h-full"/>
+</div>
 
 <section class="container">
 	<div id="ourZone" class="fixed ">
@@ -257,25 +382,20 @@
 <!--   		====하단 버튼 4개 ==== -->
 <div id="underBattleBtn" class="fixed bottom-0 left-0 w-full h-1/5 bg-gray-800 hidden flex-wrap">
         <!-- 상단 버튼 두 개 -->
-        <button id="attackBtn" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="dieAnimation();">
+        <button id="attackBtn" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="battle();">
             공격하기
         </button>
-        <button class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black">
-            버튼 2
-        </button>
-
-        <!-- 하단 버튼 두 개 -->
-        <button class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black">
-            버튼 3
-        </button>
-        <button class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="finishBattleBtnClick();">
+        <button id="back" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="finishBattleBtnClick();">
             돌아가기
         </button>
+        <!-- 하단 버튼 두 개 -->
+        <button id="next" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center">다음</button>
+        <button id="battleTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center">필드 텍스트</button>
     </div>
 <!--     		=====하단 텍스트 박스 ===== -->
 <div id="UnderTextBox" class="fixed bottom-0 left-0 w-full h-1/5 bg-gray-800 flex flex-wrap">
         <button class="w-1/2 h-full bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" 
-        onclick="startBattleBtnClick(); getCharacterStauts(); getEnemyStatus(); loadImages();">
+        onclick="startBattleBtnClick(); ">
         	게임 시작
         </button>
          <div class="w-1/2 h-full bg-gray text-white text-lg font-medium flex items-center justify-center ">
