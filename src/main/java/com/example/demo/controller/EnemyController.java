@@ -22,6 +22,11 @@ public class EnemyController {
 	public List<Enemy> getEnemy(int id) {
 		return enemyService.getEnemy(id);
 	}
+	@GetMapping("/usr/enemy/getEnemyAttack")
+	@ResponseBody
+	public List<Enemy> getEnemyAttackByEnemyId(int id) {
+		return enemyService.getEnemyAttackByEnemyId(id);
+	}
 	
 	
 }

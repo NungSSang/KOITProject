@@ -26,4 +26,11 @@ public interface ItemDao {
 			""")
 	void getItem();
 
+	@Select("""
+			SELECT itemName
+					FROM item
+					WHERE enemyType = #{enemyType}
+			""")
+	List<Item> itemDrop(String enemyType);
+
 }

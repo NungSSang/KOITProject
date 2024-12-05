@@ -23,19 +23,12 @@ public class ItemController {
 	public List<Item> getItemsByCharacterId(int id) {
 		return itemService.getItemsByCharacterId(id);
 	}
-	//팝업 예시========================
-//	@GetMapping("/usr/game/itemPop")
-//	public String itemPop(Model model,HttpServletRequest req) {
-//		Rq rq = (Rq) req.getAttribute("rq");
-//		List<Item> items = itemService.getItemsByCharacterId(rq.getLoginedMemberId());
-//	   	model.addAttribute("items",items);
-//		return "usr/game/itemPop";
-//	}
-	@GetMapping("/usr/game/addItem")
+	
+	
+	@GetMapping("/usr/item/itemDrop")
 	@ResponseBody
-	public String getMethodName() {
-		itemService.getItem();
-		return Util.jsReturn("아이템이 추가되었습니다.","field");
+	public List<Item> itemDrop(String enemyType) {
+		return itemService.itemDrop(enemyType);
 	}
 	
 	

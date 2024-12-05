@@ -24,5 +24,9 @@ public class ItemService {
 		itemDao.getItem();
 	}
 
+	public List<Item> itemDrop(String enemyType) {
+		return itemDao.itemDrop(enemyType);
+	}
+
 
 }

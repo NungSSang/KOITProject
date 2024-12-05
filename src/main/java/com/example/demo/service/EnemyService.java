@@ -22,4 +22,8 @@ public class EnemyService {
 		return enemyDao.getEnemyInfoById(id);
 	}
 
+	public List<Enemy> getEnemyAttackByEnemyId(int id) {
+		return enemyDao.getEnemyAttackByEnemyId(id);
+	}
+
 }

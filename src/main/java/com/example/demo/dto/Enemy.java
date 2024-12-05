@@ -13,4 +13,10 @@ public class Enemy {
 	private int enemyHp;
 	private int enemyAttackPower;
 	private int enemyBerrior;
+	private String enemyType;
+	// 적 공격 패턴
+	private String firstAttack;
+	private String secondAttack;
+	private String thirdAttack;
+	private String defaultAttack;
 }

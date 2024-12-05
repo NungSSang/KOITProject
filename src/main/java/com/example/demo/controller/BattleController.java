@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.demo.dto.CharacterDto;
 import com.example.demo.dto.Rq;
@@ -33,6 +34,7 @@ public class BattleController {
    }
    //HP바 만들기 
    @GetMapping("/usr/game/getHPStatus") // memberId , enemyId
+   @ResponseBody
    public Map<String, Integer> getHPStatus(int memberId, int id) {
        Map<String, Integer> hpStatus = new HashMap<>();
        int characterHp = characterService.getCharacterInfo(memberId).getCharacterHp();
