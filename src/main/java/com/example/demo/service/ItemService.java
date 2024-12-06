@@ -24,9 +24,26 @@ public class ItemService {
 		itemDao.getItem();
 	}
 
-	public List<Item> itemDrop(String enemyType) {
-		return itemDao.itemDrop(enemyType);
+	public List<Item> itemDropByEnemyType(String enemyType) {
+		return itemDao.itemDropByEnemyType(enemyType);
 	}
 
+	public void itemInsertToCharacter(int characterId, String itemName) {
+		itemDao.itemInsertToCharacter(characterId, itemName);
+	}
 
+	public void itemUpdateToCharacter(int characterId, String itemName) {
+		itemDao.itemUpdateToCharacter(characterId, itemName);
+	}
+	public Item getItemStorageByItemName(int characterId, String itemName) {
+		return	itemDao.getItemStorageByItemName(characterId, itemName);
+	}
+
+	public void goldInsertToCharacter(int characterId, int gold) {
+		itemDao.goldInsertToCharacter(characterId, gold);
+	}
+
+	public void goldUpdateToCharacter(int characterId, int gold) {
+		itemDao.goldUpdateToCharacter(characterId, gold);
+	}
 }

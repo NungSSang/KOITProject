@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import com.example.demo.dto.Item;
 
@@ -31,6 +32,43 @@ public interface ItemDao {
 					FROM item
 					WHERE enemyType = #{enemyType}
 			""")
-	List<Item> itemDrop(String enemyType);
+	List<Item> itemDropByEnemyType(String enemyType);
 
+	@Insert("""
+			INSERT INTO itemStorage
+						SET itemName = #{itemName}
+							,characterId = #{characterId}
+							,itemCount = 1
+			""")
+	void itemInsertToCharacter(int characterId, String itemName);
+
+	@Update("""
+			UPDATE itemStorage
+						SET itemCount = itemCount + 1
+						WHERE itemName = #{itemName} AND characterId = #{characterId}
+			""")
+	void itemUpdateToCharacter(int characterId, String itemName);
+	
+	@Select("""
+			SELECT * 
+					FROM itemStorage
+					WHERE itemName = #{itemName} AND characterId = #{characterId}
+			""")
+	Item getItemStorageByItemName(int characterId, String itemName);
+
+	@Insert("""
+			INSERT INTO itemStorage
+					SET itemCount = #{gold}
+						,characterId = #{characterId}
+						,itemName = 'gold'
+						WHERE characterId = #{characterId}
+			""")
+	void goldInsertToCharacter(int characterId, int gold);
+
+	@Update("""
+			UPDATE itemStorage
+					SET itemCount = itemCount + #{gold}
+						WHERE characterId = #{characterId} AND itemName = 'gold'
+			""")
+	void goldUpdateToCharacter(int characterId, int gold);
 }

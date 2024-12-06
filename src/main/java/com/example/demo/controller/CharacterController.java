@@ -6,10 +6,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.example.demo.Util.Util;
 import com.example.demo.dto.CharacterDto;
 import com.example.demo.service.CharacterService;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 

@@ -117,14 +117,174 @@
 					submenu.classList.remove('hidden');
 				});
 			});
+// 아이템 클릭
+// 	   	 	document.getElementById('potion30').addEventListener('click', () => {
+// 	    	    cost = 30;
+// 	    	    characterHp = characterHp + 30; 
+// 		 		content = `
+//                 	<div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black">
+// 						<div>\${characterName}의 Hp가 \${cost}만큼 상승하였습니다.</div> 	                    
+//                		</div>
+//             	`;
+//             	hpBar = `
+//             		<div class="relative w-36 h-3 bg-gray-300 rounded-full">
+//                    		<div id="characterHPBar" class="h-full bg-green-500 rounded-full transition-all duration-300 ease-out" style="width: \${characterHp}%;"></div>
+//                 	</div>
+//              	`;
+// 	            //텍스트박스 업데이트
+// 	            $('#characterHPBar').empty().append(hpBar);
+// 	    	    buyItem();
+// 			});
+// 	   		document.getElementById('potion50').addEventListener('click', () => {
+// 	    	    cost = 50;
+// 	    	    characterHp = characterHp + 50;
+// 		 		content = `
+//                 	<div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black">
+// 						<div>\${characterName}의 Hp가 \${cost}만큼 상승하였습니다.</div> 	                    
+//                		</div>
+//             	`;
+//             	hpBar = `
+//             		<div class="relative w-36 h-3 bg-gray-300 rounded-full">
+//                    		<div id="characterHPBar" class="h-full bg-green-500 rounded-full transition-all duration-300 ease-out" style="width: \${characterHp}%;"></div>
+//                 	</div>
+//              	`;
+//             	//텍스트박스 업데이트
+//             	$('#characterHPBar').empty().append(hpBar);
+// 	    	    buyItem();
+// 			});
+// 			document.getElementById('potion100').addEventListener('click', () => {
+// 	    	    cost = 100;
+// 	    	    characterHp = characterHp + 100;
+// 		 		content = `
+//                 	<div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black">
+// 						<div>\${characterName}의 Hp가 \${cost}만큼 상승하였습니다.</div> 	                    
+//                		</div>
+//             		`;
+//             	hpBar = `
+//             		<div class="relative w-36 h-3 bg-gray-300 rounded-full">
+//                    		<div id="characterHPBar" class="h-full bg-green-500 rounded-full transition-all duration-300 ease-out" style="width: \${characterHp}%;"></div>
+//                 	</div>
+//              	`;
+//             	//텍스트박스 업데이트
+//             	$('#characterHPBar').empty().append(hpBar);
+// 	    	    buyItem();
+// 			});
+// 		});
+			function handlePotionClick(potionCost, hpIncrease) {
+			    // 전역 변수 cost 업데이트
+			    cost = potionCost;
+
+			    // 캐릭터 HP 증가
+			    characterHp += hpIncrease;
+
+			    // 텍스트 콘텐츠 업데이트
+			    const content = `
+			        <div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center">
+			            <div>\${characterName}의 Hp가 \${hpIncrease}만큼 상승하였습니다.</div> 	                    
+			        </div>
+			    `;
+
+			    // HP 바 업데이트
+			    const hpBar = `
+			        <div class="relative w-36 h-3 bg-gray-300 rounded-full">
+			            <div id="characterHPBar" class="h-full bg-green-500 rounded-full transition-all duration-300 ease-out" style="width: \${characterHp}%;"></div>
+			        </div>
+			    `;
+
+			    // 텍스트 박스와 HP 바 업데이트
+			    $('#battleTextBox').empty().append(content);
+			    $('#characterHPBar').empty().append(hpBar);
+
+			    // 아이템 구매 처리
+			    buyItem();
+			    setTimeout(() => {
+			    	finishBattleBtnClick();
+			    }, 2000); // 딜레이 후 애니메이션 실행
+			    setTimeout(() => {
+			    	startBattleBtnClick();
+			    }, 3000); // 딜레이 후 애니메이션 실행
+
+			}
+
+			// 각 버튼에 이벤트 추가
+			const potions = [
+			    { id: 'potion30', cost: 30, hpIncrease: 30 },
+			    { id: 'potion50', cost: 50, hpIncrease: 50 },
+			    { id: 'potion100', cost: 100, hpIncrease: 100 }
+			];
+
+			potions.forEach(potion => {
+			    document.getElementById(potion.id).addEventListener('click', () => {
+			        handlePotionClick(potion.cost, potion.hpIncrease);
+			    });
+			});
 		});
 //==================게임 시작?=====================
 
-	 
+		const insertGold = () => {
+			const randomGold = randomNum(80,30);
+			$.ajax({
+			       url: "/usr/item/insertGold",
+			       type: "GET",
+			       data: { 
+			    	   characterId : 1, 
+			    	   gold : randomGold
+			       },
+			       error: function (xhr, status, error) {
+			            console.log(error);
+			       }
+			   });
+		}
+		
+	 	const itemPopUpOpen = () => {
+	 		const itemPopUp = document.getElementById('itemPopUp');
+	 		const overlay = document.getElementById('overlay');
+	 		itemPopUp.classList.remove('hidden');
+	 		itemPopUpOverlay.classList.remove('hidden');
+	 	}
+	 	const showGold = () => {
+	 		 $.ajax({
+			        url: "/usr/item/showGold",
+			        type: "GET",
+			        data: { characterId: 1 },
+			        dataType: "json",
+			        success: function (data) {
+ 			        	gold = data.itemCount;
+			        	let content = `
+			        		<span id="goldAmount">\${data.itemCount}</span>
+			            `;
+			        	 $('#goldAmount').empty().append(content);
+			        },
+			    });
+	 		itemPopUpOpen();
+	 	}
+	 	const buyItem = () => {
+	 		const itemPopUp = document.getElementById('itemPopUp');
+	 		const overlay = document.getElementById('overlay');
+		 	return	$.ajax({
+			        url: "/usr/item/buyItem",
+			        type: "GET",
+			        data: { 
+			        	characterId : 1,
+			        	gold : cost
+			        },
+			        success: function (data) {
+			        	itemPopUp.classList.add('hidden');
+				 		itemPopUpOverlay.classList.add('hidden');
+			        },
+			        error: function (xhr, status, error) {
+			            alert("골드가 부족합니다.");
+			            return;
+			        }
+			    });
+	 	}
+
+       		
+        let firstBattle = true;
 //게임시작 버튼 누르면 하단 박스 바뀌는것
 		const startBattleBtnClick = function () {
 			content = `
-                <div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black">
+                <div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center">
 					<div>전투에 진입했습니다.</div> 	                    
                 </div>
         	`;
@@ -136,8 +296,10 @@
 		    document.getElementById('underBattleBtn').classList.add('flex');
 		
 		    // 캐릭터 상태 다시 불러오기
-		    getCharacterStauts();
-		
+		    if(firstBattle){
+		    	getCharacterStauts();	
+		    }
+		    firstBattle = false;
 		    // 적 상태 다시 불러오기
 		    getEnemyStatus();
 		
@@ -169,7 +331,7 @@
 			    enemyStatus.classList.remove("translate-x-full");
 		        enemyStatus.classList.add("translate-x-0", "transition-transform", "duration-500", "ease-out");
 		    }, 10); // 딜레이 후 애니메이션 실행
-		};
+		}; 
 		const finishBattleBtnClick = function () {
 			$('#battleTextBox').empty();
 		    const heroImg = document.getElementById("heroImg");
@@ -216,7 +378,12 @@
 		let enemyType;
 		let randomAttack;
 		let dropedItem;
+		let cost;
 		let isAttack = false;
+		//======랜덤숫자======
+		const randomNum = (max,min) => {
+			return Math.floor(Math.random() * max + min);
+		}
 		//=== 캐릭터와 적 스탯 불러오기 ===
 		const getCharacterStauts = function () {
 		    $.ajax({
@@ -243,7 +410,6 @@
 		                    </div>
 		                </div>
 		            `;
-
 		            // 기존 캐릭터 정보 제거 후 새로 추가
 		            $('#characterInfo').empty().append(content);
 		        },
@@ -274,7 +440,6 @@
 		                <div id="enemyStatus" class="relative w-full flex flex-col items-center justify-center space-y-2">
 		                    <!-- 적 이름 -->
 		                    <div class="text-center font-bold text-lg text-black">\${data[0].enemyName}</div>
-		                    
 		                    <!-- HP Bar -->
 		                    <div class="relative w-36 h-3 bg-gray-300 rounded-full">
 		                        <div id="enemyHPBar" class="h-full bg-red-500 rounded-full transition-all duration-300 ease-out"
@@ -309,7 +474,6 @@
 		};
 		const enemyAttack = async function(){
 			await getEnemyPattern();
-			console.log(randomAttack + "애니미어택");
 			let content;
 			let hpBar;
 			let damage = enemyAttackPower - characterBerrior;
@@ -319,7 +483,7 @@
 			characterHp = characterHp - damage;
 			if(characterHp <= 0){
 				content = `
-	                <div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black">
+	                <div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center">
 						<div>\${characterName}이 \${damage} 만큼의 데미지를 입어 HP가 0이되었습니다.</div> 	                    
 	                </div>
             `;
@@ -336,7 +500,7 @@
 				shake('hero');
 				attackAnimation('enemy');
             	content = `
-                	<div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black">
+                	<div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center">
 						<div>\${enemyName}가 \${characterName}에게 \${randomAttack}의 공격을 사용하여 \${damage} 만큼의 데미지를 입혔습니다.</div> 	                    
                		</div>
             	`;
@@ -363,64 +527,85 @@
         			damage = 1;
         		}
 	        	enemyHp = enemyHp - damage;
-	        	console.log(enemyHp + "남은 적 HP");
 	        		if(enemyHp <= 0){
-	        		content = `
-			                <div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black">
-								<div>\${enemyName}이 \${damage}만큼의 데미지를 입어 HP가 0이되었습니다.</div> 	                    
+	        			await itemDrop();
+	        			await insertGold()
+	        			content = `
+			                <div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center">
+								<div>\${enemyName}이 \${damage}만큼의 데미지를 입어 HP가 0이되었습니다. , \${dropedItem}을 획득했습니다.</div> 	                    
 			                </div>
-		            `;
-		            hpBar = `
-							<div class="relative w-36 h-3 bg-gray-300 rounded-full">
-								<div id="enemyHPBar" class="h-full bg-red-500 rounded-full transition-all duration-300 ease-out" style="width: 0%;"></div>
-							</div>
-               				 `;
-		            
-		            //적 죽는 애니메이션 텍스트박스 업데이트
-						dieAnimation('enemy');
-						$('#enemyHPBar').empty().append(hpBar);
+			            `;
+			            hpBar = `
+								<div class="relative w-36 h-3 bg-gray-300 rounded-full">
+									<div id="enemyHPBar" class="h-full bg-red-500 rounded-full transition-all duration-300 ease-out" style="width: 0%;"></div>
+								</div>
+	               				 `;
+			            
+			            //적 죽는 애니메이션 텍스트박스 업데이트
+							dieAnimation('enemy');
+							await getDropItem();
+				            showGold();
+							$('#enemyHPBar').empty().append(hpBar);
+				            $('#battleTextBox').empty().append(content);
+	        		}else{
+		        		shake('enemy');
+		        		attackAnimation('hero');
+		        		updateHPBars();
+		            	content = `
+		                <div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center">
+							<div>\${characterName}가 \${enemyName}에게 \${damage} 만큼의 데미지를 입혔습니다.</div> 	                    
+		                </div>
+		            	`;
+		            	hpBar = `
+								<div class="relative w-36 h-3 bg-gray-300 rounded-full">
+									<div id="enemyHPBar" class="h-full bg-red-500 rounded-full transition-all duration-300 ease-out" style="width: \${enemyHp}%;"></div>
+								</div>
+	               				 `;
+		            //텍스트박스 업데이트
 			            $('#battleTextBox').empty().append(content);
-	        	}else{
-	        		shake('enemy');
-	        		attackAnimation('hero');
-	        		updateHPBars();
-	            	content = `
-	                <div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black">
-						<div>\${characterName}가 \${enemyName}에게 \${damage} 만큼의 데미지를 입혔습니다.</div> 	                    
-	                </div>
-	            	`;
-	            	hpBar = `
-							<div class="relative w-36 h-3 bg-gray-300 rounded-full">
-								<div id="enemyHPBar" class="h-full bg-red-500 rounded-full transition-all duration-300 ease-out" style="width: \${enemyHp}%;"></div>
-							</div>
-               				 `;
-	            //텍스트박스 업데이트
-		            $('#battleTextBox').empty().append(content);
-		            $('#enemyHPBar').empty().append(hpBar);
-		        }
-        		setTimeout(() => {
-        			enemyAttack();
-	            }, 3000);
+			            $('#enemyHPBar').empty().append(hpBar);
+			            
+		       	 }
+	        		// 캐릭터 공격 후 상대 공격 기다리는 시간
+	        		setTimeout(() => {
+	        			enemyAttack();
+		            }, 1000);
+	        		
 	        	
-		}; 
+			}; 
+		
 		
 		function itemDrop(){
-			console.log(enemyType);
-			const random = Math.floor(Math.random() * (3) + 1);
-			$.ajax({
-		        url: "/usr/item/itemDrop",
+			return $.ajax({
+				        url: "/usr/item/itemDrop",
+				        type: "GET",
+				        data: { enemyType : enemyType }, 
+				        dataType: "json",
+				        success: function (data) {
+				        	const random = randomNum(data.length,1);
+				        	if(random === 1){
+				        		dropedItem = data[0].itemName; 
+				        	}else if(random === 2){
+				        		dropedItem = data[1].itemName;
+				        	}else if(random === 3){
+				        		dropedItem = data[2].itemName;
+				        	}
+				        },
+				        error: function (xhr, status, error) {
+				            console.error(error);
+				        }
+				    }); 
+		}
+		function getDropItem(){
+			return $.ajax({
+		        url: "/usr/item/itemInsertToCharacter",
 		        type: "GET",
-		        data: { enemyType: enemyType }, // Id 값 전달
-		        dataType: "json",
-		        success: function (data) {
-					console.log(data);
-		        },
-		        error: function (xhr, status, error) {
-		            console.error(error);
+		        data: { 
+		        	characterId : id,
+		        	itemName : dropedItem	
 		        }
 		    }); 
 		}
-
         //데미지 입는 애니메이션
 		function shake(name) {
 		    let enemyImg;
@@ -481,28 +666,27 @@
 	    }
 	    
 	    const getEnemyPattern = async function(){
-	    	const random = Math.floor(Math.random() * (4) + 1);
-	    await $.ajax({
-				url: "/usr/enemy/getEnemyAttack",
-				type: 'GET',
-				data: { id: enemyId }, // id 값 전달
-				dataType: 'json',
-				success: function(data) {
-					console.log(data[0].firstAttack + "랜덤패턴");
-					if(random === 1){
-						randomAttack = data[0].firstAttack
-					}else if(random === 2){
-						randomAttack = data[0].secondAttack
-					}else if(random === 3){
-						randomAttack = data[0].thirdAttack
-					}else if(random === 4){
-						randomAttack = data[0].defaultAttack
+	    	const random = randomNum(4,1);
+		    await $.ajax({
+					url: "/usr/enemy/getEnemyAttack",
+					type: 'GET',
+					data: { id: enemyId }, // id 값 전달
+					dataType: 'json',
+					success: function(data) {
+						if(random === 1){
+							randomAttack = data[0].firstAttack
+						}else if(random === 2){
+							randomAttack = data[0].secondAttack
+						}else if(random === 3){
+							randomAttack = data[0].thirdAttack
+						}else if(random === 4){
+							randomAttack = data[0].defaultAttack
+						}
+					},
+					error: function(xhr, status, error) {
+						console.error(error);
 					}
-				},
-				error: function(xhr, status, error) {
-					console.error(error);
-				}
-			});
+				});
 	    }
 
 		const finishGame = function(){
@@ -561,11 +745,9 @@
 			src="${pageContext.request.contextPath}/images/testCharacter.png"
 			class="hidden">
 	</div>
-	<div id="enemyZone" class="fixed top-9 right-9">
+	<div id="enemyZone" class="fixed top-9 right-56">
 		<div id="enemyInfo"></div>
-		<img id="enemyImg"
-			src="${pageContext.request.contextPath}/images/testEnemyData.png"
-			class="hidden">
+		<img id="enemyImg" src="${pageContext.request.contextPath}/images/testEnemyData.png" class="hidden">
 	</div>
 </section>
 <!--   		====하단 버튼 4개 ==== -->
@@ -577,8 +759,8 @@
 		onclick="attack();">공격하기</button>
 	<button id="back" class=" w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" >돌아가기</button>
 	<!-- 하단 버튼 두 개 -->
-	<button id="next" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="itemDrop()" >다음</button>
-	<button id="battleTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center ">필드 텍스트</button>
+	<button id="next" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="insertGold()" >다음</button>
+	<button id="battleTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center cursor-default">필드 텍스트</button>
 </div>
 <!--     		=====하단 텍스트 박스 ===== -->
 <div id="UnderTextBox"
@@ -598,7 +780,8 @@
 <!-- 오버레이 -->
 <div id="overlay"
 	class="hidden fixed inset-0 bg-black bg-opacity-50 z-20"></div>
-
+<div id="itemPopUpOverlay"
+	class="hidden fixed inset-0 bg-black bg-opacity-50 z-20"></div>
 <!-- 사이드바 -->
 <div id="sidebar"
 	class="fixed top-0 left-0 w-64 h-full bg-gray-800 text-white transform -translate-x-full transition-transform duration-1000 z-30">
@@ -608,8 +791,7 @@
 			닫기</button>
 	</div>
 	<ul class="mt-4">
-		<li class="p-2 settingMenu"><a href="#"
-			class="btn w-full text-black whitespace-nowrap hover:text-gray-200">설정</a>
+		<li class="p-2 settingMenu"><a href="#" class="btn w-full text-black whitespace-nowrap hover:text-gray-200">설정</a>
 		</li>
 		<li class="p-2 itemMenu">
 			<!--                 <a href="#" class="btn w-full text-black whitespace-nowrap hover:text-gray-200">아이템</a> -->
@@ -627,6 +809,47 @@
 	class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-white shadow-lg border border-gray-300 z-40">
 	<!-- 비어 있는 2차 메뉴 -->
 	<div id="testContent"></div>
+</div>
+    <div id="overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-30"></div>
+
+    <!-- 아이템팝업 -->
+<div id="itemPopUp" class="hidden fixed top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-96 bg-gray-800 bg-opacity-50 shadow-lg border rounded border-gray-300 z-40 p-4 flex items-center justify-around space-x-4">
+    <div class="absolute top-2 right-16 text-white text-lg font-bold">
+        Gold: <span id="goldAmount">100</span>
+    </div>
+    <!-- 버튼 1 -->
+    <div class="flex flex-col items-center space-y-2">
+        <!-- 버튼 위 텍스트 -->
+        <div class="text-white text-sm">포션 30%</div>
+        <button id="potion30" class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-gray-100">
+            <img src="${pageContext.request.contextPath}/images/potion30.png" class="w-24 h-24">
+        </button>
+        <!-- 버튼 아래 텍스트 -->
+        <div class="text-white text-sm">사용 시 체력 30% 회복 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;30 GOLD</div>
+    </div>
+
+    <!-- 버튼 2 -->
+    <div class="flex flex-col items-center space-y-2">
+        <!-- 버튼 위 텍스트 -->
+        <div class="text-white text-sm">포션 50%</div>
+        <button id="potion50"  class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-gray-100">
+            <img src="${pageContext.request.contextPath}/images/potion50.png" class="w-28 h-36">
+        </button>
+        <!-- 버튼 아래 텍스트 -->
+        <div class="text-white text-sm">사용 시 체력 50% 회복 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;50 GOLD</div>
+    </div>
+
+    <!-- 버튼 3 -->
+    <div class="flex flex-col items-center space-y-2">
+        <!-- 버튼 위 텍스트 -->
+        <div class="text-white text-sm">포션 100%</div>
+        <button id="potion100"  class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-gray-100">
+            <img src="${pageContext.request.contextPath}/images/potion100.png" class="w-24 h-28">
+        </button>
+        <!-- 버튼 아래 텍스트 -->
+        <div class="text-white text-sm">사용 시 체력 100% 회복 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;100 GOLD</div>
+    </div>
+
 </div>
 
 <%@ include file="../../common/footer.jsp"%>

@@ -14,4 +14,5 @@ public class Item {
 	private int itemType;
 	private int enemyType;
 	private int characterId;
+	private int itemCount;
 }

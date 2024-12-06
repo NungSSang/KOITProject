@@ -27,10 +27,39 @@ public class ItemController {
 	
 	@GetMapping("/usr/item/itemDrop")
 	@ResponseBody
-	public List<Item> itemDrop(String enemyType) {
-		return itemService.itemDrop(enemyType);
+	public List<Item> itemDropByEnemyType(String enemyType) {
+		return itemService.itemDropByEnemyType(enemyType);
 	}
 	
+	@GetMapping("/usr/item/itemInsertToCharacter")
+	@ResponseBody
+	public void itemInsertToCharacter(int characterId, String itemName) {
+		Item item = itemService.getItemStorageByItemName(characterId, itemName);
+		if(item != null) {
+			itemService.itemUpdateToCharacter(characterId, itemName);
+		}else {
+			itemService.itemInsertToCharacter(characterId, itemName);
+		}
+	}
+	@GetMapping("/usr/item/insertGold")
+	@ResponseBody
+	public void insertGold(int characterId, int gold) {
+		Item item = itemService.getItemStorageByItemName(characterId, "gold");
+		if(item != null) {
+			itemService.goldUpdateToCharacter(characterId, gold);
+		}else {
+			itemService.goldInsertToCharacter(characterId, gold);
+		}
+	}
+	@GetMapping("/usr/item/buyItem")
+	@ResponseBody
+	public void buyItem(int characterId, int gold) {
+		itemService.goldUpdateToCharacter(characterId, -gold);
+	}
+	@GetMapping("/usr/item/showGold")
+	@ResponseBody
+	public  Item showGold(int characterId) {
+		return itemService.getItemStorageByItemName(characterId, "gold");
+	}
 	
-
 }
