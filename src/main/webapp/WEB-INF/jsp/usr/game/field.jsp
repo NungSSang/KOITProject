@@ -16,7 +16,7 @@
         .shake {
             animation: shake 0.1s linear;
         }
-}
+
 </style>
 <script>
 		let j = 0; // 아이템 로드? 나중에 다시 확인
@@ -117,65 +117,21 @@
 					submenu.classList.remove('hidden');
 				});
 			});
-// 아이템 클릭
-// 	   	 	document.getElementById('potion30').addEventListener('click', () => {
-// 	    	    cost = 30;
-// 	    	    characterHp = characterHp + 30; 
-// 		 		content = `
-//                 	<div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black">
-// 						<div>\${characterName}의 Hp가 \${cost}만큼 상승하였습니다.</div> 	                    
-//                		</div>
-//             	`;
-//             	hpBar = `
-//             		<div class="relative w-36 h-3 bg-gray-300 rounded-full">
-//                    		<div id="characterHPBar" class="h-full bg-green-500 rounded-full transition-all duration-300 ease-out" style="width: \${characterHp}%;"></div>
-//                 	</div>
-//              	`;
-// 	            //텍스트박스 업데이트
-// 	            $('#characterHPBar').empty().append(hpBar);
-// 	    	    buyItem();
-// 			});
-// 	   		document.getElementById('potion50').addEventListener('click', () => {
-// 	    	    cost = 50;
-// 	    	    characterHp = characterHp + 50;
-// 		 		content = `
-//                 	<div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black">
-// 						<div>\${characterName}의 Hp가 \${cost}만큼 상승하였습니다.</div> 	                    
-//                		</div>
-//             	`;
-//             	hpBar = `
-//             		<div class="relative w-36 h-3 bg-gray-300 rounded-full">
-//                    		<div id="characterHPBar" class="h-full bg-green-500 rounded-full transition-all duration-300 ease-out" style="width: \${characterHp}%;"></div>
-//                 	</div>
-//              	`;
-//             	//텍스트박스 업데이트
-//             	$('#characterHPBar').empty().append(hpBar);
-// 	    	    buyItem();
-// 			});
-// 			document.getElementById('potion100').addEventListener('click', () => {
-// 	    	    cost = 100;
-// 	    	    characterHp = characterHp + 100;
-// 		 		content = `
-//                 	<div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black">
-// 						<div>\${characterName}의 Hp가 \${cost}만큼 상승하였습니다.</div> 	                    
-//                		</div>
-//             		`;
-//             	hpBar = `
-//             		<div class="relative w-36 h-3 bg-gray-300 rounded-full">
-//                    		<div id="characterHPBar" class="h-full bg-green-500 rounded-full transition-all duration-300 ease-out" style="width: \${characterHp}%;"></div>
-//                 	</div>
-//              	`;
-//             	//텍스트박스 업데이트
-//             	$('#characterHPBar').empty().append(hpBar);
-// 	    	    buyItem();
-// 			});
-// 		});
+
 			function handlePotionClick(potionCost, hpIncrease) {
+				console.log("전투 끝난 후 포션 선택");
 			    // 전역 변수 cost 업데이트
 			    cost = potionCost;
 
 			    // 캐릭터 HP 증가
-			    characterHp += hpIncrease;
+			  if(characterHp >= 100){
+				  alert('이미 최대체력 입니다.');
+			  }
+			   characterHp += hpIncrease;	
+			   if(characterHp > 100){
+				   characterHp = 100;
+			   } 
+			    
 
 			    // 텍스트 콘텐츠 업데이트
 			    const content = `
@@ -194,7 +150,7 @@
 			    // 텍스트 박스와 HP 바 업데이트
 			    $('#battleTextBox').empty().append(content);
 			    $('#characterHPBar').empty().append(hpBar);
-
+			    console.log("텍스트 박스 및 HP 바 업데이트");
 			    // 아이템 구매 처리
 			    buyItem();
 			    setTimeout(() => {
@@ -223,6 +179,7 @@
 
 		const insertGold = () => {
 			const randomGold = randomNum(80,30);
+			console.log(randomGold + "전투 후 골드 획득");
 			$.ajax({
 			       url: "/usr/item/insertGold",
 			       type: "GET",
@@ -237,12 +194,15 @@
 		}
 		
 	 	const itemPopUpOpen = () => {
+	 		console.log("전투 후 포션창 보여주기");
 	 		const itemPopUp = document.getElementById('itemPopUp');
 	 		const overlay = document.getElementById('overlay');
 	 		itemPopUp.classList.remove('hidden');
 	 		itemPopUpOverlay.classList.remove('hidden');
 	 	}
+	 	
 	 	const showGold = () => {
+	 		console.log("전투 후 포션 팝업에서 보유중인 골드 보여주기");
 	 		 $.ajax({
 			        url: "/usr/item/showGold",
 			        type: "GET",
@@ -281,8 +241,21 @@
 
        		
         let firstBattle = true;
+        //이미지 로드
+        const loadImages = (name,type) => {
+        	console.log(3 + " 캐릭터,적군 이미지 불러오기 불러오기");
+        	let img = $('#' + type +'Img');
+        	img.attr("src", "/usr/imgFile/getImgPath?imgName=" + name);
+        	if(type === 'enemy'){
+        	img.css("width", "400px");
+        	img.css("height", "400px");
+        	}
+        	console.log( "=============== 캐릭터,적군 이미지 불러오기 불러오기끝===============");
+        };
 //게임시작 버튼 누르면 하단 박스 바뀌는것
 		const startBattleBtnClick = function () {
+			console.log("게임 시작");
+			$('#enemyZone').removeClass("hidden");
 			content = `
                 <div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center">
 					<div>전투에 진입했습니다.</div> 	                    
@@ -294,16 +267,15 @@
 		    document.getElementById('UnderTextBox').classList.add('hidden');
 		    document.getElementById('underBattleBtn').classList.remove('hidden');
 		    document.getElementById('underBattleBtn').classList.add('flex');
-		
 		    // 캐릭터 상태 다시 불러오기
 		    if(firstBattle){
-		    	getCharacterStauts();	
+		    	getCharacterStatus();	
 		    }
 		    firstBattle = false;
 		    // 적 상태 다시 불러오기
 		    getEnemyStatus();
-		
 		    // 캐릭터와 적 이미지 표시 및 애니메이션 초기화
+ 		     loadImages('character','hero');
 		     const heroImg = document.getElementById("heroImg");
 		     const heroStatus = document.getElementById("characterInfo");
 		     const enemyImg = document.getElementById("enemyImg");
@@ -325,7 +297,7 @@
 		        heroImg.classList.add("translate-x-0", "transition-transform", "duration-500", "ease-out");
 		        heroStatus.classList.remove("-translate-x-full");
 			    heroStatus.classList.add("translate-x-0", "transition-transform", "duration-500", "ease-out");
-		        
+			    console.log("=======================================애니메이션 실행=====================");
 		        enemyImg.classList.remove("translate-x-full");
 		        enemyImg.classList.add("translate-x-0", "transition-transform", "duration-500", "ease-out");
 			    enemyStatus.classList.remove("translate-x-full");
@@ -333,6 +305,7 @@
 		    }, 10); // 딜레이 후 애니메이션 실행
 		}; 
 		const finishBattleBtnClick = function () {
+			console.log("적군 사망시 들어옴")
 			$('#battleTextBox').empty();
 		    const heroImg = document.getElementById("heroImg");
 		    const heroStatus = document.getElementById("characterInfo");
@@ -342,14 +315,14 @@
 		    // 캐릭터와 HP 바, 이름이 함께 이동
 		    heroImg.classList.remove("translate-x-0");
 		    heroImg.classList.add("transition-transform", "duration-500", "ease-out", "-translate-x-full");
-
+			
 		    heroStatus.classList.remove("translate-x-0");
 		    heroStatus.classList.add("transition-transform", "duration-500", "ease-out", "-translate-x-full");
 
 		    // 적 정보와 이미지는 숨기기만 처리
 		    enemyImg.classList.add("hidden");
 		    enemyStatus.classList.add("hidden");
-
+		    console.log("적 정보와 이미지 숨기기 처리");
 		    // 애니메이션 후 숨기기
 		    setTimeout(() => {
 		        heroImg.classList.add("hidden");
@@ -385,11 +358,12 @@
 			return Math.floor(Math.random() * max + min);
 		}
 		//=== 캐릭터와 적 스탯 불러오기 ===
-		const getCharacterStauts = function () {
+		const getCharacterStatus = function () {
+			console.log(1 + " 캐릭터 스텟 불러오기");
 		    $.ajax({
 		        url: "/usr/character/getCharacter",
 		        type: "GET",
-		        data: { memberId: 1 }, // memberId 값 전달
+		        data: { memberId: ${rq.getLoginedMemberId() } }, // memberId 값 전달
 		        dataType: "json",
 		        success: function (data) {
 					id = data[0].id;
@@ -421,6 +395,7 @@
 		
 		//=============== 적군 생성  ===============
 		const getEnemyStatus = function () {
+			console.log(2 + " 적군 스텟 불러오기");
 			if (a > 5){
 				a = 1;
 			}
@@ -432,6 +407,8 @@
 		        success: function (data) {
 					enemyId = data[0].id;
 					enemyName = data[0].enemyName;
+					loadImages(enemyName,'enemy');
+	               	console.log("=======================지금 이미지 scr 적용 되었습니다 =============================")
 					enemyHp = data[0].enemyHp;
 					enemyAttackPower = data[0].enemyAttackPower;
 					enemyBerrior = data[0].enemyBerrior;
@@ -473,6 +450,7 @@
 
 		};
 		const enemyAttack = async function(){
+			console.log("적군 공격 애니메이션");
 			await getEnemyPattern();
 			let content;
 			let hpBar;
@@ -482,6 +460,7 @@
 			}
 			characterHp = characterHp - damage;
 			if(characterHp <= 0){
+				console.log("캐릭터 HP 0 될시 ");
 				content = `
 	                <div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center">
 						<div>\${characterName}이 \${damage} 만큼의 데미지를 입어 HP가 0이되었습니다.</div> 	                    
@@ -495,10 +474,11 @@
 				await dieAnimation('hero');
 				$('#characterHPBar').empty().append(hpBar);
 	            $('#battleTextBox').empty().append(content);
-			}else if(characterHp >= 0 && enemyHp >= 0){
+			}else if(characterHp >= 0){
+				console.log("적군 공격시 캐릭터 데미지 입는 것");
 				updateHPBars();
-				shake('hero');
 				attackAnimation('enemy');
+				shake('hero');
             	content = `
                 	<div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center">
 						<div>\${enemyName}가 \${characterName}에게 \${randomAttack}의 공격을 사용하여 \${damage} 만큼의 데미지를 입혔습니다.</div> 	                    
@@ -517,6 +497,7 @@
 		};
 		// === battle 스크립트 ====
  		const attack = async function () {
+ 			console.log(4 + " 캐릭터 공격");
 			if(isAttack) return;
 			isAttack = true;
 			let content;
@@ -528,6 +509,7 @@
         		}
 	        	enemyHp = enemyHp - damage;
 	        		if(enemyHp <= 0){
+	        			console.log(" 적군 죽기 입기");
 	        			await itemDrop();
 	        			await insertGold()
 	        			content = `
@@ -542,14 +524,15 @@
 	               				 `;
 			            
 			            //적 죽는 애니메이션 텍스트박스 업데이트
-							dieAnimation('enemy');
 							await getDropItem();
+							dieAnimation('enemy');
 				            showGold();
 							$('#enemyHPBar').empty().append(hpBar);
 				            $('#battleTextBox').empty().append(content);
 	        		}else{
-		        		shake('enemy');
+	        			console.log(" 적군 데미지 입기");
 		        		attackAnimation('hero');
+		        		shake('enemy');
 		        		updateHPBars();
 		            	content = `
 		                <div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center">
@@ -567,15 +550,17 @@
 			            
 		       	 }
 	        		// 캐릭터 공격 후 상대 공격 기다리는 시간
-	        		setTimeout(() => {
-	        			enemyAttack();
-		            }, 1000);
-	        		
-	        	
+        			if(enemyHp > 0){
+		        		setTimeout(() => {
+	        				enemyAttack();	
+		        			
+			            }, 1000);
+        			}
 			}; 
 		
 		
 		function itemDrop(){
+			console.log("적군 사망시 아이템 드롭");
 			return $.ajax({
 				        url: "/usr/item/itemDrop",
 				        type: "GET",
@@ -597,6 +582,7 @@
 				    }); 
 		}
 		function getDropItem(){
+			console.log("적군 사망시 아이템 드롭한것 저장");
 			return $.ajax({
 		        url: "/usr/item/itemInsertToCharacter",
 		        type: "GET",
@@ -608,6 +594,7 @@
 		}
         //데미지 입는 애니메이션
 		function shake(name) {
+			console.log("데미지 입는 애니메이션");
 		    let enemyImg;
 		    if (name === 'enemy') {
 		        enemyImg = document.getElementById("enemyImg");
@@ -626,6 +613,8 @@
 	    
 	    //죽는 애니메이션
 	    const dieAnimation = (name) => {
+	    	console.log("적군 HP 0 될시 죽는 애니메이션");
+	    	$('#enemyImg').empty();
 	        let img; 
 			if(name === 'enemy'){
 				img = document.getElementById("enemyImg");
@@ -638,12 +627,16 @@
 	        setTimeout(() => {
 	        	img.classList.remove("translate-y-[-30px]");
 	        	img.classList.add("hidden"); // 애니메이션 후 숨김 처리
-	           if(name ==='enemy')$('#enemyInfo').empty(); // 적 정보 삭제
+	           if(name ==='enemy'){
+	        	   $('#enemyInfo').empty(); // 적 정보 삭제
+	           }
 	        }, 500); // 애니메이션 시간 (500ms)
+	        
 	    };
 	    
 	    //공격하는 애니메이션
 	    const attackAnimation = function(name){
+	    	console.log("공격 애니메이션");
 	    	let img 
 	    	if(name === 'enemy'){
 	    		img = document.getElementById("enemyImg");
@@ -704,50 +697,24 @@
 			});
 			alert("데이터가 저장되었습니다.");
 		};
-		//이미지 불러오기 이미지 주소  데이터에 넣으면 사용할 것
-// 		const loadImages = () => {
-// 	        $.ajax({
-//  	            //url: "${pageContext.request.contextPath}/images/testCharacter.png",
-// 	            type: "GET",
-// 	            success: function () {
-// 	                const enemyImg = document.getElementById("enemyImg");
-//  	                //enemyImg.src = "${pageContext.request.contextPath}/images/testEnemyData.png";
-// 	                enemyImg.classList.remove("hidden"); // 이미지 숨김 해제
-// 	                enemyImg.classList.add("translate-x-full"); // 초기 위치 설정 (화면 밖)
-	                
-// 	            	const heroImg = document.getElementById("heroImg");
-//  	                //heroImg.src = "${pageContext.request.contextPath}/images/testCharacter.png";
-// 	                heroImg.classList.remove("hidden"); // 이미지 숨김 해제
-// 	                heroImg.classList.add("-translate-x-full"); // 초기 위치 설정 (화면 밖)
-// 	                setTimeout(() => {
-// 	                	heroImg.classList.add("transition-transform", "duration-500", "ease-out", "translate-x-0");
-// 	                    enemyImg.classList.add("transition-transform", "duration-500", "ease-out", "translate-x-0");
-// 	                }, 10); // 딜레이를 줘서 애니메이션 적용
-// 	            },
-// 	            error: function (xhr, status, error) {
-// 	                console.error("이미지 로드 실패:", error);
-// 	            }
-// 	        });
-// 	    };
+		
+			 
+
 </script>
 
 <div class="w-full h-full absolute">
-	<img src="${pageContext.request.contextPath}/images/background.jpg"
-		class="w-full h-full" />
+	<img src="/usr/imgFile/getImgPath?imgName=background" class="w-full h-full" />
 </div>
-
+<div id="imgtest">
+</div>
 <section class="container">
 	<div id="ourZone" class="fixed ">
-		<div id="characterInfo">
-			<div id="characterInfo" class="relative"></div>
-		</div>
-		<img id="heroImg"
-			src="${pageContext.request.contextPath}/images/testCharacter.png"
-			class="hidden">
+		<div id="characterInfo" class="relative"></div>
+		<img id="heroImg" src=""class="hidden">
 	</div>
 	<div id="enemyZone" class="fixed top-9 right-56">
-		<div id="enemyInfo"></div>
-		<img id="enemyImg" src="${pageContext.request.contextPath}/images/testEnemyData.png" class="hidden">
+		<div id="enemyInfo" class="relative"></div>
+		<img id="enemyImg" src="" class="hidden">
 	</div>
 </section>
 <!--   		====하단 버튼 4개 ==== -->
@@ -759,7 +726,7 @@
 		onclick="attack();">공격하기</button>
 	<button id="back" class=" w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" >돌아가기</button>
 	<!-- 하단 버튼 두 개 -->
-	<button id="next" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="insertGold()" >다음</button>
+	<button id="next" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="test()" >다음</button>
 	<button id="battleTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center cursor-default">필드 텍스트</button>
 </div>
 <!--     		=====하단 텍스트 박스 ===== -->
@@ -822,7 +789,7 @@
         <!-- 버튼 위 텍스트 -->
         <div class="text-white text-sm">포션 30%</div>
         <button id="potion30" class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-gray-100">
-            <img src="${pageContext.request.contextPath}/images/potion30.png" class="w-24 h-24">
+            <img src="/usr/imgFile/getImgPath?imgName=potion30" class="w-24 h-24">
         </button>
         <!-- 버튼 아래 텍스트 -->
         <div class="text-white text-sm">사용 시 체력 30% 회복 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;30 GOLD</div>
@@ -833,7 +800,7 @@
         <!-- 버튼 위 텍스트 -->
         <div class="text-white text-sm">포션 50%</div>
         <button id="potion50"  class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-gray-100">
-            <img src="${pageContext.request.contextPath}/images/potion50.png" class="w-28 h-36">
+            <img src="/usr/imgFile/getImgPath?imgName=potion50" class="w-28 h-36">
         </button>
         <!-- 버튼 아래 텍스트 -->
         <div class="text-white text-sm">사용 시 체력 50% 회복 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;50 GOLD</div>
@@ -844,7 +811,7 @@
         <!-- 버튼 위 텍스트 -->
         <div class="text-white text-sm">포션 100%</div>
         <button id="potion100"  class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-gray-100">
-            <img src="${pageContext.request.contextPath}/images/potion100.png" class="w-24 h-28">
+            <img src="/usr/imgFile/getImgPath?imgName=potion100" class="w-24 h-28">
         </button>
         <!-- 버튼 아래 텍스트 -->
         <div class="text-white text-sm">사용 시 체력 100% 회복 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;100 GOLD</div>
