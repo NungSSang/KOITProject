@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.example.demo.Util.Util;
 import com.example.demo.dto.Item;
 import com.example.demo.service.ItemService;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @Controller
@@ -18,13 +20,7 @@ public class ItemController {
 	public ItemController(ItemService itemService) {
 		this.itemService = itemService;
 	}
-	@GetMapping("/usr/item/getItems")
-	@ResponseBody
-	public List<Item> getItemsByCharacterId(int id) {
-		return itemService.getItemsByCharacterId(id);
-	}
-	
-	
+	//아이템 전체 조회 만들어야 함
 	@GetMapping("/usr/item/itemDrop")
 	@ResponseBody
 	public List<Item> itemDropByEnemyType(String enemyType) {
@@ -58,8 +54,20 @@ public class ItemController {
 	}
 	@GetMapping("/usr/item/showGold")
 	@ResponseBody
-	public  Item showGold(int characterId) {
+	public Item showGold(int characterId) {
 		return itemService.getItemStorageByItemName(characterId, "gold");
 	}
+	@GetMapping("/usr/item/getItemsByCharacterId")
+	@ResponseBody
+	public List<Item> getItemsByCharacterId(int characterId) {
+		return itemService.getItemsByCharacterId(characterId);
+	}
 	
+	@GetMapping("/usr/item/craftableItems")
+	@ResponseBody
+	public List<Item> craftableItems(int characterId) {
+		return itemService.craftableItems(characterId);
+	}
+	
+
 }

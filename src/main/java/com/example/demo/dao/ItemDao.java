@@ -13,17 +13,17 @@ import com.example.demo.dto.Item;
 public interface ItemDao {
 	@Select("""
 			SELECT * 
-					FROM item
-					WHERE characterId = #{id}
+					FROM itemStorage
+					WHERE characterId = #{characterId}
 			""")
-	List<Item> getItemsByCharacterId(int id);
-
+	List<Item> getItemsByCharacterId(int characterId);
+    
 	@Insert("""
 			INSERT INTO item
 					SET itemName = 'test'
-				,itemType = 1
-				,enemyType = 0
-				,characterId = 1;
+						,itemType = 1
+						,enemyType = 0
+						,characterId = 1;
 			""")
 	void getItem();
 
@@ -71,4 +71,29 @@ public interface ItemDao {
 						WHERE characterId = #{characterId} AND itemName = 'gold'
 			""")
 	void goldUpdateToCharacter(int characterId, int gold);
+
+    @Select("""
+            SELECT * 
+		            FROM item
+		            WHERE isCreate = 1
+        """)
+    List<Item> showCreateItem();
+    
+    @Select("""
+            SELECT * 
+		            FROM itemStorage
+		            WHERE characterId = #{characterId} AND id = #{itemId}
+        """)
+        List<Item> getItemStorageByCharacterId(int characterId, int itemId);
+
+    @Select("""
+    		SELECT * 
+					FROM item AS i
+					LEFT JOIN itemStorage AS `is`
+					ON i.itemName = `is`.itemName
+					WHERE i.id = #{needItemId}
+					AND `is`.itemCount >= #{needItemCount}
+					AND `is`.characterId = #{characterId}
+    		""")
+	List<Item> craftableItems(int characterId, int needItemId, int needItemCount);
 }

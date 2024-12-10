@@ -112,11 +112,6 @@
 			closeMenuBtn.addEventListener('click', closeSidebar);
 			overlay.addEventListener('click', closeSidebar);
 // 2차 메뉴 열기
-			document.querySelectorAll('.btn').forEach((btn) => {
-				btn.addEventListener('click', () => {
-					submenu.classList.remove('hidden');
-				});
-			});
 
 			function handlePotionClick(potionCost, hpIncrease) {
 				console.log("전투 끝난 후 포션 선택");
@@ -182,6 +177,7 @@
 			console.log(randomGold + "전투 후 골드 획득");
 			$.ajax({
 			       url: "/usr/item/insertGold",
+			       
 			       type: "GET",
 			       data: { 
 			    	   characterId : 1, 
@@ -581,6 +577,7 @@
 				        }
 				    }); 
 		}
+		
 		function getDropItem(){
 			console.log("적군 사망시 아이템 드롭한것 저장");
 			return $.ajax({
@@ -592,6 +589,30 @@
 		        }
 		    }); 
 		}
+		
+		function getItemsByCharacterId(){
+			submenu.classList.remove('hidden');
+			$('#submenu').empty();
+			$.ajax({
+				url: "/usr/item/craftableItems",
+				type: 'GET',
+				data: { characterId: ${rq.getLoginedMemberId() } }, 
+				dataType: 'json',
+				success: function(data) {
+					console.log(data);
+					for(let i = 0; i < data.length; i++){
+					const content = `
+							<a class="btn w-full mb-2">\${data[i].itemName}: \${data[i].itemCount}개</a>
+				    `;
+				    $('#submenu').append(content);
+					}
+				},
+				error: function(xhr, status, error) {
+					console.error(error);
+				}
+			});
+		}
+		
         //데미지 입는 애니메이션
 		function shake(name) {
 			console.log("데미지 입는 애니메이션");
@@ -726,7 +747,7 @@
 		onclick="attack();">공격하기</button>
 	<button id="back" class=" w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" >돌아가기</button>
 	<!-- 하단 버튼 두 개 -->
-	<button id="next" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="test()" >다음</button>
+	<button id="next" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="" >다음</button>
 	<button id="battleTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center cursor-default">필드 텍스트</button>
 </div>
 <!--     		=====하단 텍스트 박스 ===== -->
@@ -761,10 +782,7 @@
 		<li class="p-2 settingMenu"><a href="#" class="btn w-full text-black whitespace-nowrap hover:text-gray-200">설정</a>
 		</li>
 		<li class="p-2 itemMenu">
-			<!--                 <a href="#" class="btn w-full text-black whitespace-nowrap hover:text-gray-200">아이템</a> -->
-			<button
-				class="btn w-full text-black whitespace-nowrap hover:text-gray-200"
-				onclick="getItemList()">아이템</button>
+			<button id="itemPopUpBtn" class="btn w-full text-black whitespace-nowrap hover:text-gray-200" onclick="getItemsByCharacterId()">아이템</button>
 		</li>
 		<li class="p-2 testMenu"><a href="../home/main" onclick="return finishGame()" class="btn w-full text-black whitespace-nowrap hover:text-gray-200">메인페이지</a>
 		</li>
@@ -775,7 +793,6 @@
 <div id="submenu"
 	class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-white shadow-lg border border-gray-300 z-40">
 	<!-- 비어 있는 2차 메뉴 -->
-	<div id="testContent"></div>
 </div>
     <div id="overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-30"></div>
 

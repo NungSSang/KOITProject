@@ -11,8 +11,11 @@ public class Item {
 
 	private int id;
 	private String itemName;
-	private int itemType;
-	private int enemyType;
+	private String itemType;
+	private String enemyType;
 	private int characterId;
 	private int itemCount;
+	private boolean isCreate;
+	private String needItem;
+	private String needItemInt;
 }
