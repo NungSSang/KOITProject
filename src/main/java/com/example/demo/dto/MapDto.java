@@ -7,12 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CharacterDto {
+public class MapDto {
 	private int id;
-	private String characterName;
-	private int memberId;
-	private int characterHp;
-	private int characterAttackPower;
-	private int characterBerrior;
 	private int stageNum;
+	private String enemyType;
+	private String mapName;
 }

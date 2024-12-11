@@ -33,8 +33,9 @@ public interface CharacterDao {
 							,characterHp = #{characterHp}
 							,characterAttackPower = #{characterAttackPower}
 							,characterBerrior = #{characterBerrior}
+							,stageNum = #{stageNum}
 							WHERE id = #{id}
 			""")
-	void updateCharacterStatus(int id, String characterName, int memberId, int characterHp, int characterAttackPower, int characterBerrior);
+	void updateCharacterStatus(int id, String characterName, int memberId, int characterHp, int characterAttackPower, int characterBerrior, int stageNum);
 	
 }

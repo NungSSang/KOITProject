@@ -52,45 +52,15 @@
 			$(items[currentIndex]).css("background-color", "pink");
 		});
 		
-// 		const getItemList = function(){
-// 			if(j == 0){
-// 				$.ajax({
-// 					url: "/usr/item/getItems",
-// 					type: 'GET',
-// 					data: { id: 1 }, // id 값 전달
-// 					dataType: 'json',
-// 					success: function(data) {
-// 						console.log(data);
-// 						for (let t = 0; t < data.length; t++) {
-// 							let content = `
-// 							<div id="items" class="w-1/2 h-1/2 inline-block whitespace-nowrap">
-// 								<div>\${data[t].itemName}</div>
-// 							</div>
-// 							`;
-			        		
-// 							$('#testContent').append(content);
-// 							items = $("#items div").toArray();
-// 							if (items.length > 0) {
-// 								$(items[currentIndex]).css("background-color", "pink");
-// 							}
-// 						}
-	
-// 					},
-// 					error: function(xhr, status, error) {
-// 						console.error(error);
-// 					}
-// 				});
-// 			}
-// 			j = 1;
-// 		} 
-		const testRemove = function(){
-			$('#testContent div').remove();
-			j = 0 ;
+		const settingSubmenuOpen = function(){
+			itemSubmenu.classList.add('hidden');
+			craftSubmenu.classList.add('hidden');
+			settingSubmenu.classList.remove('hidden');
 		}
+		
 //============ 토글 사이드바 ================= 
 		document.addEventListener('DOMContentLoaded', () => {
 			const sidebar = document.getElementById('sidebar');
-			const submenu = document.getElementById('submenu');
 			const overlay = document.getElementById('overlay');
 			const toggleMenuBtn = document.getElementById('toggleMenuBtn');
 			const closeMenuBtn = document.getElementById('closeMenuBtn');
@@ -106,7 +76,9 @@
 			const closeSidebar = () => {
 				sidebar.classList.add('-translate-x-full'); // 사이드바 닫기
 				sidebar.classList.remove('translate-x-0');
-				submenu.classList.add('hidden'); // 2차 메뉴 숨기기
+				itemSubmenu.classList.add('hidden'); // 2차 메뉴 숨기기
+				settingSubmenu.classList.add('hidden'); // 2차 메뉴 숨기기
+				craftSubmenu.classList.add('hidden');
 				overlay.classList.add('hidden'); // 오버레이 숨기기
 			};
 			closeMenuBtn.addEventListener('click', closeSidebar);
@@ -269,6 +241,13 @@
 		    }
 		    firstBattle = false;
 		    // 적 상태 다시 불러오기
+		    stageNum = stageNum + 1; // 스테이지 숫자
+            let updateStageNum = `
+            	<div id="stageDisplay" class="fixed top-4 right-4 bg-gray-700 text-white text-sm font-bold py-2 px-4 rounded-lg shadow-md z-50">
+                	Stage: <span id="stageNum">\${stageNum}</span>
+            	</div>	
+            `;
+            $('#stageDisplay').empty().append(updateStageNum);
 		    getEnemyStatus();
 		    // 캐릭터와 적 이미지 표시 및 애니메이션 초기화
  		     loadImages('character','hero');
@@ -348,6 +327,7 @@
 		let randomAttack;
 		let dropedItem;
 		let cost;
+		let stageNum = 0;
 		let isAttack = false;
 		//======랜덤숫자======
 		const randomNum = (max,min) => {
@@ -380,6 +360,7 @@
 		                    </div>
 		                </div>
 		            `;
+
 		            // 기존 캐릭터 정보 제거 후 새로 추가
 		            $('#characterInfo').empty().append(content);
 		        },
@@ -404,7 +385,6 @@
 					enemyId = data[0].id;
 					enemyName = data[0].enemyName;
 					loadImages(enemyName,'enemy');
-	               	console.log("=======================지금 이미지 scr 적용 되었습니다 =============================")
 					enemyHp = data[0].enemyHp;
 					enemyAttackPower = data[0].enemyAttackPower;
 					enemyBerrior = data[0].enemyBerrior;
@@ -549,7 +529,6 @@
         			if(enemyHp > 0){
 		        		setTimeout(() => {
 	        				enemyAttack();	
-		        			
 			            }, 1000);
         			}
 			}; 
@@ -563,13 +542,17 @@
 				        data: { enemyType : enemyType }, 
 				        dataType: "json",
 				        success: function (data) {
+				        	console.log(data);
 				        	const random = randomNum(data.length,1);
+				        	console.log(random + "는 랜덤 숫자");
 				        	if(random === 1){
 				        		dropedItem = data[0].itemName; 
 				        	}else if(random === 2){
 				        		dropedItem = data[1].itemName;
 				        	}else if(random === 3){
 				        		dropedItem = data[2].itemName;
+				        	}else{
+				        		dropedItem = '드롭된 아이템이 없습니다.';
 				        	}
 				        },
 				        error: function (xhr, status, error) {
@@ -590,9 +573,11 @@
 		    }); 
 		}
 		
-		function getItemsByCharacterId(){
-			submenu.classList.remove('hidden');
-			$('#submenu').empty();
+		function craftableItems(){
+			settingSubmenu.classList.add('hidden');
+			itemSubmenu.classList.add('hidden');
+			craftSubmenu.classList.remove('hidden');
+			$('#craftSubmenu').empty();
 			$.ajax({
 				url: "/usr/item/craftableItems",
 				type: 'GET',
@@ -602,9 +587,40 @@
 					console.log(data);
 					for(let i = 0; i < data.length; i++){
 					const content = `
-							<a class="btn w-full mb-2">\${data[i].itemName}: \${data[i].itemCount}개</a>
+							<button class="btn w-full mb-2">\${data[i].itemName}: \${data[i].itemCount}개</button>
 				    `;
-				    $('#submenu').append(content);
+				    $('#craftSubmenu').append(content);
+					}
+				},
+				error: function(xhr, status, error) {
+					console.error(error);
+				}
+			});
+		}
+		
+		function getItemsByCharacterId(){
+			settingSubmenu.classList.add('hidden');
+			craftSubmenu.classList.add('hidden');
+			itemSubmenu.classList.remove('hidden');
+			$.ajax({
+				url: "/usr/item/getItemsByCharacterId",
+				type: 'GET',
+				data: { characterId: ${rq.getLoginedMemberId() } }, 
+				dataType: 'json',
+				success: function(data) {
+					console.log(data);
+					for(let i = 0; i < data.length; i++){
+						if(data[i].itemName =='gold'){
+							const content = `
+								<a class="btn w-full mb-2">보유중인 골드: \${data[i].itemCount}</a>
+					  	  		`;
+								$('#itemSubmenu').append(content);					    						
+						}else{
+							const content = `
+									<button class="btn w-full mb-2">\${data[i].itemName}: \${data[i].itemCount}개</button>
+						    `;
+						    $('#itemSubmenu').append(content);
+						}
 					}
 				},
 				error: function(xhr, status, error) {
@@ -713,7 +729,8 @@
 					memberId : memberId,
 					characterHp : characterHp,
 					characterAttackPower : characterAttackPower,
-					characterBerrior : characterBerrior
+					characterBerrior : characterBerrior,
+					stageNum : stageNum
 				}, 
 			});
 			alert("데이터가 저장되었습니다.");
@@ -723,8 +740,11 @@
 
 </script>
 
-<div class="w-full h-full absolute">
-	<img src="/usr/imgFile/getImgPath?imgName=background" class="w-full h-full" />
+<div class="w-full h-4/5 top-0 absolute">
+	<img src="/usr/imgFile/getImgPath?imgName=29" class="w-full h-full" />
+</div>
+<div id="stageDisplay" class="fixed top-4 right-4 bg-gray-700 text-white text-sm font-bold py-2 px-4 rounded-lg shadow-md z-50">
+    Stage: <span id="stageNum"></span>
 </div>
 <div id="imgtest">
 </div>
@@ -733,7 +753,7 @@
 		<div id="characterInfo" class="relative"></div>
 		<img id="heroImg" src=""class="hidden">
 	</div>
-	<div id="enemyZone" class="fixed top-9 right-56">
+	<div id="enemyZone" class="fixed right-20 bottom-40">
 		<div id="enemyInfo" class="relative"></div>
 		<img id="enemyImg" src="" class="hidden">
 	</div>
@@ -744,26 +764,19 @@
 	<!-- 상단 버튼 두 개 -->
 	<button id="attackBtn"
 		class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black"
-		onclick="attack();">공격하기</button>
-	<button id="back" class=" w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" >돌아가기</button>
+		onclick="attack();"><i class="fa-solid fa-bolt"></i>공격하기</button>
+	<button id="back" class=" w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" ><i class="fa-solid fa-rotate-left"></i>돌아가기</button>
 	<!-- 하단 버튼 두 개 -->
 	<button id="next" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="" >다음</button>
 	<button id="battleTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center cursor-default">필드 텍스트</button>
 </div>
 <!--     		=====하단 텍스트 박스 ===== -->
-<div id="UnderTextBox"
-	class="fixed bottom-0 left-0 w-full h-1/5 bg-gray-800 flex flex-wrap">
-	<button
-		class="w-1/2 h-full bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black"
-		onclick="startBattleBtnClick(); ">게임 시작</button>
-	<div
-		class="w-1/2 h-full bg-gray text-white text-lg font-medium flex items-center justify-center ">
-		테스트 텍스트 박스</div>
+<div id="UnderTextBox" class="fixed bottom-0 left-0 w-full h-1/5 bg-gray-800 flex flex-wrap">
+	<button	class="w-1/2 h-full bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black"	onclick="startBattleBtnClick(); "><i class="fa-solid fa-play mr-2"></i>게임 시작</button>
+	<a href="../home/main" onclick="return finishGame()" class="w-1/2 h-full bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black"><i class="fa-solid fa-house mr-2"></i>메인페이지</a>
 </div>
 <!--     ===토글 사이드바=== -->
-<button id="toggleMenuBtn"
-	class="fixed top-4 left-4 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600">
-	메뉴 열기</button>
+<button id="toggleMenuBtn" class="fixed top-4 left-4 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"><i class="fa-solid fa-bars mr-1"></i>메뉴 열기</button>
 
 <!-- 오버레이 -->
 <div id="overlay"
@@ -779,19 +792,31 @@
 			닫기</button>
 	</div>
 	<ul class="mt-4">
-		<li class="p-2 settingMenu"><a href="#" class="btn w-full text-black whitespace-nowrap hover:text-gray-200">설정</a>
+		<li class="p-2 settingMenu">
+			<button id="settingPopUpBtn" class="btn w-full text-black whitespace-nowrap hover:text-gray-200" onclick="settingSubmenuOpen()"><i class="fa-solid fa-gear"></i>설정</button>
 		</li>
 		<li class="p-2 itemMenu">
-			<button id="itemPopUpBtn" class="btn w-full text-black whitespace-nowrap hover:text-gray-200" onclick="getItemsByCharacterId()">아이템</button>
+			<button id="itemPopUpBtn" class="btn w-full text-black whitespace-nowrap hover:text-gray-200" onclick="getItemsByCharacterId()"><i class="fa-solid fa-suitcase"></i>인벤토리</button>
 		</li>
-		<li class="p-2 testMenu"><a href="../home/main" onclick="return finishGame()" class="btn w-full text-black whitespace-nowrap hover:text-gray-200">메인페이지</a>
+		<li class="p-2 craftItemMenu">
+			<button id="craftItemPopUpBtn" class="btn w-full text-black whitespace-nowrap hover:text-gray-200" onclick="craftableItems()"><i class="fa-solid fa-hammer"></i>아이템 제작</button>
+		</li>
+		<li class="p-2 menuBtn"><a href="../home/main" onclick="return finishGame()" class="btn w-full text-black whitespace-nowrap hover:text-gray-200"><i class="fa-solid fa-house"></i>메인페이지</a>
 		</li>
 	</ul>
 </div>
 
 <!-- 2차 메뉴 -->
-<div id="submenu"
-	class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-white shadow-lg border border-gray-300 z-40">
+<div id="itemSubmenu"
+	class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-white shadow-lg border border-gray-300 z-40 overflow-auto">
+	<!-- 비어 있는 2차 메뉴 -->
+</div>
+<div id="craftSubmenu"
+	class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-white shadow-lg border border-gray-300 z-40 overflow-auto">
+	<!-- 비어 있는 2차 메뉴 -->
+</div>
+<div id="settingSubmenu"
+	class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-white shadow-lg border border-gray-300 z-40 overflow-auto">
 	<!-- 비어 있는 2차 메뉴 -->
 </div>
     <div id="overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-30"></div>

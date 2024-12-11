@@ -23,8 +23,8 @@ public class CharacterService {
 		return characterDao.getCharacterInfo(memberId);
 	}
 
-	public void updateCharacterStatus(int id, String characterName, int memberId, int characterHp,int characterAttackPower, int characterBerrior) {
-		characterDao.updateCharacterStatus(id, characterName, memberId, characterHp, characterAttackPower, characterBerrior);
+	public void updateCharacterStatus(int id, String characterName, int memberId, int characterHp,int characterAttackPower, int characterBerrior, int stageNum) {
+		characterDao.updateCharacterStatus(id, characterName, memberId, characterHp, characterAttackPower, characterBerrior, stageNum);
 	}
 
 	
