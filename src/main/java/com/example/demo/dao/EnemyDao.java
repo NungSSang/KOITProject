@@ -11,11 +11,13 @@ import com.example.demo.dto.Enemy;
 public interface EnemyDao {
 
 	@Select("""
-			SELECT * 
-					FROM enemy
-					WHERE id = #{id}
+				SELECT *, e.id
+					FROM enemy AS e
+					RIGHT JOIN map AS m
+					ON e.enemyType = m.enemyType
+					WHERE stageNum = #{stageNum}
 			""")
-	List<Enemy> getEnemy(int id);
+	List<Enemy> getEnemy(int stageNum);
 
 	@Select("""
 			SELECT *
@@ -32,8 +34,9 @@ public interface EnemyDao {
 					FROM enemyAttackPattern as eA
 					INNER JOIN enemy as e
 					ON eA.enemyId = e.id
-					WHERE ea.enemyId = #{id}
+					WHERE ea.enemyType = #{enemyType}
 			""")
-	List<Enemy> getEnemyAttackByEnemyId(int id);
+	List<Enemy> getEnemyAttackByEnemyId(String enemyType);
+
 
 }

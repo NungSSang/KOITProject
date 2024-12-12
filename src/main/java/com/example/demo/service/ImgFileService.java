@@ -14,5 +14,8 @@ public class ImgFileService {
 	public String getImgPath(String imgName) {
 		return imgFileDao.getImgPath(imgName);
 	}
+	public String getMapImgPath(int stageNum) {
+		return imgFileDao.getMapImgPath(stageNum);
+	}
 
 }

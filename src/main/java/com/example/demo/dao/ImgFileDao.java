@@ -11,4 +11,13 @@ public interface ImgFileDao {
 						WHERE imgName = #{imgName}
 			""")
 	String getImgPath(String imgName);
+
+	@Select("""
+			SELECT savedPath
+					FROM imgFile AS i
+					RIGHT JOIN 	map AS m	
+					ON i.imgName = m.mapName
+					WHERE m.stageNum = #{stageNum}
+			""")
+	String getMapImgPath(int stageNum);
 }

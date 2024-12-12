@@ -12,21 +12,21 @@ import com.example.demo.service.EnemyService;
 @Controller
 public class EnemyController {
 	EnemyService enemyService;
-	
 	public EnemyController(EnemyService enemyService) {
 		this.enemyService = enemyService;
 	}
 	
 	@GetMapping("/usr/enemy/getEnemy")
 	@ResponseBody
-	public List<Enemy> getEnemy(int id) {
-		return enemyService.getEnemy(id);
+	public List<Enemy> getEnemy(int stageNum) {
+		int adjustedStageNum = (stageNum / 5) * 5; 
+		return enemyService.getEnemy(adjustedStageNum);
+		
 	}
+	
 	@GetMapping("/usr/enemy/getEnemyAttack")
 	@ResponseBody
-	public List<Enemy> getEnemyAttackByEnemyId(int id) {
-		return enemyService.getEnemyAttackByEnemyId(id);
+	public List<Enemy> getEnemyAttackByEnemyId(String enemyType) {
+		return enemyService.getEnemyAttackByEnemyId(enemyType);
 	}
-	
-	
 }

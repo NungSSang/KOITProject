@@ -16,41 +16,85 @@
         .shake {
             animation: shake 0.1s linear;
         }
-
+		<style>
+   	 /* 오버레이 애니메이션 */
+	    .black-visible {
+	        display: block;
+	        opacity: 0;
+	        animation: fadeIn 0.5s forwards;
+	    }
+	
+	    .black-hidden {
+	        opacity: 1;
+	        animation: fadeOut 0.5s forwards;
+	    }
+	
+	    @keyframes fadeIn {
+	        from {
+	            opacity: 0;
+	        }
+	        to {
+	            opacity: 1;
+	        }
+	    }
+	
+	    @keyframes fadeOut {
+	        from {
+	            opacity: 1;
+	        }
+	        to {
+	            opacity: 0;
+	        }
+	    }
 </style>
 <script>
-		let j = 0; // 아이템 로드? 나중에 다시 확인
-		let currentIndex = 0; // 현재 선택된 요소의 인덱스
-		let items = [];
-		$(document).ready(function() {
-			var hero = document.getElementById("hero");
-			items = $("#items div").toArray();
-			if (items.length > 0) {
-				$(items[currentIndex]).css("background-color", "pink");
-			}
+		$( document ).ready(function() {
+			showBlackScreen(1000);
+			 setTimeout(() => {
+				 startBattleBtnClick();
+			 }, 1000);
 		});
-	
+
+		function showBlackScreen(duration = 3000) {
+		    const blackScreen = document.getElementById('black');
+		
+		    // 검은 화면 보이기
+		    blackScreen.classList.remove('hidden');
+		    blackScreen.style.opacity = '0';
+		    blackScreen.style.transition = 'opacity 1s ease-in-out';
+		
+		    // 점점 검게 덮기
+		    setTimeout(() => {
+		        blackScreen.style.opacity = '1';
+		    }, 10);
+		
+		    // 지정된 시간(duration) 후 검은 화면 숨기기
+		    setTimeout(() => {
+		        blackScreen.style.opacity = '0';
+		        setTimeout(() => {
+		            blackScreen.classList.add('hidden');
+		        }, 1000); // 사라지는 애니메이션 시간 (1초)
+		    }, duration);
+		}
+	//=======캐릭터 정보 저장========
+		let id;
+		let characterName;
+		let memberId;
+		let characterHp;
+		let characterAttackPower;
+		let characterBerrior;	
+		let enemyId;
+		let enemyName;
+		let enemyHp;
+		let enemyAttackPower;
+		let enemyBerrior;
+		let enemyType;
+		let randomAttack;
+		let dropedItem;
+		let cost;
+		let stageNum;
+		let isAttack = false;
 //=======================키보드 이벤트 처리=========================
-		document.addEventListener('keydown', (event) => {
-			$(items[currentIndex]).css("background-color", "");
-			switch (event.key) {
-				case 'ArrowUp':    // 위쪽 방향키
-				currentIndex = (currentIndex - 2 + items.length) % items.length;
-				break;
-				case 'ArrowDown':  // 아래쪽 방향키
-				currentIndex = (currentIndex + 2) % items.length;
-				break;
-				case 'ArrowLeft':  // 왼쪽 방향키
-				currentIndex = (currentIndex - 1) % items.length;
-				break;
-				case 'ArrowRight': // 오른쪽 방향키
-				currentIndex = (currentIndex + 1) % items.length;
-				break;
-				default:
-				return; // 다른 키는 무시
-			}
-			$(items[currentIndex]).css("background-color", "pink");
-		});
 		
 		const settingSubmenuOpen = function(){
 			itemSubmenu.classList.add('hidden');
@@ -202,7 +246,9 @@
 			        },
 			        error: function (xhr, status, error) {
 			            alert("골드가 부족합니다.");
-			            return;
+			            itemPopUp.classList.add('hidden');
+				 		itemPopUpOverlay.classList.add('hidden');
+				 		return;
 			        }
 			    });
 	 	}
@@ -220,8 +266,13 @@
         	}
         	console.log( "=============== 캐릭터,적군 이미지 불러오기 불러오기끝===============");
         };
+        
+        const getMapImgPath = () => {
+        	let img = $('#map');
+            img.attr("src", "/usr/imgFile/getMapImgPath?stageNum=" + stageNum);
+        }
 //게임시작 버튼 누르면 하단 박스 바뀌는것
-		const startBattleBtnClick = function () {
+		const startBattleBtnClick = async function () {
 			console.log("게임 시작");
 			$('#enemyZone').removeClass("hidden");
 			content = `
@@ -237,18 +288,12 @@
 		    document.getElementById('underBattleBtn').classList.add('flex');
 		    // 캐릭터 상태 다시 불러오기
 		    if(firstBattle){
-		    	getCharacterStatus();	
+		    	await getCharacterStatus();	
+		    	getMapImgPath();
 		    }
 		    firstBattle = false;
-		    // 적 상태 다시 불러오기
-		    stageNum = stageNum + 1; // 스테이지 숫자
-            let updateStageNum = `
-            	<div id="stageDisplay" class="fixed top-4 right-4 bg-gray-700 text-white text-sm font-bold py-2 px-4 rounded-lg shadow-md z-50">
-                	Stage: <span id="stageNum">\${stageNum}</span>
-            	</div>	
-            `;
-            $('#stageDisplay').empty().append(updateStageNum);
-		    getEnemyStatus();
+			 // 적 상태 다시 불러오기
+		    await getEnemyStatus();
 		    // 캐릭터와 적 이미지 표시 및 애니메이션 초기화
  		     loadImages('character','hero');
 		     const heroImg = document.getElementById("heroImg");
@@ -266,6 +311,17 @@
 		    enemyImg.classList.add("translate-x-full"); // 초기 위치 오른쪽
 		    enemyStatus.classList.remove("hidden");
 		    enemyStatus.classList.add("translate-x-full");
+		    stageNum = stageNum + 1; // 스테이지 숫자
+			if(stageNum % 5 == 0){
+				getMapImgPath();
+			}
+            let updateStageNum = `
+            	<div id="stageDisplay" class="fixed top-4 right-4 bg-gray-700 text-white text-sm font-bold py-2 px-4 rounded-lg shadow-md z-50">
+                	Stage: <span id="stageNum">\${stageNum}</span>
+            	</div>	
+            `;
+            $('#stageDisplay').empty().append(updateStageNum);
+            console.log(stageNum);
 		    // 애니메이션 실행
 		    setTimeout(() => {
 		        heroImg.classList.remove("-translate-x-full");
@@ -280,6 +336,7 @@
 		    }, 10); // 딜레이 후 애니메이션 실행
 		}; 
 		const finishBattleBtnClick = function () {
+			if((stageNum + 1) % 5 === 0)showBlackScreen(1000);
 			console.log("적군 사망시 들어옴")
 			$('#battleTextBox').empty();
 		    const heroImg = document.getElementById("heroImg");
@@ -310,106 +367,88 @@
 		    document.getElementById('underBattleBtn').classList.remove('flex');
 		    document.getElementById('underBattleBtn').classList.add('hidden');
 		};
-		//=======캐릭터 정보 저장========
-		let id;
-		let characterName;
-		let memberId;
-		let characterHp;
-		let characterAttackPower;
-		let characterBerrior;	
-		let a = 1;
-		let enemyId;
-		let enemyName;
-		let enemyHp;
-		let enemyAttackPower;
-		let enemyBerrior;
-		let enemyType;
-		let randomAttack;
-		let dropedItem;
-		let cost;
-		let stageNum = 0;
-		let isAttack = false;
+
 		//======랜덤숫자======
-		const randomNum = (max,min) => {
-			return Math.floor(Math.random() * max + min);
-		}
+		const randomNum = (max, min) => {
+	    	return Math.floor(Math.random() * (max - min + 1) + min);
+		};
 		//=== 캐릭터와 적 스탯 불러오기 ===
 		const getCharacterStatus = function () {
 			console.log(1 + " 캐릭터 스텟 불러오기");
-		    $.ajax({
-		        url: "/usr/character/getCharacter",
-		        type: "GET",
-		        data: { memberId: ${rq.getLoginedMemberId() } }, // memberId 값 전달
-		        dataType: "json",
-		        success: function (data) {
-					id = data[0].id;
-					characterName = data[0].characterName;
-					memberId = data[0].memberId;
-					characterHp = data[0].characterHp;
-					characterAttackPower = data[0].characterAttackPower;
-					characterBerrior = data[0].characterBerrior;
-		            let content = `
-		                <div id="heroStatus" class="relative w-full flex flex-col items-center justify-center space-y-2">
-		                    <!-- 캐릭터 이름 -->
-		                    <div class="text-center font-bold text-lg text-black">\${data[0].characterName}</div>
-		                    
-		                    <!-- HP Bar -->
-		                    <div class="relative w-36 h-3 bg-gray-300 rounded-full">
-		                        <div id="characterHPBar" class="h-full bg-green-500 rounded-full transition-all duration-300 ease-out"
-		                            style="width: \${data[0].characterHp}%;"></div>
-		                    </div>
-		                </div>
-		            `;
-
-		            // 기존 캐릭터 정보 제거 후 새로 추가
-		            $('#characterInfo').empty().append(content);
-		        },
-		        error: function (xhr, status, error) {
-		            console.error(error);
-		        }
-		    });
+		   return $.ajax({
+			        url: "/usr/character/getCharacter",
+			        type: "GET",
+			        data: { memberId: ${rq.getLoginedMemberId() } }, // memberId 값 전달
+			        dataType: "json",
+			        success: function (data) {
+						id = data[0].id;
+						characterName = data[0].characterName;
+						memberId = data[0].memberId;
+						characterHp = data[0].characterHp;
+						characterAttackPower = data[0].characterAttackPower;
+						characterBerrior = data[0].characterBerrior;
+						stageNum = data[0].stageNum;
+						console.log(stageNum + "12323123");
+			            let content = `
+			                <div id="heroStatus" class="relative w-full flex flex-col items-center justify-center space-y-2">
+			                    <!-- 캐릭터 이름 -->
+			                    <div class="text-center font-bold text-lg text-black">\${data[0].characterName}</div>
+			                    
+			                    <!-- HP Bar -->
+			                    <div class="relative w-36 h-3 bg-gray-300 rounded-full">
+			                        <div id="characterHPBar" class="h-full bg-green-500 rounded-full transition-all duration-300 ease-out"
+			                            style="width: \${data[0].characterHp}%;"></div>
+			                    </div>
+			                </div>
+			            `;
+	
+			            // 기존 캐릭터 정보 제거 후 새로 추가
+			            $('#characterInfo').empty().append(content);
+			        },
+			        error: function (xhr, status, error) {
+			            console.error(error);
+			        }
+			    });
 		}; 
 		
 		//=============== 적군 생성  ===============
 		const getEnemyStatus = function () {
-			console.log(2 + " 적군 스텟 불러오기");
-			if (a > 5){
-				a = 1;
-			}
-		    $.ajax({
-		        url: "/usr/enemy/getEnemy",
-		        type: "GET",
-		        data: { id: a }, // Id 값 전달
-		        dataType: "json",
-		        success: function (data) {
-					enemyId = data[0].id;
-					enemyName = data[0].enemyName;
-					loadImages(enemyName,'enemy');
-					enemyHp = data[0].enemyHp;
-					enemyAttackPower = data[0].enemyAttackPower;
-					enemyBerrior = data[0].enemyBerrior;
-					enemyType = data[0].enemyType;
-		            let content = `
-		                <div id="enemyStatus" class="relative w-full flex flex-col items-center justify-center space-y-2">
-		                    <!-- 적 이름 -->
-		                    <div class="text-center font-bold text-lg text-black">\${data[0].enemyName}</div>
-		                    <!-- HP Bar -->
-		                    <div class="relative w-36 h-3 bg-gray-300 rounded-full">
-		                        <div id="enemyHPBar" class="h-full bg-red-500 rounded-full transition-all duration-300 ease-out"
-		                            style="width: \${data[0].enemyHp}%;"></div>
-		                    </div>
-		                </div>
-		            `;
-
-		            // 기존 적 정보 제거 후 새로 추가
-		            $('#enemyInfo').empty().append(content);
-		        },
-		        error: function (xhr, status, error) {
-		            console.error(error);
-		        }
-		    });  
-		    a = a + 1;
-		    isAttack = false;
+		   return $.ajax({
+			        url: "/usr/enemy/getEnemy",
+			        type: "GET",
+			        data: { stageNum: stageNum+1 }, // Id 값 전달
+			        dataType: "json",
+			        success: function (data) {
+			        	console.log(data.length + "데이터 길이");
+			        	const i = randomNum(data.length -1,0);
+			        	console.log(i + "랜덤숫자 길이");
+						enemyId = data[i].id;
+						enemyName = data[i].enemyName;
+						loadImages(enemyName,'enemy');
+						enemyHp = data[i].enemyHp;
+						enemyAttackPower = data[i].enemyAttackPower;
+						enemyBerrior = data[i].enemyBerrior;
+						enemyType = data[i].enemyType;
+			            let content = `
+			                <div id="enemyStatus" class="relative w-full flex flex-col items-center justify-center space-y-2">
+			                    <!-- 적 이름 -->
+			                    <div class="text-center text-white font-bold text-lg text-black">\${data[0].enemyName}</div>
+			                    <!-- HP Bar -->
+			                    <img src="/usr/imgFile/getImgPath?imgName=fire" class="w-6 h-8 inline-block">
+			                    <div class="relative w-36 h-3 bg-gray-300 rounded-full">
+			                        <div id="enemyHPBar" class="h-full bg-red-500 rounded-full transition-all duration-300 ease-out" style="width: \${data[0].enemyHp}%;"></div>
+			                    </div>
+			                </div>
+			            `;
+	
+					    isAttack = false;
+			            // 기존 적 정보 제거 후 새로 추가
+			            $('#enemyInfo').empty().append(content);
+			        },
+			        error: function (xhr, status, error) {
+			            console.error(error);
+			        }
+			    });  
 		}; 
 		const updateHPBars = () => {
 			// HP 비율 계산 (max 100%)
@@ -486,6 +525,7 @@
 	        	enemyHp = enemyHp - damage;
 	        		if(enemyHp <= 0){
 	        			console.log(" 적군 죽기 입기");
+	        			attackAnimation('hero');
 	        			await itemDrop();
 	        			await insertGold()
 	        			content = `
@@ -533,7 +573,20 @@
         			}
 			}; 
 		
+		function characterAttackPattern(){
+			document.getElementById('underBattleBtn').classList.add('hidden');
+		    document.getElementById('underBattleBtn').classList.remove('flex');
+		    document.getElementById('underAttackBtn').classList.remove('hidden');
+		    document.getElementById('underAttackBtn').classList.add('flex');
+		}	
 		
+		function finishAttackPattern(){
+			document.getElementById('underBattleBtn').classList.remove('hidden');
+		    document.getElementById('underBattleBtn').classList.add('flex');
+		    document.getElementById('underAttackBtn').classList.add('hidden');
+		    document.getElementById('underAttackBtn').classList.remove('flex');
+		}	
+			
 		function itemDrop(){
 			console.log("적군 사망시 아이템 드롭");
 			return $.ajax({
@@ -696,11 +749,13 @@
 	    }
 	    
 	    const getEnemyPattern = async function(){
+	    	console.log('적 랜덤 패턴들어오나요?');
 	    	const random = randomNum(4,1);
+	    	console.log(random + '적 랜덤 패턴 숫자 들어오나요?');
 		    await $.ajax({
 					url: "/usr/enemy/getEnemyAttack",
 					type: 'GET',
-					data: { id: enemyId }, // id 값 전달
+					data: { enemyType: enemyType }, // id 값 전달
 					dataType: 'json',
 					success: function(data) {
 						if(random === 1){
@@ -739,9 +794,10 @@
 			 
 
 </script>
-
+<!-- 검은색 패널 -->
+<div id="black" class="hidden fixed inset-0 bg-black bg-opacity-100 z-30"></div>
 <div class="w-full h-4/5 top-0 absolute">
-	<img src="/usr/imgFile/getImgPath?imgName=29" class="w-full h-full" />
+	<img id="map" src="" class="w-full h-full" />
 </div>
 <div id="stageDisplay" class="fixed top-4 right-4 bg-gray-700 text-white text-sm font-bold py-2 px-4 rounded-lg shadow-md z-50">
     Stage: <span id="stageNum"></span>
@@ -749,9 +805,9 @@
 <div id="imgtest">
 </div>
 <section class="container">
-	<div id="ourZone" class="fixed ">
+	<div id="ourZone" class="fixed">
 		<div id="characterInfo" class="relative"></div>
-		<img id="heroImg" src=""class="hidden">
+		<img id="heroImg" src=""class="hidden ">
 	</div>
 	<div id="enemyZone" class="fixed right-20 bottom-40">
 		<div id="enemyInfo" class="relative"></div>
@@ -759,20 +815,31 @@
 	</div>
 </section>
 <!--   		====하단 버튼 4개 ==== -->
+<div id="underAttackBtn"
+	class="fixed bottom-0 left-0 w-full h-1/5 bg-gray-800 hidden flex-wrap">
+	<!-- 상단 버튼 두 개 -->
+	<button id="attackBtn"
+		class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black"
+		onclick="finishAttackPattern()"><i class="fa-solid fa-bolt"></i>스킬1</button>
+	<button id="back" class=" w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" ><i class="fa-solid fa-snowflake"></i>스킬2</button>
+	<!-- 하단 버튼 두 개 -->
+	<button id="next" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="" ><i class="fa-solid fa-seedling"></i>스킬3</button>
+	<button id="battleTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center cursor-default">텍스트</button>
+</div>
 <div id="underBattleBtn"
 	class="fixed bottom-0 left-0 w-full h-1/5 bg-gray-800 hidden flex-wrap">
 	<!-- 상단 버튼 두 개 -->
 	<button id="attackBtn"
 		class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black"
-		onclick="attack();"><i class="fa-solid fa-bolt"></i>공격하기</button>
+		onclick="attack();"><i class="fa-solid fa-gavel"></i>공격하기</button>
 	<button id="back" class=" w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" ><i class="fa-solid fa-rotate-left"></i>돌아가기</button>
 	<!-- 하단 버튼 두 개 -->
-	<button id="next" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="" >다음</button>
+	<button id="next" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="characterAttackPattern()">스킬</button>
 	<button id="battleTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center cursor-default">필드 텍스트</button>
 </div>
 <!--     		=====하단 텍스트 박스 ===== -->
 <div id="UnderTextBox" class="fixed bottom-0 left-0 w-full h-1/5 bg-gray-800 flex flex-wrap">
-	<button	class="w-1/2 h-full bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black"	onclick="startBattleBtnClick(); "><i class="fa-solid fa-play mr-2"></i>게임 시작</button>
+	<button	class="w-1/2 h-full bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black"	onclick="startBattleBtnClick();"><i class="fa-solid fa-play mr-2"></i>게임 시작</button>
 	<a href="../home/main" onclick="return finishGame()" class="w-1/2 h-full bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black"><i class="fa-solid fa-house mr-2"></i>메인페이지</a>
 </div>
 <!--     ===토글 사이드바=== -->
@@ -830,35 +897,48 @@
     <div class="flex flex-col items-center space-y-2">
         <!-- 버튼 위 텍스트 -->
         <div class="text-white text-sm">포션 30%</div>
-        <button id="potion30" class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-gray-100">
+        <button id="potion30" class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-green-100">
             <img src="/usr/imgFile/getImgPath?imgName=potion30" class="w-24 h-24">
         </button>
         <!-- 버튼 아래 텍스트 -->
-        <div class="text-white text-sm">사용 시 체력 30% 회복 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;30 GOLD</div>
+        <div class="text-white text-sm">사용 시 체력 30% 회복</div>
+        <div class="text-white text-sm">30 Gold</div>
     </div>
 
     <!-- 버튼 2 -->
     <div class="flex flex-col items-center space-y-2">
         <!-- 버튼 위 텍스트 -->
         <div class="text-white text-sm">포션 50%</div>
-        <button id="potion50"  class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-gray-100">
+        <button id="potion50"  class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-green-100">
             <img src="/usr/imgFile/getImgPath?imgName=potion50" class="w-28 h-36">
         </button>
         <!-- 버튼 아래 텍스트 -->
-        <div class="text-white text-sm">사용 시 체력 50% 회복 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;50 GOLD</div>
+        <div class="text-white text-sm">사용 시 체력 50% 회복</div>
+        <div class="text-white text-sm">50 Gold</div>
     </div>
 
     <!-- 버튼 3 -->
     <div class="flex flex-col items-center space-y-2">
         <!-- 버튼 위 텍스트 -->
         <div class="text-white text-sm">포션 100%</div>
-        <button id="potion100"  class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-gray-100">
+        <button id="potion100"  class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-green-100">
             <img src="/usr/imgFile/getImgPath?imgName=potion100" class="w-24 h-28">
         </button>
         <!-- 버튼 아래 텍스트 -->
-        <div class="text-white text-sm">사용 시 체력 100% 회복 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;100 GOLD</div>
+        <div class="text-white text-sm">사용 시 체력 100% 회복</div>
+        <div class="text-white text-sm">100 Gold</div>
     </div>
-
+  <!-- 버튼 4 -->
+    <div class="flex flex-col items-center space-y-2">
+        <!-- 버튼 위 텍스트 -->
+        <div class="text-white text-sm inline-block">속성 : <img src="/usr/imgFile/getImgPath?imgName=fire" class="w-6 h-8 inline-block"></div>
+        <button id="potion100"  class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-green-100">
+            <img src="/usr/imgFile/getImgPath?imgName=fireSword" class="w-24 h-28">
+        </button>
+        <!-- 버튼 아래 텍스트 -->
+        <div class="text-white text-sm">plant 타입의 몬스터에게 20%의 추가 데미지를 줍니다.</div>
+        <div class="text-white text-sm">100 Gold</div>
+    </div>
 </div>
 
 <%@ include file="../../common/footer.jsp"%>

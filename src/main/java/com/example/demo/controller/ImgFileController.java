@@ -23,7 +23,13 @@ public class ImgFileController {
 	@ResponseBody
 	public Resource getImgPath(String imgName) throws IOException {
 		String filePath = imgFileService.getImgPath(imgName);
-        return new UrlResource("file:" + filePath);
-		
+        return new UrlResource("file:" + filePath);		
+	}
+	@GetMapping("/usr/imgFile/getMapImgPath")
+	@ResponseBody
+	public Resource getMapImgPath(int stageNum) throws IOException {
+		int adjustedStageNum = (stageNum / 5) * 5; 
+	    String filePath = imgFileService.getMapImgPath(adjustedStageNum);
+        return new UrlResource("file:" + filePath);		
 	}
 }

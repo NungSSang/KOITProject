@@ -14,16 +14,16 @@ public class EnemyService {
 	public EnemyService(EnemyDao enemyDao) {
 		this.enemyDao = enemyDao;
 	}
-	
-	public List<Enemy> getEnemy(int id) {
-		return enemyDao.getEnemy(id);
+
+	public List<Enemy> getEnemy(int stageNum) {
+		return enemyDao.getEnemy(stageNum);
 	}
 	public Enemy getEnemyInfoById(int id) {
 		return enemyDao.getEnemyInfoById(id);
 	}
 
-	public List<Enemy> getEnemyAttackByEnemyId(int id) {
-		return enemyDao.getEnemyAttackByEnemyId(id);
+	public List<Enemy> getEnemyAttackByEnemyId(String enemyType) {
+		return enemyDao.getEnemyAttackByEnemyId(enemyType);
 	}
 
 }

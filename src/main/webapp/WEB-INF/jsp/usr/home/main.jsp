@@ -4,7 +4,6 @@
 
 <%@ include file="../../common/header.jsp"%>
 
-
 <section>
 	<div>
 		<c:if test="${rq.getLoginedMemberId() == -1 }">
