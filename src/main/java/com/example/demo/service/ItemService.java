@@ -49,26 +49,42 @@ public class ItemService {
 		itemDao.goldUpdateToCharacter(characterId, gold);
 	}
 
-	public List<Item> craftableItems(int characterId) {
-		List<Item> creatableItemsName = new ArrayList<>();
+	public List<List<Item>> craftableItems(int characterId) {
+		List<List<Item>> creatableItemsName = new ArrayList<>();
 		List<Item> creatableItems = itemDao.showCreateItem();
-		if (creatableItems == null || creatableItems.isEmpty()) {
-		       return null;
-		  }
+		List<Integer> names = new ArrayList<>();
+		for(int j = 0; j < creatableItems.size(); j ++) {
+			names.add(itemDao.showCreateItem().get(j).getId());
+		}
 		try {
 			for (Item item : creatableItems) {
+				List<Item> beforeCreatableItemsName = new ArrayList<>();
 	            String[] neededItemIds = item.getNeedItem().split(",");
 	            String[] neededItemCounts = item.getNeedItemInt().split(",");
-
+	            	
 	            for (int i = 0; i < neededItemIds.length; i++) {
 	                int neededItemId = Integer.parseInt(neededItemIds[i]);
 	                int neededItemCount = Integer.parseInt(neededItemCounts[i]);
-	                creatableItemsName.addAll(itemDao.craftableItems(characterId, neededItemId, neededItemCount));
+	                beforeCreatableItemsName.addAll(itemDao.craftableItems(2, neededItemId, neededItemCount));
+	                System.out.println(itemDao.craftableItems(2, neededItemId, neededItemCount).size());
 	            }
+	            creatableItemsName.add(beforeCreatableItemsName);
+	            
 			}
 		} catch (Exception e) {
 			e.printStackTrace(); 
 		}
+//		System.out.println(creatableItemsName);
+		
+//		for (List<Item> a : creatableItemsName) {
+//			for (Item b : a ) {
+//				if (b == null) {
+//					creatableItemsName.remove(a);
+//					break;
+//				}
+//			}
+//		}
+		
 		return creatableItemsName;
 	}
 

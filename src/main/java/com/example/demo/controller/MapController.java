@@ -15,7 +15,8 @@ public class MapController {
 	@GetMapping("/usr/map/getMap")
 	@ResponseBody
 	public void getMap(int stageNum) {
-		mapService.getMap(stageNum);
+		int adjustedStageNum = (stageNum / 5) * 5; 
+		mapService.getMap(adjustedStageNum);
 	}
 	
 	

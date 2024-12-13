@@ -29,6 +29,9 @@ public class ImgFileController {
 	@ResponseBody
 	public Resource getMapImgPath(int stageNum) throws IOException {
 		int adjustedStageNum = (stageNum / 5) * 5; 
+		if(adjustedStageNum == 0) {
+			adjustedStageNum = 1;
+		}
 	    String filePath = imgFileService.getMapImgPath(adjustedStageNum);
         return new UrlResource("file:" + filePath);		
 	}

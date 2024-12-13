@@ -65,9 +65,8 @@ public class ItemController {
 	
 	@GetMapping("/usr/item/craftableItems")
 	@ResponseBody
-	public List<Item> craftableItems(int characterId) {
+	public List<List<Item>> craftableItems(int characterId) {
 		return itemService.craftableItems(characterId);
 	}
-	
 
 }

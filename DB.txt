@@ -1,5 +1,5 @@
 USE project;
-CREATE TABLE user(
+CREATE TABLE `member`(
 id INT AUTO_INCREMENT NOT NULL PRIMARY KEY
 ,loginId VARCHAR(50) NOT NULL
 ,loginPw VARCHAR(50) NOT NULL
@@ -14,13 +14,6 @@ id INT AUTO_INCREMENT NOT NULL PRIMARY KEY
 ,characterHP INT NOT NULL
 ,characterAttackPower INT NOT NULL
 ,characterBerrior INT NOT NULL
-);
-CREATE TABLE item(
-id INT AUTO_INCREMENT NOT NULL PRIMARY KEY
-,itemName VARCHAR(50) NOT NULL
-,itemType INT NOT NULL
-,enemyType INT DEFAULT 0
-,characterId INT NOT NULL
 );
 CREATE TABLE status(
 id INT AUTO_INCREMENT NOT NULL PRIMARY KEY
@@ -314,8 +307,20 @@ INSERT INTO itemStorage
 				,itemCount = 100;	
 //스킬
 INSERT INTO skills
-				SET skillName = 'fire Attack'
-					,skillAttr = 'fire'
-					,skillDamage = 20
-					,skillEffectName = 'fire'
-					,skillInfo = 'plant타입 속성의 몬스터에게 20%의 추가 데미지를 줍니다.'												
+		SET skillName = 'fire Attack'
+			,skillAttr = 'fire'
+			,skillDamage = 20
+			,skillEffectName = 'fire'
+			,skillInfo = '풀타입 속성의 적에게 20%의 추가 데미지를 줍니다.';		
+INSERT INTO skills
+		SET skillName = 'plant Attack'
+			,skillAttr = 'plant'
+			,skillDamage = 20
+			,skillEffectName = 'plant'
+			,skillInfo = '물타입 속성의 적에게 20%의 추가 데미지를 줍니다.';
+INSERT INTO skills
+		SET skillName = 'water Attack'
+			,skillAttr = 'water'
+			,skillDamage = 20
+			,skillEffectName = 'water'
+			,skillInfo = '불타입 속성의 적에게 20%의 추가 데미지를 줍니다.';												

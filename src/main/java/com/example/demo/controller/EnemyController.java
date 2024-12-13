@@ -20,6 +20,9 @@ public class EnemyController {
 	@ResponseBody
 	public List<Enemy> getEnemy(int stageNum) {
 		int adjustedStageNum = (stageNum / 5) * 5; 
+		if(adjustedStageNum == 0) {
+			adjustedStageNum = 1;
+		}
 		return enemyService.getEnemy(adjustedStageNum);
 		
 	}

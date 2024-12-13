@@ -93,6 +93,7 @@
 		let dropedItem;
 		let cost;
 		let stageNum;
+		let isGetItem = false;
 		let isAttack = false;
 //=======================키보드 이벤트 처리=========================
 		
@@ -142,8 +143,6 @@
 			   if(characterHp > 100){
 				   characterHp = 100;
 			   } 
-			    
-
 			    // 텍스트 콘텐츠 업데이트
 			    const content = `
 			        <div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center">
@@ -163,7 +162,7 @@
 			    $('#characterHPBar').empty().append(hpBar);
 			    console.log("텍스트 박스 및 HP 바 업데이트");
 			    // 아이템 구매 처리
-			    buyItem();
+		    	buyItem();
 			    setTimeout(() => {
 			    	finishBattleBtnClick();
 			    }, 2000); // 딜레이 후 애니메이션 실행
@@ -172,7 +171,6 @@
 			    }, 3000); // 딜레이 후 애니메이션 실행
 
 			}
-
 			// 각 버튼에 이벤트 추가
 			const potions = [
 			    { id: 'potion30', cost: 30, hpIncrease: 30 },
@@ -205,10 +203,142 @@
 			   });
 		}
 		
-	 	const itemPopUpOpen = () => {
-	 		console.log("전투 후 포션창 보여주기");
+// 		const updateSkills = () => {
+// 			const skillItem = document.getElementById('skillItem');
+// 	 		const itemPopUp = document.getElementById('itemPopUp');
+// 	 		const overlay = document.getElementById('overlay');
+// 	 		const skillChangePopUp = document.getElementById('skillChangePopUp');
+// 	 		$('#skillChangePopUp').clear();
+// 			$.ajax({
+// 		        url: "/usr/character/getSkillsCount",
+// 		        type: "GET",
+// 		        data: {	
+// 		        	id: ${rq.getLoginedMemberId()},
+// 		        	skillId: 
+// 				},
+// 		        dataType: "json",
+// 		        success: function (data) {
+// 		        	skillChangePopUp.classList.remove('hidden');
+// 					itemPopUp.classList.add('hidden');
+// 			 		itemPopUpOverlay.classList.add('hidden');
+// 			 		skillItem.classList.add('hidden');
+// 			 		let content;
+// 			 		for(let i = 0; i < data.length; i++){
+// 					 content = `
+// 			        <!-- 버튼 3 -->
+// 			        <div id="skillItem" class="flex flex-col items-center space-y-2 hidden">
+// 			            <!-- 버튼 위 텍스트 -->
+// 			            <div class="text-white text-sm inline-block">속성 : <img src="/usr/imgFile/getImgPath?imgName=fire" class="w-6 h-8 inline-block"></div>
+// 			            <button id="skillId"+\${data[i].skillId}  class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-green-100" onclick="">
+// 			                <img src="/usr/imgFile/getImgPath?imgName=fireSword" class="w-24 h-28">
+// 			            </button>
+// 			            버튼 아래 텍스트
+// 			            <div class="text-white text-sm">plant 타입의 몬스터에게 20%의 추가 데미지를 줍니다.</div>
+// 			            <div class="text-white text-sm">100 Gold</div>
+// 			        </div>
+// 			        `;
+// 			        $('#skillChangePopUp').append(content);
+// 			 		}
+// 		        },
+// 		        error: function (xhr, status, error) {
+// 					console.log(error);		            
+// 		        }
+// 		    });
+// 		}
+		
+		const showMySkills = () => {
+	 		document.getElementById('skillItem').classList.remove('hidden');
+        	document.getElementById('itemPopUp').classList.add('hidden');
+			document.getElementById('overlay').classList.add('hidden');
+	 		document.getElementById('skillChangePopUp').classList.add('hidden');
+	 		return $.ajax({
+			        url: "/usr/skill/showMySkills",
+			        type: "GET",
+			        data: {	
+			        	id: ${rq.getLoginedMemberId()},
+					},
+			        dataType: "json"
+// 			        success: function (data) {
+// 			        },
+// 			        error: function (xhr, status, error) {
+// 				 		console.log(error);
+// 			        }
+			    });
+		}	
+		
+		const test = () => {
+			showMySkills()
+			.then((response) => {
+				console.log(response.data);
+			})
+			.catch((error) => {
+				console.error("ERROR",error);
+			})
+		}
+		
+		const getSkills = (skillId) => {
+	 		const skillItem = document.getElementById('skillItem');
 	 		const itemPopUp = document.getElementById('itemPopUp');
 	 		const overlay = document.getElementById('overlay');
+			$.ajax({
+		        url: "/usr/character/getSkills",
+		        type: "GET",
+		        data: {	
+		        	id: ${rq.getLoginedMemberId()},
+		        	skillId: skillId	
+				},
+		        dataType: "json",
+		        success: function (data) {
+					console.log("성공됨");
+		        },
+		        error: function (xhr, status, error) {
+		        	showMySkills();
+		        }
+		        
+		    });
+// 			itemPopUp.classList.add('hidden');
+// 	 		itemPopUpOverlay.classList.add('hidden');
+// 	 		skillItem.classList.add('hidden');
+// 		    setTimeout(() => {
+// 		    	finishBattleBtnClick();
+// 		    }, 2000); // 딜레이 후 애니메이션 실행
+// 		    setTimeout(() => {
+// 		    	startBattleBtnClick();
+// 		    }, 3000); // 딜레이 후 애니메이션 실행
+		}
+		
+		const getSkillInfo = async() => {
+			console.log("스킬 보여주는거 들어옴?");
+			return $.ajax({
+			        url: "/usr/skill/getSkillInfo",
+			        type: "GET",
+			        dataType: "json",
+			        success: function (data) {
+			        	const random = randomNum(data.length -1 , 0);
+			        	console.log(data);
+			        	console.log(random);
+			        	let content = `
+			                <div class="text-white text-sm inline-block">속성 : <img src="/usr/imgFile/getImgPath?imgName=fire" class="w-6 h-8 inline-block"></div>
+			                <button id="skill"  class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-green-100" onClick="getSkills(\${data[random].id})">
+			                    <img src="/usr/imgFile/getImgPath?imgName=\${data[random].skillName }" class="w-24 h-28">
+			                </button>
+			                <!-- 버튼 아래 텍스트 -->
+			                <div class="text-white text-sm">\${data[random].skillInfo }</div>
+			                <div class="text-white text-sm">100 Gold</div>
+			            `;
+			        	 $('#skillItem').empty().append(content);
+			        },
+			    });
+			
+		}
+	 	const itemPopUpOpen = () => {
+	 		console.log("전투 후 포션창 보여주기");
+	 		getSkillInfo();
+	 		randomNum(10,1);
+	 		const skillItem = document.getElementById('skillItem');
+	 		const itemPopUp = document.getElementById('itemPopUp');
+	 		const overlay = document.getElementById('overlay');
+	 		skillItem.classList.remove('hidden');
 	 		itemPopUp.classList.remove('hidden');
 	 		itemPopUpOverlay.classList.remove('hidden');
 	 	}
@@ -218,9 +348,10 @@
 	 		 $.ajax({
 			        url: "/usr/item/showGold",
 			        type: "GET",
-			        data: { characterId: 1 },
+			        data: { characterId: ${rq.getLoginedMemberId()} },
 			        dataType: "json",
 			        success: function (data) {
+			        	console.log(data);
  			        	gold = data.itemCount;
 			        	let content = `
 			        		<span id="goldAmount">\${data.itemCount}</span>
@@ -231,6 +362,7 @@
 	 		itemPopUpOpen();
 	 	}
 	 	const buyItem = () => {
+	 		const skillItem = document.getElementById('skillItem');
 	 		const itemPopUp = document.getElementById('itemPopUp');
 	 		const overlay = document.getElementById('overlay');
 		 	return	$.ajax({
@@ -251,6 +383,7 @@
 				 		return;
 			        }
 			    });
+		 	skillItem.classList.add('hidden');
 	 	}
 
        		
@@ -274,6 +407,7 @@
 //게임시작 버튼 누르면 하단 박스 바뀌는것
 		const startBattleBtnClick = async function () {
 			console.log("게임 시작");
+			
 			$('#enemyZone').removeClass("hidden");
 			content = `
                 <div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center">
@@ -292,6 +426,16 @@
 		    	getMapImgPath();
 		    }
 		    firstBattle = false;
+		    stageNum = stageNum + 1;
+			if(stageNum  % 5 == 0){
+				getMapImgPath();
+			}
+            let updateStageNum = `
+            	<div id="stageDisplay" class="fixed top-4 right-4 bg-gray-700 text-white text-sm font-bold py-2 px-4 rounded-lg shadow-md z-50">
+                	Stage: <span id="stageNum">\${stageNum}</span>
+            	</div>	
+            `;
+            $('#stageDisplay').empty().append(updateStageNum);
 			 // 적 상태 다시 불러오기
 		    await getEnemyStatus();
 		    // 캐릭터와 적 이미지 표시 및 애니메이션 초기화
@@ -311,17 +455,7 @@
 		    enemyImg.classList.add("translate-x-full"); // 초기 위치 오른쪽
 		    enemyStatus.classList.remove("hidden");
 		    enemyStatus.classList.add("translate-x-full");
-		    stageNum = stageNum + 1; // 스테이지 숫자
-			if(stageNum % 5 == 0){
-				getMapImgPath();
-			}
-            let updateStageNum = `
-            	<div id="stageDisplay" class="fixed top-4 right-4 bg-gray-700 text-white text-sm font-bold py-2 px-4 rounded-lg shadow-md z-50">
-                	Stage: <span id="stageNum">\${stageNum}</span>
-            	</div>	
-            `;
-            $('#stageDisplay').empty().append(updateStageNum);
-            console.log(stageNum);
+
 		    // 애니메이션 실행
 		    setTimeout(() => {
 		        heroImg.classList.remove("-translate-x-full");
@@ -416,14 +550,14 @@
 		   return $.ajax({
 			        url: "/usr/enemy/getEnemy",
 			        type: "GET",
-			        data: { stageNum: stageNum+1 }, // Id 값 전달
+			        data: { stageNum: stageNum }, // Id 값 전달
 			        dataType: "json",
 			        success: function (data) {
-			        	console.log(data.length + "데이터 길이");
 			        	const i = randomNum(data.length -1,0);
-			        	console.log(i + "랜덤숫자 길이");
 						enemyId = data[i].id;
+						console.log(enemyId);
 						enemyName = data[i].enemyName;
+						console.log(enemyName);
 						loadImages(enemyName,'enemy');
 						enemyHp = data[i].enemyHp;
 						enemyAttackPower = data[i].enemyAttackPower;
@@ -432,9 +566,10 @@
 			            let content = `
 			                <div id="enemyStatus" class="relative w-full flex flex-col items-center justify-center space-y-2">
 			                    <!-- 적 이름 -->
-			                    <div class="text-center text-white font-bold text-lg text-black">\${data[0].enemyName}</div>
+			                    
+			                    <div class="text-center text-white font-bold text-lg text-black"><img src="/usr/imgFile/getImgPath?imgName=fire" class="w-6 h-8 inline"> \${data[i].enemyName}</div>
+			                    
 			                    <!-- HP Bar -->
-			                    <img src="/usr/imgFile/getImgPath?imgName=fire" class="w-6 h-8 inline-block">
 			                    <div class="relative w-36 h-3 bg-gray-300 rounded-full">
 			                        <div id="enemyHPBar" class="h-full bg-red-500 rounded-full transition-all duration-300 ease-out" style="width: \${data[0].enemyHp}%;"></div>
 			                    </div>
@@ -638,12 +773,12 @@
 				dataType: 'json',
 				success: function(data) {
 					console.log(data);
-					for(let i = 0; i < data.length; i++){
-					const content = `
-							<button class="btn w-full mb-2">\${data[i].itemName}: \${data[i].itemCount}개</button>
-				    `;
-				    $('#craftSubmenu').append(content);
-					}
+// 					for(let i = 0; i < data.length; i++){
+	// 					const content = `
+	// 							<button class="btn w-full mb-2">\${data[i].itemName}: \${data[i].itemCount}개</button>
+	// 				    `;
+	// 				    $('#craftSubmenu').append(content);
+// 					}
 				},
 				error: function(xhr, status, error) {
 					console.error(error);
@@ -820,8 +955,8 @@
 	<!-- 상단 버튼 두 개 -->
 	<button id="attackBtn"
 		class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black"
-		onclick="finishAttackPattern()"><i class="fa-solid fa-bolt"></i>스킬1</button>
-	<button id="back" class=" w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" ><i class="fa-solid fa-snowflake"></i>스킬2</button>
+		onclick="finishAttackPattern()"><i class="fa-brands fa-gripfire"></i>스킬1</button>
+	<button id="back" class=" w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" ><i class="fa-solid fa-droplet"></i>스킬2</button>
 	<!-- 하단 버튼 두 개 -->
 	<button id="next" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="" ><i class="fa-solid fa-seedling"></i>스킬3</button>
 	<button id="battleTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center cursor-default">텍스트</button>
@@ -832,7 +967,7 @@
 	<button id="attackBtn"
 		class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black"
 		onclick="attack();"><i class="fa-solid fa-gavel"></i>공격하기</button>
-	<button id="back" class=" w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" ><i class="fa-solid fa-rotate-left"></i>돌아가기</button>
+	<button id="back" class=" w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="test()"><i class="fa-solid fa-rotate-left"></i>돌아가기</button>
 	<!-- 하단 버튼 두 개 -->
 	<button id="next" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="characterAttackPattern()">스킬</button>
 	<button id="battleTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center cursor-default">필드 텍스트</button>
@@ -870,6 +1005,7 @@
 		</li>
 		<li class="p-2 menuBtn"><a href="../home/main" onclick="return finishGame()" class="btn w-full text-black whitespace-nowrap hover:text-gray-200"><i class="fa-solid fa-house"></i>메인페이지</a>
 		</li>
+		
 	</ul>
 </div>
 
@@ -886,12 +1022,12 @@
 	class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-white shadow-lg border border-gray-300 z-40 overflow-auto">
 	<!-- 비어 있는 2차 메뉴 -->
 </div>
-    <div id="overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-30"></div>
+<div id="overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-30"></div>
 
     <!-- 아이템팝업 -->
 <div id="itemPopUp" class="hidden fixed top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-96 bg-gray-800 bg-opacity-50 shadow-lg border rounded border-gray-300 z-40 p-4 flex items-center justify-around space-x-4">
     <div class="absolute top-2 right-16 text-white text-lg font-bold">
-        Gold: <span id="goldAmount">100</span>
+        Gold: <span id="goldAmount"></span>
     </div>
     <!-- 버튼 1 -->
     <div class="flex flex-col items-center space-y-2">
@@ -929,16 +1065,56 @@
         <div class="text-white text-sm">100 Gold</div>
     </div>
   <!-- 버튼 4 -->
-    <div class="flex flex-col items-center space-y-2">
+    <div id="skillItem" class="flex flex-col items-center space-y-2 hidden">
         <!-- 버튼 위 텍스트 -->
         <div class="text-white text-sm inline-block">속성 : <img src="/usr/imgFile/getImgPath?imgName=fire" class="w-6 h-8 inline-block"></div>
-        <button id="potion100"  class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-green-100">
+        <button id="skill"  class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-green-100">
             <img src="/usr/imgFile/getImgPath?imgName=fireSword" class="w-24 h-28">
         </button>
-        <!-- 버튼 아래 텍스트 -->
+        버튼 아래 텍스트
         <div class="text-white text-sm">plant 타입의 몬스터에게 20%의 추가 데미지를 줍니다.</div>
         <div class="text-white text-sm">100 Gold</div>
     </div>
 </div>
 
+<div id="skillChangePopUp" class="hidden fixed top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-96 bg-gray-800 bg-opacity-50 shadow-lg border rounded border-gray-300 z-40 p-4 flex items-center justify-around space-x-4">
+    <div class="absolute top-2 right-16 text-white text-lg font-bold">
+        Gold: <span id="goldAmount"></span>
+    </div>
+    <!-- 버튼 1 -->
+    <!-- 버튼 2 -->
+    <div class="flex flex-col items-center space-y-2">
+        <!-- 버튼 위 텍스트 -->
+        <div class="text-white text-sm">포션 50%</div>
+        <button id="potion50"  class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-green-100">
+            <img src="/usr/imgFile/getImgPath?imgName=potion50" class="w-28 h-36">
+        </button>
+        <!-- 버튼 아래 텍스트 -->
+        <div class="text-white text-sm">사용 시 체력 50% 회복</div>
+        <div class="text-white text-sm">50 Gold</div>
+    </div>
+
+    <!-- 버튼 3 -->
+    <div class="flex flex-col items-center space-y-2">
+        <!-- 버튼 위 텍스트 -->
+        <div class="text-white text-sm">포션 100%</div>
+        <button id="potion100"  class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-green-100">
+            <img src="/usr/imgFile/getImgPath?imgName=potion100" class="w-24 h-28">
+        </button>
+        <!-- 버튼 아래 텍스트 -->
+        <div class="text-white text-sm">사용 시 체력 100% 회복</div>
+        <div class="text-white text-sm">100 Gold</div>
+    </div>
+  <!-- 버튼 4 -->
+    <div id="skillItem" class="flex flex-col items-center space-y-2 hidden">
+        <!-- 버튼 위 텍스트 -->
+        <div class="text-white text-sm inline-block">속성 : <img src="/usr/imgFile/getImgPath?imgName=fire" class="w-6 h-8 inline-block"></div>
+        <button id="skill"  class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-green-100">
+            <img src="/usr/imgFile/getImgPath?imgName=fireSword" class="w-24 h-28">
+        </button>
+        버튼 아래 텍스트
+        <div class="text-white text-sm">plant 타입의 몬스터에게 20%의 추가 데미지를 줍니다.</div>
+        <div class="text-white text-sm">100 Gold</div>
+    </div>
+</div>
 <%@ include file="../../common/footer.jsp"%>
