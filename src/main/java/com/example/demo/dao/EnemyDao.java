@@ -31,10 +31,11 @@ public interface EnemyDao {
 					,eA.secondAttack
 					,eA.thirdAttack
 					,eA.defaultAttack
-					FROM enemyAttackPattern as eA
-					INNER JOIN enemy as e
-					ON eA.enemyId = e.id
+					FROM enemyAttackPattern AS eA
+					INNER JOIN enemy AS e
+					ON eA.enemyType = e.enemyType
 					WHERE ea.enemyType = #{enemyType}
+					LIMIT 1	
 			""")
 	List<Enemy> getEnemyAttackByEnemyId(String enemyType);
 

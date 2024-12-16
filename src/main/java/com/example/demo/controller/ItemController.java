@@ -29,18 +29,18 @@ public class ItemController {
 	
 	@GetMapping("/usr/item/itemInsertToCharacter")
 	@ResponseBody
-	public void itemInsertToCharacter(int characterId, String itemName) {
-		Item item = itemService.getItemStorageByItemName(characterId, itemName);
+	public void itemInsertToCharacter(int characterId, int itemId) {
+		Item item = itemService.getItemStorageByItemName(characterId, itemId);
 		if(item != null) {
-			itemService.itemUpdateToCharacter(characterId, itemName);
+			itemService.itemUpdateToCharacter(characterId, itemId);
 		}else {
-			itemService.itemInsertToCharacter(characterId, itemName);
+			itemService.itemInsertToCharacter(characterId, itemId);
 		}
 	}
 	@GetMapping("/usr/item/insertGold")
 	@ResponseBody
 	public void insertGold(int characterId, int gold) {
-		Item item = itemService.getItemStorageByItemName(characterId, "gold");
+		Item item = itemService.getItemStorageByItemName(characterId, 0);
 		if(item != null) {
 			itemService.goldUpdateToCharacter(characterId, gold);
 		}else {
@@ -55,7 +55,7 @@ public class ItemController {
 	@GetMapping("/usr/item/showGold")
 	@ResponseBody
 	public Item showGold(int characterId) {
-		return itemService.getItemStorageByItemName(characterId, "gold");
+		return itemService.getItemStorageByItemName(characterId, 0);
 	}
 	@GetMapping("/usr/item/getItemsByCharacterId")
 	@ResponseBody

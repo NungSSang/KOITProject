@@ -19,4 +19,6 @@ public class Enemy {
 	private String secondAttack;
 	private String thirdAttack;
 	private String defaultAttack;
+	private String weakAttr;
+	private String strongAttr;
 }

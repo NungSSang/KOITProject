@@ -34,10 +34,12 @@ public class CharacterController {
 
 	@GetMapping("/usr/character/getSkills")
 	@ResponseBody
-	public void getSkills(int id, int skillId) {
+	public List<CharacterDto> getSkills(int id, int skillId) {
 		if (characterService.getSkillsCount(id).size() < 3) {
-			characterService.getSkills(id, skillId);
+			return characterService.getSkills(id, skillId);
+		}else {
+			return characterService.getSkillsCount(id);
 		}
 	}
-	
+
 }

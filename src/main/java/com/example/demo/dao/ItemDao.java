@@ -33,34 +33,34 @@ public interface ItemDao {
 					WHERE enemyType = #{enemyType}
 			""")
 	List<Item> itemDropByEnemyType(String enemyType);
-
+	//아이템 네임 -> 아이템 번호
 	@Insert("""
 			INSERT INTO itemStorage
-						SET itemName = #{itemName}
+						SET itemId = #{itemId}
 							,characterId = #{characterId}
 							,itemCount = 1
 			""")
-	void itemInsertToCharacter(int characterId, String itemName);
-
+	void itemInsertToCharacter(int characterId, int itemId);
+	//아이템 네임 -> 아이템 번호
 	@Update("""
 			UPDATE itemStorage
 						SET itemCount = itemCount + 1
-						WHERE itemName = #{itemName} AND characterId = #{characterId}
+						WHERE itemId = #{itemId} AND characterId = #{characterId}
 			""")
-	void itemUpdateToCharacter(int characterId, String itemName);
-	
+	void itemUpdateToCharacter(int characterId, int itemId);
+	//아이템 네임 -> 아이템 번호
 	@Select("""
 			SELECT * 
 					FROM itemStorage
-					WHERE itemName = #{itemName} AND characterId = #{characterId}
+					WHERE itemId = #{itemId} AND characterId = #{characterId}
 			""")
-	Item getItemStorageByItemName(int characterId, String itemName);
-
+	Item getItemStorageByItemName(int characterId, int itemId);
+	
 	@Insert("""
 			INSERT INTO itemStorage
 					SET itemCount = #{gold}
 						,characterId = #{characterId}
-						,itemName = 'gold'
+						,itemId = 0
 						WHERE characterId = #{characterId}
 			""")
 	void goldInsertToCharacter(int characterId, int gold);
@@ -68,7 +68,7 @@ public interface ItemDao {
 	@Update("""
 			UPDATE itemStorage
 					SET itemCount = itemCount + #{gold}
-						WHERE characterId = #{characterId} AND itemName = 'gold'
+						WHERE characterId = #{characterId} AND itemId = 0
 			""")
 	void goldUpdateToCharacter(int characterId, int gold);
 
@@ -82,15 +82,15 @@ public interface ItemDao {
     @Select("""
             SELECT * 
 		            FROM itemStorage
-		            WHERE characterId = #{characterId} AND id = #{itemId}
+		            WHERE characterId = #{characterId} AND itemId = #{itemId}
         """)
         List<Item> getItemStorageByCharacterId(int characterId, int itemId);
-
+//    수정필요
     @Select("""
     		SELECT * 
 					FROM item AS i
 					LEFT JOIN itemStorage AS `is`
-					ON i.itemName = `is`.itemName
+					ON i.id = `is`.itemId
 					WHERE i.id = #{needItemId}
 					AND `is`.itemCount >= #{needItemCount}
 					AND `is`.characterId = #{characterId}

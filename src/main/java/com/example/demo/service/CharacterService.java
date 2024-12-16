@@ -27,8 +27,8 @@ public class CharacterService {
 		characterDao.updateCharacterStatus(id, characterName, memberId, characterHp, characterAttackPower, characterBerrior, stageNum);
 	}
 
-	public void getSkills(int id, int skillId) {
-		characterDao.getSkills(id, skillId);
+	public List<CharacterDto> getSkills(int id, int skillId) {
+		return characterDao.getSkills(id, skillId);
 	}
 
 	public List<CharacterDto> getSkillsCount(int id) {

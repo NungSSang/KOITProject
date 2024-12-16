@@ -18,4 +18,5 @@ public class Item {
 	private boolean isCreate;
 	private String needItem;
 	private String needItemInt;
+	private int itemId;
 }
