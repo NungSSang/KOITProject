@@ -19,4 +19,6 @@ public class Item {
 	private String needItem;
 	private String needItemInt;
 	private int itemId;
+	private String itemInfo;
+	private String type;
 }

@@ -15,4 +15,5 @@ public class SkillDto {
 	private int skillDamage;
 	private String skillEffectName;
 	private String skillInfo;
+	private int SkillId;
 }

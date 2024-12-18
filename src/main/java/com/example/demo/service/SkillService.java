@@ -23,5 +23,9 @@ public class SkillService {
 	public List<SkillDto> showMySkills(int id) {
 		return skillDao.showMySkills(id);
 	}
+	public void deleteSkill(int characterId, int skillId) {
+		skillDao.deleteSkill(characterId, skillId);
+		
+	}
 
 }

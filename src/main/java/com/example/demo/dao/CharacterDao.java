@@ -44,7 +44,7 @@ public interface CharacterDao {
 						SET characterId = #{id}
 							,skillId = #{skillId}
 			""")
-	List<CharacterDto> getSkills(int id, int skillId);
+	void getSkills(int id, int skillId);
 
 	@Select("""
 			SELECT * 

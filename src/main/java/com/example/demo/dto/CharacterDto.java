@@ -15,4 +15,5 @@ public class CharacterDto {
 	private int characterAttackPower;
 	private int characterBerrior;
 	private int stageNum;
+	private String skillAttr;
 }

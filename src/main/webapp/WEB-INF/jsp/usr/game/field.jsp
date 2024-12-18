@@ -96,6 +96,7 @@
 		let stageNum;
 		let enemyWeakAttr;
 		let enemyStrongAttr;
+		let changeSkillId;
 		let isGetItem = false;
 		let isAttack = false;
 //=======================키보드 이벤트 처리=========================
@@ -205,22 +206,47 @@
 			   });
 		}
 		
+		const updateSkills = async (skillId) => {
+			console.log("업데이트 스킬 들어옴");
+			console.log(skillId);
+			await $.ajax({
+				       url: "/usr/skill/updateSkills",
+				       type: "GET",
+				       data: { 
+				    	   id: ${rq.getLoginedMemberId() }, 
+				    	   skillId: skillId,
+				    	   changeSkillId: changeSkillId
+				       },
+				       error: function (xhr, status, error) {
+				            console.log(error);
+				       }
+				   });	
+			itemPopUp.classList.add('hidden');
+	 		itemPopUpOverlay.classList.add('hidden');
+	 		skillItem.classList.add('hidden');
+	 		document.getElementById('skillChangePopUp').classList.add('hidden');
+	 		setTimeout(() => {
+		    	finishBattleBtnClick();
+		    }, 2000); // 딜레이 후 애니메이션 실행
+		    setTimeout(() => {
+		    	startBattleBtnClick();
+		    }, 3000); // 딜레이 후 애니메이션 실행
+		}
+		
 		const getSkills = (skillId) => {
-			console.log("겟스킬 스킬 이미지 클릭시 들어오는곳");
-	 		const skillItem = document.getElementById('skillItem');
-	 		const itemPopUp = document.getElementById('itemPopUp');
-	 		const overlay = document.getElementById('overlay');
+			changeSkillId = skillId;
+	 		document.getElementById('skillChangePopUp').classList.add('hidden');
 			$.ajax({
 		        url: "/usr/character/getSkills",
 		        type: "GET",
 		        data: {	
 		        	id: ${rq.getLoginedMemberId()},
-		        	skillId: skillId	
+		        	skillId: skillId
 				},
 				dataType: 'json',
     			success: function (data) {
 					console.log(data);
-			 		if(data.length < 3){
+			 		if(data == 1){
 						itemPopUp.classList.add('hidden');
 				 		itemPopUpOverlay.classList.add('hidden');
 				 		skillItem.classList.add('hidden');
@@ -230,7 +256,8 @@
 					    setTimeout(() => {
 					    	startBattleBtnClick();
 					    }, 3000); // 딜레이 후 애니메이션 실행
-			 		}else if(data.length >= 3){
+			 		}else if(data == 0){
+			 			console.log("데이터의 값은 0 입니다.")
 			 			updateSkill();
 			 		}
     			},
@@ -243,45 +270,38 @@
 		
 		const updateSkill = () => {
 			console.log("업데이트 스킬");
-			const skillItem = document.getElementById('skillItem');
-	 		const itemPopUp = document.getElementById('itemPopUp');
-	 		const overlay = document.getElementById('overlay');
-	 		const itemPopUpOverlay = document.getElementById('itemPopUpOverlay');
-	 		const skillChangePopUp = document.getElementById('skillChangePopUp');
-	 		itemPopUp.classList.add('hidden');
-	 		itemPopUpOverlay.classList.add('hidden');
-	 		skillItem.classList.add('hidden');
-	 		skillChangePopUp.classList.remove('hidden');
-	 		showMySkills()
-			.then((response) => {
-			    content = `
-					<div id="skillChangePopUp" class="fixed top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-96 bg-gray-800 bg-opacity-50 shadow-lg border rounded border-gray-300 z-40 p-4 flex items-center justify-around space-x-4">
-				    <div id="skillItem" class="flex flex-col items-center space-y-2">
-				        <div class="text-white text-sm inline-block">속성 : <img src="/usr/imgFile/getImgPath?imgName=fire" class="w-6 h-8 inline-block"></div>
-				        <button id="skill"  class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-green-100">
-				            <img src="/usr/imgFile/getImgPath?imgName=\${response.data[0].skillName}" class="w-24 h-28">
-				        </button>
-				        <div class="text-white text-sm">\${response.data[0].skillName}</div>
-				        <div class="text-white text-sm">\${response.data[0].skillInfo}</div>
-				    </div>
-				</div>
-			    `;
-			    $('#underAttackBtn').empty().append(content);
-			});
-	
-	//  		isFinish = false;
+	 		document.getElementById('itemPopUp').classList.add('hidden');
+			document.getElementById('skillItem').classList.add('hidden');
+	 		document.getElementById('itemPopUpOverlay').classList.add('hidden');
+	 		document.getElementById('skillChangePopUp').classList.remove('hidden');
+	 		let content = "";
+			for (let i = 0; i < 3; i++){
+		 		showMySkills()
+				.then((response) => {
+					console.log(response.data);
+					    content += `
+						    <div id="changeSkillItem" class="flex flex-col items-center space-y-2">
+						        <div class="text-white text-sm inline-block">속성 : <img src="/usr/imgFile/getImgPath?imgName=fire" class="w-6 h-8 inline-block"></div>
+						        <button id="skill" class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-green-100" onClick="updateSkills(\${response.data[i].id})">
+						            <img src="/usr/imgFile/getImgPath?imgName=\${response.data[i].skillName}" class="w-24 h-28">
+						        </button>
+						        <div class="text-white text-sm">\${response.data[i].skillName}</div>
+						        <div class="text-white text-sm">\${response.data[i].skillInfo}</div>
+						    </div>
+					    `;
+				    $('#skillChangePopUp').empty().append(content);
+					});
+				}			
 		}
 		
+		
 		const getSkillInfo = async() => {
-			console.log("스킬 보여주는거 들어옴?");
 			return $.ajax({
 			        url: "/usr/skill/getSkillInfo",
 			        type: "GET",
 			        dataType: "json",
 			        success: function (data) {
 			        	const random = randomNum(data.length -1 , 0);
-			        	console.log(data);
-			        	console.log(random + "스킬아이템 랜덤");
 			        	let content = `
 			                <div class="text-white text-sm inline-block">속성 : <img src="/usr/imgFile/getImgPath?imgName=fire" class="w-6 h-8 inline-block"></div>
 			                <button id="skill"  class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-green-100" onClick="getSkills(\${data[random].id})">
@@ -297,26 +317,25 @@
 			
 		}
 	 	const itemPopUpOpen = () => {
-	 		console.log("전투 후 포션창 보여주기");
-	 		getSkillInfo();
-	 		randomNum(10,1);
+	 		
 	 		const skillItem = document.getElementById('skillItem');
 	 		const itemPopUp = document.getElementById('itemPopUp');
 	 		const overlay = document.getElementById('overlay');
-	 		skillItem.classList.remove('hidden');
+	 		if(randomNum(10,1) < 6){
+		 		skillItem.classList.remove('hidden');
+		 		getSkillInfo();
+	 		}
 	 		itemPopUp.classList.remove('hidden');
 	 		itemPopUpOverlay.classList.remove('hidden');
 	 	}
 	 	
 	 	const showGold = () => {
-	 		console.log("전투 후 포션 팝업에서 보유중인 골드 보여주기");
 	 		 $.ajax({
 			        url: "/usr/item/showGold",
 			        type: "GET",
 			        data: { characterId: ${rq.getLoginedMemberId()} },
 			        dataType: "json",
 			        success: function (data) {
-			        	console.log(data);
  			        	gold = data.itemCount;
 			        	let content = `
 			        		<span id="goldAmount">\${data.itemCount}</span>
@@ -355,23 +374,20 @@
         let firstBattle = true;
         //이미지 로드
         const loadImages = (name,type) => {
-        	console.log(3 + " 캐릭터,적군 이미지 불러오기 불러오기");
         	let img = $('#' + type +'Img');
         	img.attr("src", "/usr/imgFile/getImgPath?imgName=" + name);
         	if(type === 'enemy'){
         	img.css("width", "400px");
         	img.css("height", "400px");
         	}
-        	console.log( "=============== 캐릭터,적군 이미지 불러오기 불러오기끝===============");
         };
         
         const getMapImgPath = () => {
         	let img = $('#map');
             img.attr("src", "/usr/imgFile/getMapImgPath?stageNum=" + stageNum);
         }
-//게임시작 버튼 누르면 하단 박스 바뀌는것
+		//게임시작 버튼 누르면 하단 박스 바뀌는것
 		const startBattleBtnClick = async function () {
-			console.log("게임 시작");
 			
 			$('#enemyZone').removeClass("hidden");
 			content = `
@@ -427,7 +443,6 @@
 		        heroImg.classList.add("translate-x-0", "transition-transform", "duration-500", "ease-out");
 		        heroStatus.classList.remove("-translate-x-full");
 			    heroStatus.classList.add("translate-x-0", "transition-transform", "duration-500", "ease-out");
-			    console.log("=======================================애니메이션 실행=====================");
 		        enemyImg.classList.remove("translate-x-full");
 		        enemyImg.classList.add("translate-x-0", "transition-transform", "duration-500", "ease-out");
 			    enemyStatus.classList.remove("translate-x-full");
@@ -436,7 +451,6 @@
 		}; 
 		const finishBattleBtnClick = function () {
 			if((stageNum + 1) % 5 === 0)showBlackScreen(1000);
-			console.log("적군 사망시 들어옴")
 			$('#battleTextBox').empty();
 		    const heroImg = document.getElementById("heroImg");
 		    const heroStatus = document.getElementById("characterInfo");
@@ -453,7 +467,6 @@
 		    // 적 정보와 이미지는 숨기기만 처리
 		    enemyImg.classList.add("hidden");
 		    enemyStatus.classList.add("hidden");
-		    console.log("적 정보와 이미지 숨기기 처리");
 		    // 애니메이션 후 숨기기
 		    setTimeout(() => {
 		        heroImg.classList.add("hidden");
@@ -473,7 +486,6 @@
 		};
 		//=== 캐릭터와 적 스탯 불러오기 ===
 		const getCharacterStatus = function () {
-			console.log(1 + " 캐릭터 스텟 불러오기");
 		   return $.ajax({
 			        url: "/usr/character/getCharacter",
 			        type: "GET",
@@ -487,7 +499,6 @@
 						characterAttackPower = data[0].characterAttackPower;
 						characterBerrior = data[0].characterBerrior;
 						stageNum = data[0].stageNum;
-						console.log(stageNum + "12323123");
 			            let content = `
 			                <div id="heroStatus" class="relative w-full flex flex-col items-center justify-center space-y-2">
 			                    <!-- 캐릭터 이름 -->
@@ -520,9 +531,7 @@
 			        success: function (data) {
 			        	const i = randomNum(data.length -1,0);
 						enemyId = data[i].id;
-						console.log(enemyId);
 						enemyName = data[i].enemyName;
-						console.log(enemyName);
 						loadImages(enemyName,'enemy');
 						enemyHp = data[i].enemyHp;
 						enemyAttackPower = data[i].enemyAttackPower;
@@ -568,7 +577,6 @@
 
 		};
 		const enemyAttack = async function(){
-			console.log("적군 공격 애니메이션");
 			await getEnemyPattern();
 			let content;
 			let hpBar;
@@ -578,7 +586,6 @@
 			}
 			characterHp = characterHp - damage;
 			if(characterHp <= 0){
-				console.log("캐릭터 HP 0 될시 ");
 				content = `
 	                <div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center">
 						<div>\${characterName}이 \${damage} 만큼의 데미지를 입어 HP가 0이되었습니다.</div> 	                    
@@ -615,9 +622,6 @@
 		};
 		// === battle 스크립트 ====
  		const attack = async function (attackAttr) {
-			console.log(attackAttr + '왜 안들어와');
-			console.log(enemyWeakAttr + '들어와라');
- 			console.log(4 + " 캐릭터 공격");
 			if(isAttack) return;
 			isAttack = true;
 			let content;
@@ -625,18 +629,15 @@
         	 if(enemyHp <= 0){return;}
         		let damage = characterAttackPower - enemyBerrior;
         		if(attackAttr == enemyWeakAttr){
-        			console.log('위크');
         			damage = damage + (damage * 0.2);
         		}else if(attackAttr == enemyStrongAttr){
         			damage = damage - (damage * 0.2);
-        			console.log('스트롱');
         		}
         		if(damage < 1){
         			damage = 1;
         		}
 	        	enemyHp = enemyHp - damage;
 	        		if(enemyHp <= 0){
-	        			console.log(" 적군 죽기 입기");
 	        			attackAnimation('hero');
 	        			await itemDrop();
 	        			await insertGold()
@@ -658,7 +659,6 @@
 							$('#enemyHPBar').empty().append(hpBar);
 				            $('#battleTextBox').empty().append(content);
 	        		}else{
-	        			console.log(" 적군 데미지 입기");
 		        		attackAnimation('hero');
 		        		shake('enemy');
 		        		updateHPBars();
@@ -684,21 +684,11 @@
 			            }, 1000);
         			}
 		}; 
-// 		const test = () => {
-// 			showMySkills()
-// 			.then((response) => {
-// 				console.log(response.data);
-// 			})
-// 			.catch((error) => {
-// 				console.error("ERROR",error);
-// 			})
-// 		}
 			
 		const showMySkills = () => {
-	 		document.getElementById('skillItem').classList.remove('hidden');
+// 	 		document.getElementById('skillItem').classList.remove('hidden');
         	document.getElementById('itemPopUp').classList.add('hidden');
 			document.getElementById('overlay').classList.add('hidden');
-	 		document.getElementById('skillChangePopUp').classList.add('hidden');
 	 		return $.ajax({
 			        url: "/usr/skill/showMySkills",
 			        type: "GET",
@@ -717,20 +707,19 @@
 			
 
 		function characterSkillAttack(){
-			console.log('캐릭터 스킬어택');
+			document.getElementById('underBattleBtn').classList.add('hidden');
+		    document.getElementById('underBattleBtn').classList.remove('flex');
+		    document.getElementById('underAttackBtn').classList.remove('hidden');
+		    document.getElementById('underAttackBtn').classList.add('flex');
 			showMySkills()
 			.then((response) => {
 				console.log(response.data);
 				console.log(response.data[0].skillAttr);
-				document.getElementById('underBattleBtn').classList.add('hidden');
-			    document.getElementById('underBattleBtn').classList.remove('flex');
-			    document.getElementById('underAttackBtn').classList.remove('hidden');
-			    document.getElementById('underAttackBtn').classList.add('flex');
 			    content = `
 	                <div id="underAttackBtn"
                     class="fixed bottom-0 left-0 w-full h-1/5 bg-gray-800 flex flex-wrap">
                     <!-- 상단 버튼 두 개 -->
-                    <button id="skill1"
+                    <button id="showSkills"
                         class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="attack('\${response.data[0].skillAttr}');">
                         <i class="fa-brands fa-gripfire"></i>스킬 : \${response.data[0].skillName}<br />\${response.data[0].skillInfo}
                     </button>
@@ -762,7 +751,6 @@
 		}	
 			
 		function itemDrop(){
-			console.log("적군 사망시 아이템 드롭");
 			return $.ajax({
 				        url: "/usr/item/itemDrop",
 				        type: "GET",
@@ -770,8 +758,8 @@
 				        dataType: "json",
 				        success: function (data) {
 				        	console.log(data);
+				        	console.log(data[0].id);
 				        	const random = randomNum(data.length,1);
-				        	console.log(random + "는 랜덤 숫자");
 				        	if(random === 1){
 				        		dropedItem = data[0].itemName;
 				        		dropedItemId = data[0].id; 
@@ -791,8 +779,8 @@
 				    }); 
 		}
 		
-		function getDropItem(){
-			console.log("적군 사망시 아이템 드롭한것 저장");
+		function getDropItem() {
+			console.log(dropedItemId);
 			return $.ajax({
 		        url: "/usr/item/itemInsertToCharacter",
 		        type: "GET",
@@ -803,7 +791,33 @@
 		    }); 
 		}
 		
-		function craftableItems(){
+		function closedCrateMenu() {
+			craftSubmenu.classList.add('hidden');
+		}
+		
+		function insertItemToCharacterEquip(id,itemId) {
+			console.log(id);
+			console.log(itemId);
+			$.ajax({
+				url: "/usr/item/craftableItems",
+				type: 'GET',
+				data: { characterId: ${rq.getLoginedMemberId() },
+						itemId: itemId,
+						id: id
+				}, 
+				dataType: 'json',
+				success: function(data) {
+					console.log(data);
+					
+				},
+				error: function(xhr, status, error) {
+					console.error(error);
+				}
+			});
+			console.log("아이템 장착");
+		}
+		
+		function craftableItems() {
 			settingSubmenu.classList.add('hidden');
 			itemSubmenu.classList.add('hidden');
 			craftSubmenu.classList.remove('hidden');
@@ -815,17 +829,40 @@
 				dataType: 'json',
 				success: function(data) {
 					console.log(data);
-// 					for(let i = 0; i < data.length; i++){
-	// 					const content = `
-	// 							<button class="btn w-full mb-2">\${data[i].itemName}: \${data[i].itemCount}개</button>
-	// 				    `;
-	// 				    $('#craftSubmenu').append(content);
-// 					}
+					if(data.length > 0){
+						for(let i = 0; i < data.length; i++){
+							const content = `
+									<button class="btn w-full mb-2" onclick="craftItem('\${data[i]}')">제작 가능한 아이템 : \${data[i]}</button>
+						    `;
+						    $('#craftSubmenu').append(content);
+						}
+					}else{
+						const content = `
+							<button class="btn w-full mb-2">제작 가능한 아이템이 없습니다.</button>
+				    `;
+				    $('#craftSubmenu').append(content);
+					}
 				},
 				error: function(xhr, status, error) {
 					console.error(error);
 				}
 			});
+		}
+		
+		function craftItem(itemName){
+			console.log(itemName);
+			$.ajax({
+				url: "/usr/item/craftItem",
+				type: 'GET',
+				data: { characterId: ${rq.getLoginedMemberId() },
+						itemName: itemName
+				}, 
+				error: function(xhr, status, error) {
+					console.error(error);
+				}
+			});
+			alert(itemName +" 을 성공적으로 제작했습니다.");
+			craftSubmenu.classList.add('hidden');
 		}
 		
 		function getItemsByCharacterId(){
@@ -838,19 +875,56 @@
 				data: { characterId: ${rq.getLoginedMemberId() } }, 
 				dataType: 'json',
 				success: function(data) {
+					$('#itemSubmenu').empty();
 					console.log(data);
-					for(let i = 0; i < data.length; i++){
-						if(data[i].itemId == 0){
-							const content = `
-								<a class="btn w-full mb-2">보유중인 골드: \${data[i].itemCount}</a>
-					  	  		`;
-								$('#itemSubmenu').append(content);					    						
-						}else{
-							const content = `
-									<button class="btn w-full mb-2">\${data[i].itemName}: \${data[i].itemCount}개</button>
-						    `;
-						    $('#itemSubmenu').append(content);
-						}
+					console.log(data.length);
+					for (let i = 0; i < data.length; i++) {
+					    if (data[i].itemId == 0) {
+					        const content = `
+					            <a class="btn w-full mb-2">보유중인 골드: \${data[i].itemCount}</a>
+					        `;
+					        $('#itemSubmenu').append(content);                        						
+					    } else {
+					        // 장비 아이템
+					        if (data[i].itemType == '장비 아이템') {
+					            const content = `
+					                <div class="relative group flex items-center mb-2">
+					                    <!-- 메인 버튼 -->
+					                    <button class="btn flex-1">\${data[i].itemName}: \${data[i].itemCount}개</button>
+					                    <!-- 장착 버튼 -->
+					                    <button class="btn ml-2 text-xs px-2 py-1 bg-black text-white rounded" onclick="insertItemToCharacterEquip(\${data[i].id},\${data[i].itemId})">장착</button>
+					                    <!-- 팝업창 -->
+					                    <div class="absolute hidden group-hover:block bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 p-2 bg-gray-800 text-white text-sm rounded shadow-lg z-10">
+					                        <p class="font-bold">아이템 설명</p>
+					                        <p>\${data[i].itemInfo}</p>
+					                    </div>
+					                </div>
+					            `;
+					            $('#itemSubmenu').append(content);
+					        } 
+					        // 소비 아이템
+					        else if (data[i].itemType == '소비 아이템') {
+					            const content = `
+					                <div class="relative group flex items-center mb-2">
+					                    <button class="btn flex-1">\${data[i].itemName}: \${data[i].itemCount}개</button>
+					                    <button class="btn ml-2 text-xs px-2 py-1 bg-black text-white rounded">사용</button>
+					                    <!-- 팝업창 -->
+					                    <div class="absolute hidden group-hover:block bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 p-2 bg-gray-800 text-white text-sm rounded shadow-lg z-10">
+					                        <p class="font-bold">아이템 설명</p>
+					                        <p>\${data[i].itemInfo}</p>
+					                    </div>
+					                </div>
+					            `;
+					            $('#itemSubmenu').append(content);
+					        } 
+					        // 일반 아이템
+					        else {
+					            const content = `
+					                <button class="btn w-full mb-2">\${data[i].itemName}: \${data[i].itemCount}개</button>
+					            `;
+					            $('#itemSubmenu').append(content);
+					        }
+					    }
 					}
 				},
 				error: function(xhr, status, error) {
@@ -1060,9 +1134,46 @@
 	class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-white shadow-lg border border-gray-300 z-40 overflow-auto">
 	<!-- 비어 있는 2차 메뉴 -->
 </div>
+<!-- <div id="settingSubmenu" -->
+<!-- 	class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-white shadow-lg border border-gray-300 z-40 overflow-auto"> -->
+<!-- 	<!-- 비어 있는 2차 메뉴 --> -->
+<!-- </div> -->
+
 <div id="settingSubmenu"
-	class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-white shadow-lg border border-gray-300 z-40 overflow-auto">
-	<!-- 비어 있는 2차 메뉴 -->
+    class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-white shadow-lg border border-gray-300 z-40 flex items-center justify-center">
+    <!-- 십자가 네모칸 -->
+    <div class="relative w-full h-full">
+        <!-- 네모칸 예시 (반복 구조) -->
+        <!-- 상단 네모칸 -->
+        <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-16 h-16 flex items-center justify-center">
+<!--             <span class="text-gray-500" id="top-box-text">없음</span> -->
+            <img src="/usr/imgFile/getImgPath?imgName=potion30" alt="Image" id="top-box-img" class=" w-full h-full object-cover">
+        </div>
+        
+        <!-- 중앙 네모칸 -->
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-gray-300 flex items-center justify-center">
+            <span class="text-gray-500" id="center-box-text">없음</span>
+            <img src="" alt="Image" id="center-box-img" class="hidden w-full h-full object-cover">
+        </div>
+
+        <!-- 왼쪽 네모칸 -->
+        <div class="absolute top-1/2 left-0 transform -translate-y-1/2 w-16 h-16 flex items-center justify-center">
+<!--             <span class="text-gray-500" id="left-box-text">없음</span> -->
+            <img src="/usr/imgFile/getImgPath?imgName=waterSword" alt="Image" id="left-box-img" class="w-full h-full object-cover">
+        </div>
+
+        <!-- 오른쪽 네모칸 -->
+        <div class="absolute top-1/2 right-0 transform -translate-y-1/2 w-16 h-16 flex items-center justify-center">
+<!--             <span class="text-gray-500" id="right-box-text">없음</span> -->
+            <img src="/usr/imgFile/getImgPath?imgName=fireSword" alt="Image" id="right-box-img" class="w-full h-full object-cover">
+        </div>
+
+        <!-- 하단 네모칸 -->
+        <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-16 h-16 bg-gray-300 flex items-center justify-center">
+            <span class="text-gray-500" id="bottom-box-text">없음</span>
+            <img src="" alt="Image" id="bottom-box-img" class="hidden w-full h-full object-cover">
+        </div>
+    </div>
 </div>
 <div id="overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-30"></div>
 
@@ -1108,26 +1219,17 @@
     </div>
   <!-- 버튼 4 -->
     <div id="skillItem" class="flex flex-col items-center space-y-2 hidden">
-        <!-- 버튼 위 텍스트 -->
+<!--         버튼 위 텍스트 -->
         <div class="text-white text-sm inline-block">속성 : <img src="/usr/imgFile/getImgPath?imgName=fire" class="w-6 h-8 inline-block"></div>
         <button id="skill"  class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-green-100">
             <img src="/usr/imgFile/getImgPath?imgName=fireSword" class="w-24 h-28">
         </button>
-        버튼 아래 텍스트
+<!--         버튼 아래 텍스트 -->
         <div class="text-white text-sm">plant 타입의 몬스터에게 20%의 추가 데미지를 줍니다.</div>
         <div class="text-white text-sm">100 Gold</div>
     </div>
 </div>
 
 <div id="skillChangePopUp" class="hidden fixed top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-96 bg-gray-800 bg-opacity-50 shadow-lg border rounded border-gray-300 z-40 p-4 flex items-center justify-around space-x-4">
-    <div id="skillItem" class="flex flex-col items-center space-y-2 hidden">
-        <div class="text-white text-sm inline-block">속성 : <img src="/usr/imgFile/getImgPath?imgName=fire" class="w-6 h-8 inline-block"></div>
-        <button id="skill"  class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-green-100">
-            <img src="" class="w-24 h-28">
-        </button>
-        버튼 아래 텍스트
-        <div class="text-white text-sm">plant 타입의 몬스터에게 20%의 추가 데미지를 줍니다.</div>
-        <div class="text-white text-sm">100 Gold</div>
-    </div>
 </div>
 <%@ include file="../../common/footer.jsp"%>

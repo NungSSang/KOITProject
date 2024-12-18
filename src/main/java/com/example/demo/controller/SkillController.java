@@ -32,5 +32,10 @@ public class SkillController {
 	public ResultData<List<SkillDto>> showMySkills(int id) {
 		return ResultData.from("S-1", "test", skillService.showMySkills(id));
 	}
+	@GetMapping("/usr/skill/deleteSkill")
+	@ResponseBody
+	public void deleteSkill(int characterId, int skillId) {
+		skillService.deleteSkill(characterId, skillId);
+	}
 	
 }

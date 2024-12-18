@@ -22,9 +22,6 @@ public class ItemService {
 		return itemDao.getItemsByCharacterId(characterId);
 	}
 
-	public void getItem() {
-		itemDao.getItem();
-	}
 
 	public List<Item> itemDropByEnemyType(String enemyType) {
 		return itemDao.itemDropByEnemyType(enemyType);
@@ -49,14 +46,14 @@ public class ItemService {
 	public void goldUpdateToCharacter(int characterId, int gold) {
 		itemDao.goldUpdateToCharacter(characterId, gold);
 	}
-
-	public List<List<Item>> craftableItems(int characterId) {
+//	List<List<Item>>
+		public List<String> craftableItems(int characterId) {
 		
 		 // 내가 가진 아이템을 데이터베이스에서 가져오기
         List<Item> availableItems = itemDao.getItemsByCharacterId(characterId); // ID와 수량을 가진 아이템 리스트
         List<Item> creatableItems = itemDao.showCreateItem();    // 제작 가능한 아이템 리스트
         List<List<Item>> creatableItemsName = new ArrayList<>();
-
+        List<String> craftableItemsNames = new ArrayList<>();
         try {
             for (Item item : creatableItems) {
                 // 아이템 제작에 필요한 정보 파싱
@@ -97,6 +94,8 @@ public class ItemService {
                     // 최종적으로 제작 가능한 아이템을 리스트에 추가
                     creatableItemsName.add(beforeCreatableItemsName);
                     System.out.println("제작 가능한 아이템: " + item.getItemName());
+                    craftableItemsNames.add(item.getItemName());
+                    
                 }
             }
         } catch (Exception e) {
@@ -105,45 +104,29 @@ public class ItemService {
 
         // 최종 결과 출력
         System.out.println("최종 제작 가능한 아이템 리스트: " + creatableItemsName);
-
-		
-		
-//		List<List<Item>> creatableItemsName = new ArrayList<>();
-//		List<Item> creatableItems = itemDao.showCreateItem();
-//		List<Integer> names = new ArrayList<>();
-//		for(int j = 0; j < creatableItems.size(); j ++) {
-//			names.add(itemDao.showCreateItem().get(j).getId()); 
-//		}
-//		try {
-//			for (Item item : creatableItems) {
-//				List<Item> beforeCreatableItemsName = new ArrayList<>();
-//	            String[] neededItemIds = item.getNeedItem().split(",");
-//	            String[] neededItemCounts = item.getNeedItemInt().split(",");
-//	            	
-//	            for (int i = 0; i < neededItemIds.length; i++) {
-//	                int neededItemId = Integer.parseInt(neededItemIds[i]);
-//	                int neededItemCount = Integer.parseInt(neededItemCounts[i]);
-//	                beforeCreatableItemsName.addAll(itemDao.craftableItems(2, neededItemId, neededItemCount));
-//	                System.out.println(itemDao.craftableItems(2, neededItemId, neededItemCount).size());
-//	            }
-//	            creatableItemsName.add(beforeCreatableItemsName);
-//	            
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace(); 
-//		}
-//		System.out.println(creatableItemsName);
-		
-//		for (List<Item> a : creatableItemsName) {
-//			for (Item b : a ) {
-//				if (b == null) {
-//					creatableItemsName.remove(a);
-//					break;
-//				}
-//			}
-//		}
-		
-		return creatableItemsName;
+		return craftableItemsNames;
 	}
+
+		public void craftItem(int characterId, String itemName) {
+			Item item = itemDao.getItemByItemName(itemName);
+			String[] neededItemIds = item.getNeedItem().split(",");
+            String[] neededItemCounts = item.getNeedItemInt().split(",");
+            for(int i = 0; i < neededItemIds.length; i++) {
+            	 int neededItemId = Integer.parseInt(neededItemIds[i]);
+                 int neededItemCount = Integer.parseInt(neededItemCounts[i]);
+            	if(itemDao.getItemByCharacterId(characterId, neededItemId).getItemCount() > neededItemCount) {
+            		itemDao.craftItemCountDown(neededItemCount,neededItemId);
+            	}else {
+            		itemDao.craftItemDeleteItem(neededItemId);
+            	}
+            }
+            itemInsertToCharacter(characterId,itemDao.getItemByItemName(itemName).getId());
+		}
+
+		public void insertItemToCharacterEquip(int characterId, int itemId, int id) {
+			Item item = itemDao.getItemInfoByItemStorageId(id);
+			System.out.println(item.getType());
+			itemDao.insertItemToCharacterEquip(item.getType(),characterId, itemId);
+		}
 
 }

@@ -6,10 +6,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.example.demo.Util.Util;
 import com.example.demo.dto.Item;
 import com.example.demo.service.ItemService;
-import org.springframework.web.bind.annotation.RequestParam;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 
 
@@ -65,8 +66,20 @@ public class ItemController {
 	
 	@GetMapping("/usr/item/craftableItems")
 	@ResponseBody
-	public List<List<Item>> craftableItems(int characterId) {
+	public List<String> craftableItems(int characterId) {
 		return itemService.craftableItems(characterId);
 	}
+	@GetMapping("/usr/item/craftItem")
+	@ResponseBody
+	public void craftItem(int characterId, String itemName) {
+		System.out.println(itemName.toString());
+		itemService.craftItem(characterId, itemName.toString());
+	}
+	@GetMapping("/usr/item/insertItemToCharacterEquip")
+	@ResponseBody
+	public void insertItemToCharacterEquip(int characterId, int itemId, int id) {
+		itemService.insertItemToCharacterEquip(characterId, itemId, id);
+	}
+	
 
 }

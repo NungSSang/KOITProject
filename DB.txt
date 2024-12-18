@@ -15,11 +15,6 @@ id INT AUTO_INCREMENT NOT NULL PRIMARY KEY
 ,characterAttackPower INT NOT NULL
 ,characterBerrior INT NOT NULL
 );
-CREATE TABLE status(
-id INT AUTO_INCREMENT NOT NULL PRIMARY KEY
-,statusType INT NOT NULL
-,whoStatus INT NOT NULL
-);
 CREATE TABLE stage(
 id INT AUTO_INCREMENT NOT NULL PRIMARY KEY
 ,enemyId INT NOT NULL
@@ -77,7 +72,119 @@ id INT AUTO_INCREMENT NOT NULL PRIMARY KEY
 ,characterId INT NOT NULL
 ,skillId INT NOT NULL
 );
-//멤버
+CREATE TABLE characterEquippedItem(
+		characterId INT NOT NULL
+		,head INT 
+		,`body` INT 
+		,foot INT
+		,rightHand INT 
+		,leftHand INT 
+);
+CREATE TABLE itemInfo(
+	itemId INT NOT NULL
+	,attack INT
+	,def INT
+	,hp INT
+	,`type` VARCHAR(50) NOT NULL
+);
+ALTER TABLE characterSkill CHANGE COLUMN characterId characterId INT UNSIGNED;
+ALTER TABLE itemStorage DROP COLUMN itemName;
+ALTER TABLE itemStorage ADD COLUMN itemId INT; 
+UPDATE itemStorage SET itemCount = 0 WHERE characterId = 1;	
+ALTER TABLE enemy ADD COLUMN strongAttr VARCHAR(20) NOT NULL;
+ALTER TABLE enemy ADD COLUMN weakAttr VARCHAR(50) DEFAULT 'none';
+ALTER TABLE enemyAttackPattern ADD COLUMN enemyType VARCHAR(50);
+ALTER TABLE item ADD COLUMN itemInfo TEXT; 
+ALTER TABLE `member` DROP COLUMN stageNum;
+ALTER TABLE `character` ADD COLUMN stageNum INT NOT NULL DEFAULT 0;
+ALTER TABLE enemyAttackPattern DROP COLUMN enemyId;
+ALTER TABLE item DROP COLUMN itemInfo;
+ALTER TABLE item ADD COLUMN isCreate BOOLEAN DEFAULT 0;
+ALTER TABLE item ADD COLUMN needItem VARCHAR(20);
+ALTER TABLE item ADD COLUMN needItemInt VARCHAR(20);
+
+-- 적군
+INSERT INTO enemy
+		SET enemyName = '마법사'
+			,enemyHp = 100
+			,enemyAttackPower = 10
+			,enemyBerrior = 0
+			,enemyType = 'majic'
+			,weakAttr = 'fire'
+			,strongAttr = 'plant';
+INSERT INTO enemy
+		SET enemyName = '전사'
+			,enemyHp = 100
+			,enemyAttackPower = 10
+			,enemyBerrior = 0
+			,enemyType = 'warrior'
+			,weakAttr = 'none'
+			,strongAttr = 'none';
+INSERT INTO enemy
+		SET enemyName = '괴물'
+			,enemyHp = 100
+			,enemyAttackPower = 10
+			,enemyBerrior = 0
+			,enemyType = 'monster'
+			,weakAttr = 'plant'
+			,strongAttr = 'none';
+INSERT INTO enemy
+		SET enemyName = '엔트'
+			,enemyHp = 100
+			,enemyAttackPower = 10
+			,enemyBerrior = 0
+			,enemyType = 'plant'
+			,weakAttr = 'fire'
+			,strongAttr = 'water';
+INSERT INTO enemy
+		SET enemyName = '용'
+			,enemyHp = 100
+			,enemyAttackPower = 10
+			,enemyBerrior = 0
+			,enemyType = 'dragon'
+			,weakAttr = 'water'
+			,strongAttr = 'plant';
+INSERT INTO enemy
+		SET enemyName = '불마법사'
+			,enemyHp = 100
+			,enemyAttackPower = 10
+			,enemyBerrior = 0
+			,enemyType = 'majic'
+			,weakAttr = 'none'
+			,strongAttr = 'plant';
+INSERT INTO enemy
+		SET enemyName = '해머전사'
+			,enemyHp = 100
+			,enemyAttackPower = 10
+			,enemyBerrior = 0
+			,enemyType = 'warrior'
+			,weakAttr = 'none'
+			,strongAttr = 'none';
+INSERT INTO enemy
+		SET enemyName = '몬스터2'
+			,enemyHp = 100
+			,enemyAttackPower = 10
+			,enemyBerrior = 0
+			,enemyType = 'monster'
+			,weakAttr = 'plant'
+			,strongAttr = 'none';
+INSERT INTO enemy
+		SET enemyName = '엔트2'
+			,enemyHp = 100
+			,enemyAttackPower = 10
+			,enemyBerrior = 0
+			,enemyType = 'plant'
+			,weakAttr = 'fire'
+			,strongAttr = 'water';
+INSERT INTO enemy
+		SET enemyName = '용2'
+			,enemyHp = 100
+			,enemyAttackPower = 10
+			,enemyBerrior = 0
+			,enemyType = 'dragon'
+			,weakAttr = 'water'
+			,strongAttr = 'plant';
+-- 멤버
 INSERT INTO `member`
 SET id = 1
 ,loginId = 'test1'
@@ -119,7 +226,7 @@ INSERT INTO enemyAttackPattern
 	,secondAttack = 'Tail Whip'
 	,thirdAttack = 'Whing Attack'
 	,enemyType = 'dragon';
-//맵 
+-- 맵 
 INSERT INTO map
 		SET stageNum = '1'
 			,enemyType = 'majic'
@@ -140,7 +247,7 @@ INSERT INTO map
 		SET stageNum = '20'
 			,enemyType = 'dragon'
 			,mapName = 'fireMountain';
-//이미지 파일
+-- 이미지 파일
 INSERT INTO imgFile
 			SET imgName = 'character'
 				,savedPath = 'C:/kwj/projectImages/character.png';
@@ -201,7 +308,7 @@ INSERT INTO imgFile
 INSERT INTO imgFile
 			SET imgName = 'fireMountain'
 				,savedPath = 'C:/kwj/projectImages/fireMountain.png';		
-//아이템
+-- 아이템
 INSERT INTO item
 	SET itemName = '마법사의 지팡이'
 		,itemType = '재료아이템'
@@ -300,12 +407,12 @@ INSERT INTO item
 		,isCreate = 1
 		,needItem = '9,11'
 		,needItemInt = '1,1';	
-//아이템 스토리지
+-- 아이템 스토리지
 INSERT INTO itemStorage
 			SET itemName = 'gold'
 				,characterId = 1
 				,itemCount = 100;	
-//스킬
+-- 스킬
 INSERT INTO skills
 		SET skillName = 'fire Attack'
 			,skillAttr = 'fire'
@@ -323,4 +430,16 @@ INSERT INTO skills
 			,skillAttr = 'water'
 			,skillDamage = 20
 			,skillEffectName = 'water'
-			,skillInfo = '불타입 속성의 적에게 20%의 추가 데미지를 줍니다.';												
+			,skillInfo = '불타입 속성의 적에게 20%의 추가 데미지를 줍니다.';		
+-- 아이템 정보			
+INSERT INTO itemInfo
+	SET itemId = 13
+		,attack = 50
+		,`type` = 'rightHand';	
+INSERT INTO itemInfo
+	SET itemId = 14
+		,hp = 100
+		,`type` = 'potion';	
+-- 장착된 아이템		
+INSERT INTO characterEquippedItem
+		SET characterId = 1;															
