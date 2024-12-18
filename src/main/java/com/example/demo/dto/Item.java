@@ -21,4 +21,11 @@ public class Item {
 	private int itemId;
 	private String itemInfo;
 	private String type;
+	
+	private int head;
+	private int body;
+	private int foot;
+	private int rightHand;
+	private int leftHand;
+	
 }

@@ -125,26 +125,7 @@ public interface ItemDao {
     @Update("""
     		UPDATE characterEquippedItem
 					SET 
-					    head = CASE 
-					                   WHEN #{type} = 'head' THEN #{itemId} 
-					                   ELSE rightHand 
-					               END,
-					    `body` = CASE 
-					                  WHEN #{type} = 'body' THEN #{itemId} 
-					                  ELSE leftHand 
-					               END,
-						foot = CASE 
-					                   WHEN #{type} = 'foot' THEN #{itemId} 
-					                   ELSE rightHand 
-					               END,
-					    rightHand = CASE 
-					                   WHEN #{type} = 'rightHand' THEN #{itemId} 
-					                   ELSE rightHand 
-					               END,
-					    leftHand = CASE 
-					                   WHEN #{type} = 'leftHand' THEN #{itemId} 
-					                   ELSE rightHand 
-					               END,                      			
+					    ${type} = #{itemId}                   			
 					WHERE characterId = 1;
     		""")
 	void insertItemToCharacterEquip(String type, int itemId, int characterId);
@@ -157,4 +138,19 @@ public interface ItemDao {
 					WHERE `is`.id = #{id}
 			""")
 	Item getItemInfoByItemStorageId(int id);
+	
+	@Delete("""
+			DELETE 
+					FROM itemStorage
+					WHERE id = #{id}
+			""")
+	void deleteItemStorageById(int id);
+
+
+	@Select("""
+			SELECT characterId,head,`body`,foot,rightHand,leftHand 
+					FROM characterEquippedItem
+					WHERE characterId = #{characterId}
+			""")
+	Item showEquippedItemsByCharacterId(int characterId);
 }

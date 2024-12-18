@@ -72,14 +72,18 @@ public class ItemController {
 	@GetMapping("/usr/item/craftItem")
 	@ResponseBody
 	public void craftItem(int characterId, String itemName) {
-		System.out.println(itemName.toString());
 		itemService.craftItem(characterId, itemName.toString());
 	}
 	@GetMapping("/usr/item/insertItemToCharacterEquip")
 	@ResponseBody
 	public void insertItemToCharacterEquip(int characterId, int itemId, int id) {
 		itemService.insertItemToCharacterEquip(characterId, itemId, id);
+		itemService.deleteItemStorageById(id);
+	}
+	@GetMapping("/usr/item/showEquippedItemsByCharacterId")
+	@ResponseBody
+	public Item showEquippedItemsByCharacterId(int characterId) {
+		return itemService.showEquippedItemsByCharacterId(characterId);
 	}
 	
-
 }

@@ -100,11 +100,20 @@
 		let isGetItem = false;
 		let isAttack = false;
 //=======================키보드 이벤트 처리=========================
-		
+	
+		const equipItemSubMenuOpen = () => {
+			itemSubmenu.classList.add('hidden');
+			craftSubmenu.classList.add('hidden');
+			settingSubmenu.classList.add('hidden');
+			equipItemSubMenu.classList.remove('hidden');
+			showEquippedItemsByCharacterId();
+		}
+	
 		const settingSubmenuOpen = function(){
 			itemSubmenu.classList.add('hidden');
 			craftSubmenu.classList.add('hidden');
 			settingSubmenu.classList.remove('hidden');
+			equipItemSubMenu.classList.add('hidden');
 		}
 		
 //============ 토글 사이드바 ================= 
@@ -129,6 +138,7 @@
 				settingSubmenu.classList.add('hidden'); // 2차 메뉴 숨기기
 				craftSubmenu.classList.add('hidden');
 				overlay.classList.add('hidden'); // 오버레이 숨기기
+				equipItemSubMenu.classList.add('hidden');
 			};
 			closeMenuBtn.addEventListener('click', closeSidebar);
 			overlay.addEventListener('click', closeSidebar);
@@ -795,32 +805,41 @@
 			craftSubmenu.classList.add('hidden');
 		}
 		
-		function insertItemToCharacterEquip(id,itemId) {
-			console.log(id);
-			console.log(itemId);
+		function showEquippedItemsByCharacterId() {
 			$.ajax({
-				url: "/usr/item/craftableItems",
+				url: "/usr/item/showEquippedItemsByCharacterId",
 				type: 'GET',
 				data: { characterId: ${rq.getLoginedMemberId() },
-						itemId: itemId,
-						id: id
-				}, 
-				dataType: 'json',
+				},
 				success: function(data) {
 					console.log(data);
-					
 				},
 				error: function(xhr, status, error) {
 					console.error(error);
 				}
 			});
-			console.log("아이템 장착");
+		} 
+		
+		function insertItemToCharacterEquip(id,itemId) {
+			console.log(id);
+			console.log(itemId);
+			$.ajax({
+				url: "/usr/item/insertItemToCharacterEquip",
+				type: 'GET',
+				data: { characterId: ${rq.getLoginedMemberId() },
+						itemId: itemId,
+						id: id
+				},
+			});
+			alert('아이템을 장착했습니다.');
+			getItemsByCharacterId();
 		}
 		
 		function craftableItems() {
 			settingSubmenu.classList.add('hidden');
 			itemSubmenu.classList.add('hidden');
 			craftSubmenu.classList.remove('hidden');
+			equipItemSubMenu.classList.add('hidden');
 			$('#craftSubmenu').empty();
 			$.ajax({
 				url: "/usr/item/craftableItems",
@@ -869,6 +888,7 @@
 			settingSubmenu.classList.add('hidden');
 			craftSubmenu.classList.add('hidden');
 			itemSubmenu.classList.remove('hidden');
+			equipItemSubMenu.classList.add('hidden');
 			$.ajax({
 				url: "/usr/item/getItemsByCharacterId",
 				type: 'GET',
@@ -1119,6 +1139,9 @@
 		<li class="p-2 craftItemMenu">
 			<button id="craftItemPopUpBtn" class="btn w-full text-black whitespace-nowrap hover:text-gray-200" onclick="craftableItems()"><i class="fa-solid fa-hammer"></i>아이템 제작</button>
 		</li>
+		<li class="p-2 epuipItemMenu">
+			<button id="epuipItemMenuPopUpBtn" class="btn w-full text-black whitespace-nowrap hover:text-gray-200" onclick="equipItemSubMenuOpen()"><i class="fa-solid fa-hammer"></i>장착 아이템</button>
+		</li>
 		<li class="p-2 menuBtn"><a href="../home/main" onclick="return finishGame()" class="btn w-full text-black whitespace-nowrap hover:text-gray-200"><i class="fa-solid fa-house"></i>메인페이지</a>
 		</li>
 		
@@ -1134,43 +1157,43 @@
 	class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-white shadow-lg border border-gray-300 z-40 overflow-auto">
 	<!-- 비어 있는 2차 메뉴 -->
 </div>
-<!-- <div id="settingSubmenu" -->
-<!-- 	class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-white shadow-lg border border-gray-300 z-40 overflow-auto"> -->
-<!-- 	<!-- 비어 있는 2차 메뉴 --> -->
-<!-- </div> -->
-
 <div id="settingSubmenu"
+	class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-white shadow-lg border border-gray-300 z-40 overflow-auto">
+	<!-- 비어 있는 2차 메뉴 -->
+</div>
+
+<div id="equipItemSubMenu"
     class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-white shadow-lg border border-gray-300 z-40 flex items-center justify-center">
     <!-- 십자가 네모칸 -->
     <div class="relative w-full h-full">
         <!-- 네모칸 예시 (반복 구조) -->
         <!-- 상단 네모칸 -->
-        <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-16 h-16 flex items-center justify-center">
-<!--             <span class="text-gray-500" id="top-box-text">없음</span> -->
-            <img src="/usr/imgFile/getImgPath?imgName=potion30" alt="Image" id="top-box-img" class=" w-full h-full object-cover">
+        <div id="head" class="absolute top-0 left-1/2 transform -translate-x-1/2 w-16 h-16 bg-gray-300  flex items-center justify-center">
+            <span class="text-gray-500" id="top-box-text">머리</span>
+            <img src="" alt="Image" id="top-box-img" class="hidden w-full h-full object-cover">
         </div>
         
         <!-- 중앙 네모칸 -->
-        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-gray-300 flex items-center justify-center">
-            <span class="text-gray-500" id="center-box-text">없음</span>
+        <div id="body"  class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-gray-300 flex items-center justify-center">
+            <span class="text-gray-500" id="center-box-text">옷</span>
             <img src="" alt="Image" id="center-box-img" class="hidden w-full h-full object-cover">
         </div>
 
         <!-- 왼쪽 네모칸 -->
-        <div class="absolute top-1/2 left-0 transform -translate-y-1/2 w-16 h-16 flex items-center justify-center">
-<!--             <span class="text-gray-500" id="left-box-text">없음</span> -->
-            <img src="/usr/imgFile/getImgPath?imgName=waterSword" alt="Image" id="left-box-img" class="w-full h-full object-cover">
+        <div id="leftHand"  class="absolute top-1/2 left-0 transform -translate-y-1/2 w-16 h-16 flex bg-gray-300  items-center justify-center">
+            <span class="text-gray-500" id="left-box-text">방패</span>
+            <img src="/usr/imgFile/getImgPath?imgName=waterSword" alt="Image" id="left-box-img" class="hidden w-full h-full object-cover">
         </div>
 
         <!-- 오른쪽 네모칸 -->
-        <div class="absolute top-1/2 right-0 transform -translate-y-1/2 w-16 h-16 flex items-center justify-center">
-<!--             <span class="text-gray-500" id="right-box-text">없음</span> -->
-            <img src="/usr/imgFile/getImgPath?imgName=fireSword" alt="Image" id="right-box-img" class="w-full h-full object-cover">
+        <div id="rightHand"  class="absolute top-1/2 right-0 transform -translate-y-1/2 w-16 h-16 bg-gray-300  flex items-center justify-center">
+            <span class="text-gray-500" id="right-box-text">무기</span>
+            <img src="/usr/imgFile/getImgPath?imgName=fireSword" alt="Image" id="right-box-img" class="hidden w-full h-full object-cover">
         </div>
 
         <!-- 하단 네모칸 -->
-        <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-16 h-16 bg-gray-300 flex items-center justify-center">
-            <span class="text-gray-500" id="bottom-box-text">없음</span>
+        <div id="foot"  class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-16 h-16 bg-gray-300 flex items-center justify-center">
+            <span class="text-gray-500" id="bottom-box-text">신발</span>
             <img src="" alt="Image" id="bottom-box-img" class="hidden w-full h-full object-cover">
         </div>
     </div>
