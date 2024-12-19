@@ -232,7 +232,7 @@
 				       }
 				   });	
 			itemPopUp.classList.add('hidden');
-	 		itemPopUpOverlay.classList.add('hidden');
+ 	 		itemPopUpOverlay.classList.add('hidden');
 	 		skillItem.classList.add('hidden');
 	 		document.getElementById('skillChangePopUp').classList.add('hidden');
 	 		setTimeout(() => {
@@ -258,7 +258,7 @@
 					console.log(data);
 			 		if(data == 1){
 						itemPopUp.classList.add('hidden');
-				 		itemPopUpOverlay.classList.add('hidden');
+ 				 		itemPopUpOverlay.classList.add('hidden');
 				 		skillItem.classList.add('hidden');
 				 		setTimeout(() => {
 					    	finishBattleBtnClick();
@@ -282,7 +282,6 @@
 			console.log("업데이트 스킬");
 	 		document.getElementById('itemPopUp').classList.add('hidden');
 			document.getElementById('skillItem').classList.add('hidden');
-	 		document.getElementById('itemPopUpOverlay').classList.add('hidden');
 	 		document.getElementById('skillChangePopUp').classList.remove('hidden');
 	 		let content = "";
 			for (let i = 0; i < 3; i++){
@@ -300,12 +299,13 @@
 						    </div>
 					    `;
 				    $('#skillChangePopUp').empty().append(content);
-					});
-				}			
+				});
+			}			
 		}
 		
 		
 		const getSkillInfo = async() => {
+			itemPopUpOverlay.classList.remove('hidden');
 			return $.ajax({
 			        url: "/usr/skill/getSkillInfo",
 			        type: "GET",
@@ -327,7 +327,6 @@
 			
 		}
 	 	const itemPopUpOpen = () => {
-	 		
 	 		const skillItem = document.getElementById('skillItem');
 	 		const itemPopUp = document.getElementById('itemPopUp');
 	 		const overlay = document.getElementById('overlay');
@@ -416,8 +415,8 @@
 		    	await getCharacterStatus();	
 		    	getMapImgPath();
 		    }
+		    if(!firstBattle)stageNum = stageNum + 1;
 		    firstBattle = false;
-		    stageNum = stageNum + 1;
 			if(stageNum  % 5 == 0){
 				getMapImgPath();
 			}
@@ -494,12 +493,12 @@
 		const randomNum = (max, min) => {
 	    	return Math.floor(Math.random() * (max - min + 1) + min);
 		};
-		//=== 캐릭터와 적 스탯 불러오기 ===
+		//=== 캐릭터 스탯 불러오기 ===
 		const getCharacterStatus = function () {
 		   return $.ajax({
 			        url: "/usr/character/getCharacter",
 			        type: "GET",
-			        data: { memberId: ${rq.getLoginedMemberId() } }, // memberId 값 전달
+			        data: { memberId: ${rq.getLoginedMemberId() } },
 			        dataType: "json",
 			        success: function (data) {
 						id = data[0].id;
@@ -610,7 +609,6 @@
 				$('#characterHPBar').empty().append(hpBar);
 	            $('#battleTextBox').empty().append(content);
 			}else if(characterHp >= 0){
-				console.log("적군 공격시 캐릭터 데미지 입는 것");
 				updateHPBars();
 				attackAnimation('enemy');
 				shake('hero');
@@ -666,6 +664,7 @@
 							await getDropItem();
 							dieAnimation('enemy');
 				            showGold();
+				            finishSkillAttack();
 							$('#enemyHPBar').empty().append(hpBar);
 				            $('#battleTextBox').empty().append(content);
 	        		}else{
@@ -696,7 +695,6 @@
 		}; 
 			
 		const showMySkills = () => {
-// 	 		document.getElementById('skillItem').classList.remove('hidden');
         	document.getElementById('itemPopUp').classList.add('hidden');
 			document.getElementById('overlay').classList.add('hidden');
 	 		return $.ajax({
@@ -754,10 +752,10 @@
 		}	
 		
 		function finishSkillAttack(){
-			document.getElementById('underBattleBtn').classList.remove('hidden');
-		    document.getElementById('underBattleBtn').classList.add('flex');
 		    document.getElementById('underAttackBtn').classList.add('hidden');
 		    document.getElementById('underAttackBtn').classList.remove('flex');
+			document.getElementById('underBattleBtn').classList.remove('hidden');
+		    document.getElementById('underBattleBtn').classList.add('flex');
 		}	
 			
 		function itemDrop(){
@@ -812,13 +810,52 @@
 				data: { characterId: ${rq.getLoginedMemberId() },
 				},
 				success: function(data) {
+					const keys = Object.keys(data);
 					console.log(data);
+					console.log(keys);
 				},
 				error: function(xhr, status, error) {
 					console.error(error);
 				}
 			});
 		} 
+		
+// 		<div id="equipItemSubMenu"
+// 		    class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-white shadow-lg border border-gray-300 z-40 flex items-center justify-center">
+// 		    <!-- 십자가 네모칸 -->
+// 		    <div class="relative w-full h-full">
+// 		        <!-- 네모칸 예시 (반복 구조) -->
+// 		        <!-- 상단 네모칸 -->
+// 		        <div id="head" class="absolute top-0 left-1/2 transform -translate-x-1/2 w-16 h-16 flex items-center justify-center">
+// 		<!--             <span class="text-gray-500" id="top-box-text">머리</span> -->
+// 		            <img src="/usr/imgFile/getImgPath?imgName=다재다능 모자" alt="Image" id="top-box-img" class="w-full h-full object-cover">
+// 		        </div>
+		        
+// 		        <!-- 중앙 네모칸 -->
+// 		        <div id="body"  class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-gray-300 flex items-center justify-center">
+// 		            <span class="text-gray-500" id="center-box-text">옷</span>
+// 		            <img src="" alt="Image" id="center-box-img" class="hidden w-full h-full object-cover">
+// 		        </div>
+
+// 		        <!-- 왼쪽 네모칸 -->
+// 		        <div id="leftHand"  class="absolute top-1/2 left-0 transform -translate-y-1/2 w-16 h-16 flex bg-gray-300  items-center justify-center">
+// 		            <span class="text-gray-500" id="left-box-text">방패</span>
+// 		            <img src="/usr/imgFile/getImgPath?imgName=waterSword" alt="Image" id="left-box-img" class="hidden w-full h-full object-cover">
+// 		        </div>
+
+// 		        <!-- 오른쪽 네모칸 -->
+// 		        <div id="rightHand"  class="absolute top-1/2 right-0 transform -translate-y-1/2 w-16 h-16 bg-gray-300  flex items-center justify-center">
+// 		            <span class="text-gray-500" id="right-box-text">무기</span>
+// 		            <img src="/usr/imgFile/getImgPath?imgName=fireSword" alt="Image" id="right-box-img" class="hidden w-full h-full object-cover">
+// 		        </div>
+
+// 		        <!-- 하단 네모칸 -->
+// 		        <div id="foot"  class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-16 h-16 bg-gray-300 flex items-center justify-center">
+// 		            <span class="text-gray-500" id="bottom-box-text">신발</span>
+// 		            <img src="" alt="Image" id="bottom-box-img" class="hidden w-full h-full object-cover">
+// 		        </div>
+// 		    </div>
+// 		</div>
 		
 		function insertItemToCharacterEquip(id,itemId) {
 			console.log(id);
@@ -1020,13 +1057,11 @@
 	    }
 	    
 	    const getEnemyPattern = async function(){
-	    	console.log('적 랜덤 패턴들어오나요?');
 	    	const random = randomNum(4,1);
-	    	console.log(random + '적 랜덤 패턴 숫자 들어오나요?');
 		    await $.ajax({
 					url: "/usr/enemy/getEnemyAttack",
 					type: 'GET',
-					data: { enemyType: enemyType }, // id 값 전달
+					data: { enemyType: enemyType }, 
 					dataType: 'json',
 					success: function(data) {
 						if(random === 1){
@@ -1168,9 +1203,9 @@
     <div class="relative w-full h-full">
         <!-- 네모칸 예시 (반복 구조) -->
         <!-- 상단 네모칸 -->
-        <div id="head" class="absolute top-0 left-1/2 transform -translate-x-1/2 w-16 h-16 bg-gray-300  flex items-center justify-center">
-            <span class="text-gray-500" id="top-box-text">머리</span>
-            <img src="" alt="Image" id="top-box-img" class="hidden w-full h-full object-cover">
+        <div id="head" class="absolute top-0 left-1/2 transform -translate-x-1/2 w-16 h-16 flex items-center justify-center">
+<!--             <span class="text-gray-500" id="top-box-text">머리</span> -->
+            <img src="/usr/imgFile/getImgPath?imgName=다재다능 모자" alt="Image" id="top-box-img" class="w-full h-full object-cover">
         </div>
         
         <!-- 중앙 네모칸 -->

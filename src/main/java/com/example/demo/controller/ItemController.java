@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -8,9 +9,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.demo.dto.Item;
 import com.example.demo.service.ItemService;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 
 
 
@@ -82,8 +80,10 @@ public class ItemController {
 	}
 	@GetMapping("/usr/item/showEquippedItemsByCharacterId")
 	@ResponseBody
-	public Item showEquippedItemsByCharacterId(int characterId) {
-		return itemService.showEquippedItemsByCharacterId(characterId);
+	public List<Item> showEquippedItemsByCharacterId(int characterId) {
+		List<Item> items = new ArrayList<>();
+		items.add(itemService.showEquippedItemsByCharacterId(characterId));
+		return null;
 	}
 	
 }

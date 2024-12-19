@@ -307,7 +307,10 @@ INSERT INTO imgFile
 				,savedPath = 'C:/kwj/projectImages/dark.png';
 INSERT INTO imgFile
 			SET imgName = 'fireMountain'
-				,savedPath = 'C:/kwj/projectImages/fireMountain.png';		
+				,savedPath = 'C:/kwj/projectImages/fireMountain.png';	
+INSERT INTO imgFile
+		SET imgName = '다재다능 모자'
+			,savedPath = 'C:/kwj/projectImages/다재다능 모자.png';					
 -- 아이템
 INSERT INTO item
 	SET itemName = '마법사의 지팡이'
@@ -442,4 +445,4 @@ INSERT INTO itemInfo
 		,`type` = 'potion';	
 -- 장착된 아이템		
 INSERT INTO characterEquippedItem
-		SET characterId = 1;															
+		SET characterId = 1;				
