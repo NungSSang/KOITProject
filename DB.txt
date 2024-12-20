@@ -593,4 +593,25 @@ UPDATE skills
 INSERT INTO imgFile
 		SET imgName = 'gold'
 			,savedPath = 'C:/kwj/projectImages/gold.png';
-			
+ALTER TABLE characterEquippedItem DROP COLUMN head;
+ALTER TABLE characterEquippedItem DROP COLUMN `body`;
+ALTER TABLE characterEquippedItem DROP COLUMN foot;
+ALTER TABLE characterEquippedItem DROP COLUMN leftHand;
+ALTER TABLE characterEquippedItem DROP COLUMN rightHand;	
+ALTER TABLE characterEquippedItem ADD COLUMN itemType VARCHAR(20);
+ALTER TABLE characterEquippedItem ADD COLUMN itemId INT;
+INSERT INTO characterEquippedItem
+			SET itemType = 'head'
+				,characterId = 1;		
+INSERT INTO characterEquippedItem
+			SET itemType = 'body'
+				,characterId = 1;
+INSERT INTO characterEquippedItem
+			SET itemType = 'foot'
+				,characterId = 1;
+INSERT INTO characterEquippedItem
+			SET itemType = 'leftHand'
+				,characterId = 1;
+INSERT INTO characterEquippedItem
+			SET itemType = 'rightHand'
+				,characterId = 1;	

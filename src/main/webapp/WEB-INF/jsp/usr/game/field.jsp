@@ -661,6 +661,7 @@
         		await addCharacterStatusAndItem()
     			.then((response) => {
     				console.log(response);
+    				console.log("잘 들어 오나요?====================");
     				for(let i = 0; i < response.length; i++){
     					if(response[i].type != null && response[i].type == 'rightHand'){
     						console.log(response[i].attack);
@@ -855,8 +856,8 @@
 					        const content = `
 	                            <img src="/usr/imgFile/getImgPath?imgName=\${data[i].itemName}" alt="Image" class="w-full h-full object-cover">
 					        `;
-					        $('#'+data[i].type).empty().append(content);
-					        console.log(data[i].type);
+					        $('#'+data[i].itemType).empty().append(content);
+					        console.log(data[i].itemType);
 						}   
 					}
 				},
@@ -866,7 +867,10 @@
 			});
 		} 
 		
-		function insertItemToCharacterEquip(id,itemId) {
+		function insertItemToCharacterEquip(id,itemId,itemType) {
+			console.log(id);
+			console.log(itemId);
+			console.log(itemType);
 			let isTrue = confirm("이미 장착중인 아이템이 있다면 기존 아이템은 삭제됩니다. 아이템을 장착 하시겠습니까?");
 			if(isTrue){
 				$.ajax({
@@ -874,7 +878,8 @@
 					type: 'GET',
 					data: { characterId: ${rq.getLoginedMemberId() },
 							itemId: itemId,
-							id: id
+							id: id,
+							itemType: itemType
 					},
 				});
 				alert('아이템을 장착했습니다.');
@@ -906,6 +911,7 @@
 		            // 기존 캐릭터 정보 제거 후 새로 추가
 		             $('#characterHPBar').empty().append(HpBar);
 					 getItemsByCharacterId();
+					 alert("캐릭터의 Hp가 " + data + "만큼 회복되었습니다.");
 				},
 				error: function(xhr, status, error) {
 					console.error(error);
@@ -987,6 +993,7 @@
 						console.log(data);
 						console.log(data.length);
 						for (let i = 0; i < data.length; i++) {
+						console.log(data[i].type);
 						    if (data[i].itemId == 0) {
 						        const content = `
 						            <a class="btn w-full mb-2"><img src="/usr/imgFile/getImgPath?imgName=gold" class="h-full object-contain max-h-6"> 보유중인 골드: \${data[i].itemCount}</a>
@@ -1000,7 +1007,7 @@
 						                    <!-- 메인 버튼 -->
 						                    <button class="btn flex-1"><img src="/usr/imgFile/getImgPath?imgName=\${data[i].itemName}" class="h-full object-contain max-h-6"> \${data[i].itemName}: \${data[i].itemCount}개</button>
 						                    <!-- 장착 버튼 -->
-						                    <button class="btn ml-2 text-xs px-2 py-1 bg-black text-white rounded" onclick="insertItemToCharacterEquip(\${data[i].id},\${data[i].itemId})">장착</button>
+						                    <button class="btn ml-2 text-xs px-2 py-1 bg-black text-white rounded" onclick="insertItemToCharacterEquip(\${data[i].id}, \${data[i].itemId}, '\${data[i].type}')">장착</button>
 						                    <!-- 팝업창 -->
 						                    <div class="absolute hidden group-hover:block bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 p-2 bg-gray-800 text-white text-sm rounded shadow-lg z-10">
 						                        <p class="font-bold">아이템 설명</p>
@@ -1015,7 +1022,7 @@
 						                    <!-- 메인 버튼 -->
 						                    <button class="btn flex-1"><img src="/usr/imgFile/getImgPath?imgName=\${data[i].itemName}" class="h-full object-contain max-h-6"> \${data[i].itemName}: \${data[i].itemCount}개</button>
 						                    <!-- 장착 버튼 -->
-						                    <button class="btn ml-2 text-xs px-2 py-1 bg-black text-white rounded" onclick="insertItemToCharacterEquip(\${data[i].id},\${data[i].itemId})">장착</button>
+						                    <button class="btn ml-2 text-xs px-2 py-1 bg-black text-white rounded" onclick="insertItemToCharacterEquip(\${data[i].id},\${data[i].itemId},'\${data[i].type}')">장착</button>
 						                    <!-- 팝업창 -->
 						                    <div class="absolute hidden group-hover:block bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 p-2 bg-gray-800 text-white text-sm rounded shadow-lg z-10">
 						                        <p class="font-bold">아이템 설명</p>

@@ -126,11 +126,10 @@ public interface ItemDao {
 
     @Update("""
     		UPDATE characterEquippedItem
-					SET 
-					    ${type} = #{itemId}                   			
-					WHERE characterId = 1;
+					SET itemId = #{itemId} 			
+					WHERE characterId = 1 AND itemType = #{itemType}
     		""")
-	void insertItemToCharacterEquip(String type, int itemId, int characterId);
+	void insertItemToCharacterEquip(int characterId, int itemId, String itemType);
 	
 	@Select("""
 			SELECT * 
@@ -178,4 +177,15 @@ public interface ItemDao {
 				WHERE itemId = #{itemId}
 			""")
 	Item getItemInfoByItemId(int itemId);
+	
+	@Select("""
+			SELECT * 
+				FROM item AS i
+				INNER JOIN characterEquippedItem AS c
+				ON i.id = c.itemId
+				INNER JOIN itemInfo AS ii
+				ON i.id = ii.itemId
+				WHERE c.characterId = 1
+			""")
+	List<Item> getItemByCharacterIdFOREquippedItem(int characterId);
 }

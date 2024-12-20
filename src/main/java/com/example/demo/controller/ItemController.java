@@ -74,20 +74,14 @@ public class ItemController {
 	}
 	@GetMapping("/usr/item/insertItemToCharacterEquip")
 	@ResponseBody
-	public void insertItemToCharacterEquip(int characterId, int itemId, int id) {
-		itemService.insertItemToCharacterEquip(characterId, itemId, id);
+	public void insertItemToCharacterEquip(int characterId, int itemId, int id, String itemType) {
+		itemService.insertItemToCharacterEquip(characterId, itemId,itemType);
 		itemService.deleteItemStorageById(id);
 	}
 	@GetMapping("/usr/item/showEquippedItemsByCharacterId")
 	@ResponseBody
 	public List<Item> showEquippedItemsByCharacterId(int characterId) {
-		List<Item> item = new ArrayList<>();
-		item.add(itemService.getItemByItemId(itemService.showEquippedItemsByCharacterId(characterId).getHead()));
-		item.add(itemService.getItemByItemId(itemService.showEquippedItemsByCharacterId(characterId).getBody()));
-		item.add(itemService.getItemByItemId(itemService.showEquippedItemsByCharacterId(characterId).getFoot()));
-		item.add(itemService.getItemByItemId(itemService.showEquippedItemsByCharacterId(characterId).getRightHand()));
-		item.add(itemService.getItemByItemId(itemService.showEquippedItemsByCharacterId(characterId).getLeftHand()));
-		return item;
+		return itemService.getItemByCharacterIdFOREquippedItem(characterId);
 	}
 	@GetMapping("/usr/item/useItem")
 	@ResponseBody
@@ -104,13 +98,7 @@ public class ItemController {
 	@GetMapping("/usr/item/addCharacterStatusAndItem")
 	@ResponseBody
 	public List<Item> addCharacterStatusAndItem(int characterId) {
-		List<Item> item = new ArrayList<>();
-		item.add(itemService.getItemInfoByItemId(itemService.showEquippedItemsByCharacterId(characterId).getHead()));
-		item.add(itemService.getItemInfoByItemId(itemService.showEquippedItemsByCharacterId(characterId).getBody()));
-		item.add(itemService.getItemInfoByItemId(itemService.showEquippedItemsByCharacterId(characterId).getFoot()));
-		item.add(itemService.getItemInfoByItemId(itemService.showEquippedItemsByCharacterId(characterId).getRightHand()));
-		item.add(itemService.getItemInfoByItemId(itemService.showEquippedItemsByCharacterId(characterId).getLeftHand()));
-		return item;
+		return itemService.getItemByCharacterIdFOREquippedItem(characterId);
 	}
 	
 	

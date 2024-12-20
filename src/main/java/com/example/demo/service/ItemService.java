@@ -123,9 +123,8 @@ public class ItemService {
             itemInsertToCharacter(characterId,itemDao.getItemByItemName(itemName).getId());
 		}
 
-		public void insertItemToCharacterEquip(int characterId, int itemId, int id) {
-			Item item = itemDao.getItemInfoByItemStorageId(id);
-			itemDao.insertItemToCharacterEquip(item.getType(), itemId, characterId);
+		public void insertItemToCharacterEquip(int characterId, int itemId, String itemType) {
+			itemDao.insertItemToCharacterEquip(characterId, itemId, itemType);
 		}
 		public void deleteItemStorageById(int id) {
 			itemDao.deleteItemStorageById(id);
@@ -147,5 +146,9 @@ public class ItemService {
 		}
 		public Item getItemInfoByItemId(int itemId) {
 			return itemDao.getItemInfoByItemId(itemId);
+		}
+		
+		public List<Item> getItemByCharacterIdFOREquippedItem(int characterId){
+			return itemDao.getItemByCharacterIdFOREquippedItem(characterId);
 		}
 }
