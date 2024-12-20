@@ -137,4 +137,15 @@ public class ItemService {
 		public Item showEquippedItemsByCharacterId(int characterId) {
 			return itemDao.showEquippedItemsByCharacterId(characterId);
 		}
+		
+		public Item getItemByItemId(int itemId) {
+			return itemDao.getItemByItemId(itemId);
+		}
+
+		public void ustItem(int characterId, int id, int itemId) {
+			itemDao.useItem(characterId, id, itemId);
+		}
+		public Item getItemInfoByItemId(int itemId) {
+			return itemDao.getItemInfoByItemId(itemId);
+		}
 }

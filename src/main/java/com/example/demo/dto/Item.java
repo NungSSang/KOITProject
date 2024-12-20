@@ -27,5 +27,7 @@ public class Item {
 	private int foot;
 	private int rightHand;
 	private int leftHand;
-	
+	private int attack;
+	private int def;
+	private int hp;
 }

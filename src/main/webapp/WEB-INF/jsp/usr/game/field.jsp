@@ -391,6 +391,9 @@
         	}
         };
         
+//         const getItemImgPath = (imgName) => {
+//         	let img = 
+//         }
         const getMapImgPath = () => {
         	let img = $('#map');
             img.attr("src", "/usr/imgFile/getMapImgPath?stageNum=" + stageNum);
@@ -548,7 +551,6 @@
 						enemyType = data[i].enemyType;
 						enemyWeakAttr = data[i].weakAttr;
 						enemyStrongAttr = data[i].strongAttr;
-						
 			            let content = `
 			                <div id="enemyStatus" class="relative w-full flex flex-col items-center justify-center space-y-2">
 			                    <!-- 적 이름 -->
@@ -590,14 +592,25 @@
 			let content;
 			let hpBar;
 			let damage = enemyAttackPower - characterBerrior;
+			await addCharacterStatusAndItem()
+			.then((response) => {
+				console.log(response);
+				for(let i = 0; i < response.length; i++){
+					if(response[i].type != null && response[i].type != 'rightHand'){
+						console.log(response[i].def);
+						damage = damage - response[i].def;
+					}
+				}		
+			});
 			if(damage < 0){
 				damage = 1;
 			}
 			characterHp = characterHp - damage;
+			console.log(characterHp);
 			if(characterHp <= 0){
 				content = `
 	                <div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center">
-						<div>\${characterName}이 \${damage} 만큼의 데미지를 입어 HP가 0이되었습니다.</div> 	                    
+						<div>\${characterName}이(가) \${damage} 만큼의 데미지를 입어 HP가 0이되었습니다.</div> 	                    
 	                </div>
             `;
            		 hpBar = `
@@ -631,11 +644,12 @@
 		// === battle 스크립트 ====
  		const attack = async function (attackAttr) {
 			if(isAttack) return;
+			let damage = 0;
 			isAttack = true;
 			let content;
 			let hpBar;
         	 if(enemyHp <= 0){return;}
-        		let damage = characterAttackPower - enemyBerrior;
+        		damage = characterAttackPower - enemyBerrior;
         		if(attackAttr == enemyWeakAttr){
         			damage = damage + (damage * 0.2);
         		}else if(attackAttr == enemyStrongAttr){
@@ -644,6 +658,16 @@
         		if(damage < 1){
         			damage = 1;
         		}
+        		await addCharacterStatusAndItem()
+    			.then((response) => {
+    				console.log(response);
+    				for(let i = 0; i < response.length; i++){
+    					if(response[i].type != null && response[i].type == 'rightHand'){
+    						console.log(response[i].attack);
+    						damage = damage + response[i].attack;
+    					}
+    				}		
+    			});
 	        	enemyHp = enemyHp - damage;
 	        		if(enemyHp <= 0){
 	        			attackAnimation('hero');
@@ -651,7 +675,7 @@
 	        			await insertGold()
 	        			content = `
 			                <div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center">
-								<div>\${enemyName}이 \${damage}만큼의 데미지를 입어 HP가 0이되었습니다. , \${dropedItem}을 획득했습니다.</div> 	                    
+								<div>\${enemyName}이(가) \${damage}만큼의 데미지를 입어 HP가 0이되었습니다. , \${dropedItem}을 획득했습니다.</div> 	                    
 			                </div>
 			            `;
 			            hpBar = `
@@ -693,7 +717,24 @@
 			            }, 1000);
         			}
 		}; 
-			
+		
+		const addCharacterStatusAndItem = () => {
+			return $.ajax({
+			        url: "/usr/item/addCharacterStatusAndItem",
+			        type: "GET",
+			        data: {	
+			        	characterId: ${rq.getLoginedMemberId()},
+					}
+// 			        dataType: "json",
+// 			        success: function (data) {
+// 			        	console.log(data);
+// 			        },
+// 			        error: function (xhr, status, error) {
+// 				 		console.log(error);
+// 			        }
+			    });
+		}
+		
 		const showMySkills = () => {
         	document.getElementById('itemPopUp').classList.add('hidden');
 			document.getElementById('overlay').classList.add('hidden');
@@ -721,24 +762,22 @@
 		    document.getElementById('underAttackBtn').classList.add('flex');
 			showMySkills()
 			.then((response) => {
-				console.log(response.data);
-				console.log(response.data[0].skillAttr);
 			    content = `
 	                <div id="underAttackBtn"
                     class="fixed bottom-0 left-0 w-full h-1/5 bg-gray-800 flex flex-wrap">
                     <!-- 상단 버튼 두 개 -->
                     <button id="showSkills"
                         class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="attack('\${response.data[0].skillAttr}');">
-                        <i class="fa-brands fa-gripfire"></i>스킬 : \${response.data[0].skillName}<br />\${response.data[0].skillInfo}
+                        <img src="/usr/imgFile/getImgPath?imgName=\${response.data[0].skillEffectName}" class="h-full object-contain max-h-8"> \${response.data[0].skillName}<br />\${response.data[0].skillInfo}
                     </button>
                     <button id="skill2"
                         class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="attack('\${response.data[1].skillAttr}');">
-                        <i class="fa-solid fa-droplet"></i>\${response.data[1].skillName}<br />\${response.data[1].skillInfo}
+                        <img src="/usr/imgFile/getImgPath?imgName=\${response.data[1].skillEffectName}" class="h-full object-contain max-h-8"> \${response.data[1].skillName}<br />\${response.data[1].skillInfo}
                     </button>
                     <!-- 하단 버튼 두 개 -->
                     <button id="skill3"
                         class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="attack('\${response.data[2].skillAttr}');">
-                        <i class="fa-solid fa-seedling"></i>\${response.data[2].skillName}<br />\${response.data[2].skillInfo}
+                        <img src="/usr/imgFile/getImgPath?imgName=\${response.data[2].skillEffectName}" class="h-full object-contain max-h-8"> \${response.data[2].skillName}<br />\${response.data[2].skillInfo}
                     </button>
                     <button id="back"
                         class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black"
@@ -810,9 +849,16 @@
 				data: { characterId: ${rq.getLoginedMemberId() },
 				},
 				success: function(data) {
-					const keys = Object.keys(data);
 					console.log(data);
-					console.log(keys);
+					for(let i = 0; i < data.length; i ++){
+						if(data[i] != null){
+					        const content = `
+	                            <img src="/usr/imgFile/getImgPath?imgName=\${data[i].itemName}" alt="Image" class="w-full h-full object-cover">
+					        `;
+					        $('#'+data[i].type).empty().append(content);
+					        console.log(data[i].type);
+						}   
+					}
 				},
 				error: function(xhr, status, error) {
 					console.error(error);
@@ -820,56 +866,52 @@
 			});
 		} 
 		
-// 		<div id="equipItemSubMenu"
-// 		    class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-white shadow-lg border border-gray-300 z-40 flex items-center justify-center">
-// 		    <!-- 십자가 네모칸 -->
-// 		    <div class="relative w-full h-full">
-// 		        <!-- 네모칸 예시 (반복 구조) -->
-// 		        <!-- 상단 네모칸 -->
-// 		        <div id="head" class="absolute top-0 left-1/2 transform -translate-x-1/2 w-16 h-16 flex items-center justify-center">
-// 		<!--             <span class="text-gray-500" id="top-box-text">머리</span> -->
-// 		            <img src="/usr/imgFile/getImgPath?imgName=다재다능 모자" alt="Image" id="top-box-img" class="w-full h-full object-cover">
-// 		        </div>
-		        
-// 		        <!-- 중앙 네모칸 -->
-// 		        <div id="body"  class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-gray-300 flex items-center justify-center">
-// 		            <span class="text-gray-500" id="center-box-text">옷</span>
-// 		            <img src="" alt="Image" id="center-box-img" class="hidden w-full h-full object-cover">
-// 		        </div>
-
-// 		        <!-- 왼쪽 네모칸 -->
-// 		        <div id="leftHand"  class="absolute top-1/2 left-0 transform -translate-y-1/2 w-16 h-16 flex bg-gray-300  items-center justify-center">
-// 		            <span class="text-gray-500" id="left-box-text">방패</span>
-// 		            <img src="/usr/imgFile/getImgPath?imgName=waterSword" alt="Image" id="left-box-img" class="hidden w-full h-full object-cover">
-// 		        </div>
-
-// 		        <!-- 오른쪽 네모칸 -->
-// 		        <div id="rightHand"  class="absolute top-1/2 right-0 transform -translate-y-1/2 w-16 h-16 bg-gray-300  flex items-center justify-center">
-// 		            <span class="text-gray-500" id="right-box-text">무기</span>
-// 		            <img src="/usr/imgFile/getImgPath?imgName=fireSword" alt="Image" id="right-box-img" class="hidden w-full h-full object-cover">
-// 		        </div>
-
-// 		        <!-- 하단 네모칸 -->
-// 		        <div id="foot"  class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-16 h-16 bg-gray-300 flex items-center justify-center">
-// 		            <span class="text-gray-500" id="bottom-box-text">신발</span>
-// 		            <img src="" alt="Image" id="bottom-box-img" class="hidden w-full h-full object-cover">
-// 		        </div>
-// 		    </div>
-// 		</div>
-		
 		function insertItemToCharacterEquip(id,itemId) {
-			console.log(id);
-			console.log(itemId);
+			let isTrue = confirm("이미 장착중인 아이템이 있다면 기존 아이템은 삭제됩니다. 아이템을 장착 하시겠습니까?");
+			if(isTrue){
+				$.ajax({
+					url: "/usr/item/insertItemToCharacterEquip",
+					type: 'GET',
+					data: { characterId: ${rq.getLoginedMemberId() },
+							itemId: itemId,
+							id: id
+					},
+				});
+				alert('아이템을 장착했습니다.');
+				getItemsByCharacterId();
+			}else {
+				return;
+			}
+		}
+		
+		function useItem(id,itemId) {
 			$.ajax({
-				url: "/usr/item/insertItemToCharacterEquip",
+				url: "/usr/item/useItem",
 				type: 'GET',
 				data: { characterId: ${rq.getLoginedMemberId() },
 						itemId: itemId,
 						id: id
 				},
+				dataType: 'json',
+				success: function(data) {
+					characterHp = characterHp + data;
+					if(characterHp >= 100){
+						characterHp = 100;
+					}
+					let HpBar = `
+						<div class="relative w-36 h-3 bg-gray-300 rounded-full">
+			            	<div id="characterHPBar" class="h-full bg-green-500 rounded-full transition-all duration-300 ease-out" style="width: \${characterHp}%;"></div>
+			       		</div>
+		            `;
+		            // 기존 캐릭터 정보 제거 후 새로 추가
+		             $('#characterHPBar').empty().append(HpBar);
+					 getItemsByCharacterId();
+				},
+				error: function(xhr, status, error) {
+					console.error(error);
+				}
 			});
-			alert('아이템을 장착했습니다.');
-			getItemsByCharacterId();
+			
 		}
 		
 		function craftableItems() {
@@ -886,17 +928,26 @@
 				success: function(data) {
 					console.log(data);
 					if(data.length > 0){
-						for(let i = 0; i < data.length; i++){
-							const content = `
-									<button class="btn w-full mb-2" onclick="craftItem('\${data[i]}')">제작 가능한 아이템 : \${data[i]}</button>
-						    `;
-						    $('#craftSubmenu').append(content);
-						}
+						const content = `
+							<button class="btn w-full mb-2">제작 가능한 아이템 목록</button>
+				    	`;
+					    $('#craftSubmenu').append(content);
+					    for (let i = 0; i < data.length; i++) {
+					        const content = `
+					            <div class="flex items-center mb-2">
+					                <!-- 첫 번째 버튼 -->
+					                <button class="btn flex-1 w-full" onclick=""><img src="/usr/imgFile/getImgPath?imgName=\${data[i]}" class="h-full object-contain max-h-6"> \${data[i]}</button>
+					                <!-- 제작 버튼 -->
+					                <button class="btn ml-2 text-xs px-2 py-1 bg-black text-white rounded" onclick="craftItem('\${data[i]}')">제작</button>
+					            </div>
+					        `;
+					        $('#craftSubmenu').append(content);
+					    }
 					}else{
 						const content = `
 							<button class="btn w-full mb-2">제작 가능한 아이템이 없습니다.</button>
-				    `;
-				    $('#craftSubmenu').append(content);
+				    	`;
+				   		 $('#craftSubmenu').append(content);
 					}
 				},
 				error: function(xhr, status, error) {
@@ -927,67 +978,82 @@
 			itemSubmenu.classList.remove('hidden');
 			equipItemSubMenu.classList.add('hidden');
 			$.ajax({
-				url: "/usr/item/getItemsByCharacterId",
-				type: 'GET',
-				data: { characterId: ${rq.getLoginedMemberId() } }, 
-				dataType: 'json',
-				success: function(data) {
-					$('#itemSubmenu').empty();
-					console.log(data);
-					console.log(data.length);
-					for (let i = 0; i < data.length; i++) {
-					    if (data[i].itemId == 0) {
-					        const content = `
-					            <a class="btn w-full mb-2">보유중인 골드: \${data[i].itemCount}</a>
-					        `;
-					        $('#itemSubmenu').append(content);                        						
-					    } else {
-					        // 장비 아이템
-					        if (data[i].itemType == '장비 아이템') {
-					            const content = `
-					                <div class="relative group flex items-center mb-2">
-					                    <!-- 메인 버튼 -->
-					                    <button class="btn flex-1">\${data[i].itemName}: \${data[i].itemCount}개</button>
-					                    <!-- 장착 버튼 -->
-					                    <button class="btn ml-2 text-xs px-2 py-1 bg-black text-white rounded" onclick="insertItemToCharacterEquip(\${data[i].id},\${data[i].itemId})">장착</button>
-					                    <!-- 팝업창 -->
-					                    <div class="absolute hidden group-hover:block bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 p-2 bg-gray-800 text-white text-sm rounded shadow-lg z-10">
-					                        <p class="font-bold">아이템 설명</p>
-					                        <p>\${data[i].itemInfo}</p>
-					                    </div>
-					                </div>
-					            `;
-					            $('#itemSubmenu').append(content);
-					        } 
-					        // 소비 아이템
-					        else if (data[i].itemType == '소비 아이템') {
-					            const content = `
-					                <div class="relative group flex items-center mb-2">
-					                    <button class="btn flex-1">\${data[i].itemName}: \${data[i].itemCount}개</button>
-					                    <button class="btn ml-2 text-xs px-2 py-1 bg-black text-white rounded">사용</button>
-					                    <!-- 팝업창 -->
-					                    <div class="absolute hidden group-hover:block bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 p-2 bg-gray-800 text-white text-sm rounded shadow-lg z-10">
-					                        <p class="font-bold">아이템 설명</p>
-					                        <p>\${data[i].itemInfo}</p>
-					                    </div>
-					                </div>
-					            `;
-					            $('#itemSubmenu').append(content);
-					        } 
-					        // 일반 아이템
-					        else {
-					            const content = `
-					                <button class="btn w-full mb-2">\${data[i].itemName}: \${data[i].itemCount}개</button>
-					            `;
-					            $('#itemSubmenu').append(content);
-					        }
-					    }
+					url: "/usr/item/getItemsByCharacterId",
+					type: 'GET',
+					data: { characterId: ${rq.getLoginedMemberId() } }, 
+					dataType: 'json',
+					success: function(data) {
+						$('#itemSubmenu').empty();
+						console.log(data);
+						console.log(data.length);
+						for (let i = 0; i < data.length; i++) {
+						    if (data[i].itemId == 0) {
+						        const content = `
+						            <a class="btn w-full mb-2"><img src="/usr/imgFile/getImgPath?imgName=gold" class="h-full object-contain max-h-6"> 보유중인 골드: \${data[i].itemCount}</a>
+						        `;
+						        $('#itemSubmenu').append(content);                        						
+						    } else {
+						        // 장비 아이템
+						        if (data[i].itemType == '장비 아이템' && data[i].type == 'rightHand') {
+						            const content = `
+						                <div class="relative group flex items-center mb-2">
+						                    <!-- 메인 버튼 -->
+						                    <button class="btn flex-1"><img src="/usr/imgFile/getImgPath?imgName=\${data[i].itemName}" class="h-full object-contain max-h-6"> \${data[i].itemName}: \${data[i].itemCount}개</button>
+						                    <!-- 장착 버튼 -->
+						                    <button class="btn ml-2 text-xs px-2 py-1 bg-black text-white rounded" onclick="insertItemToCharacterEquip(\${data[i].id},\${data[i].itemId})">장착</button>
+						                    <!-- 팝업창 -->
+						                    <div class="absolute hidden group-hover:block bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 p-2 bg-gray-800 text-white text-sm rounded shadow-lg z-10">
+						                        <p class="font-bold">아이템 설명</p>
+						                        <p>장착시 공격력이 \${data[i].attack}만큼 증가합니다.</p>
+						                    </div>
+						                </div>
+						            `;
+						            $('#itemSubmenu').append(content);
+						        } else if(data[i].itemType == '장비 아이템' && data[i].type != 'rightHand'){
+						            const content = `
+						                <div class="relative group flex items-center mb-2">
+						                    <!-- 메인 버튼 -->
+						                    <button class="btn flex-1"><img src="/usr/imgFile/getImgPath?imgName=\${data[i].itemName}" class="h-full object-contain max-h-6"> \${data[i].itemName}: \${data[i].itemCount}개</button>
+						                    <!-- 장착 버튼 -->
+						                    <button class="btn ml-2 text-xs px-2 py-1 bg-black text-white rounded" onclick="insertItemToCharacterEquip(\${data[i].id},\${data[i].itemId})">장착</button>
+						                    <!-- 팝업창 -->
+						                    <div class="absolute hidden group-hover:block bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 p-2 bg-gray-800 text-white text-sm rounded shadow-lg z-10">
+						                        <p class="font-bold">아이템 설명</p>
+						                        <p>장착시 방어력이 \${data[i].def}만큼 증가합니다.</p>
+						                    </div>
+						                </div>
+						            `;
+						            $('#itemSubmenu').append(content);
+						        }
+						        // 소비 아이템
+						        else if (data[i].itemType == '소비 아이템') {
+						            const content = `
+						                <div class="relative group flex items-center mb-2">
+						                    <button class="btn flex-1"><img src="/usr/imgFile/getImgPath?imgName=\${data[i].itemName}" class="h-full object-contain max-h-6"> \${data[i].itemName}: \${data[i].itemCount}개</button>
+						                    <button class="btn ml-2 text-xs px-2 py-1 bg-black text-white rounded" onclick="useItem(\${data[i].id},\${data[i].itemId})">사용</button>
+						                    <!-- 팝업창 -->
+						                    <div class="absolute hidden group-hover:block bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 p-2 bg-gray-800 text-white text-sm rounded shadow-lg z-10">
+						                        <p class="font-bold">아이템 설명</p>
+						                        <p>사용시 HP를 \${data[i].hp}만큼 회복 합니다.</p>
+						                    </div>
+						                </div>
+						            `;
+						            $('#itemSubmenu').append(content);
+						        } 
+						        // 일반 아이템
+						        else {
+						            const content = `
+						                <button class="btn w-full mb-2"><img src="/usr/imgFile/getImgPath?imgName=\${data[i].itemName}" class="h-full object-contain max-h-6"> \${data[i].itemName}: \${data[i].itemCount}개</button>
+						            `;
+						            $('#itemSubmenu').append(content);
+						        }
+						    }
+						}
+					},
+					error: function(xhr, status, error) {
+						console.error(error);
 					}
-				},
-				error: function(xhr, status, error) {
-					console.error(error);
-				}
-			});
+				});
 		}
 		
         //데미지 입는 애니메이션
@@ -1108,8 +1174,6 @@
 <div id="stageDisplay" class="fixed top-4 right-4 bg-gray-700 text-white text-sm font-bold py-2 px-4 rounded-lg shadow-md z-50">
     Stage: <span id="stageNum"></span>
 </div>
-<div id="imgtest">
-</div>
 <section class="container">
 	<div id="ourZone" class="fixed">
 		<div id="characterInfo" class="relative"></div>
@@ -1126,10 +1190,10 @@
 	<!-- 상단 버튼 두 개 -->
 	<button id="skill1"
 		class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black"
-		onclick=""><i class="fa-brands fa-gripfire"></i>스킬1</button>
-	<button id="skill2" class=" w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" ><i class="fa-solid fa-droplet"></i>스킬2</button>
+		onclick=""><img src="/usr/imgFile/getImgPath?imgName=fireEffect" class="h-full object-contain max-h-6"> 스킬1</button>
+	<button id="skill2" class=" w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" >스킬2</button>
 	<!-- 하단 버튼 두 개 -->
-	<button id="skill3" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="" ><i class="fa-solid fa-seedling"></i>스킬3</button>
+	<button id="skill3" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="" >스킬3</button>
 	<button id="back" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center cursor-default hover:bg-gray-200 hover:text-black" onclick="finishSkillAttack()"><i class="fa-solid fa-rotate-left"></i>돌아가기</button>
 </div>
 <div id="underBattleBtn"
@@ -1141,7 +1205,7 @@
 	<button id="battleTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center cursor-default">필드 텍스트</button>
 	<!-- 하단 버튼 두 개 -->
 	<button id="next" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="characterSkillAttack()">스킬</button>
-	<button id="back" class=" w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="test()"><i class="fa-solid fa-rotate-left"></i>돌아가기</button>
+	<button id="back" class=" w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black"><i class="fa-solid fa-rotate-left"></i>돌아가기</button>
 </div>
 <!--     		=====하단 텍스트 박스 ===== -->
 <div id="UnderTextBox" class="fixed bottom-0 left-0 w-full h-1/5 bg-gray-800 flex flex-wrap">
@@ -1175,7 +1239,7 @@
 			<button id="craftItemPopUpBtn" class="btn w-full text-black whitespace-nowrap hover:text-gray-200" onclick="craftableItems()"><i class="fa-solid fa-hammer"></i>아이템 제작</button>
 		</li>
 		<li class="p-2 epuipItemMenu">
-			<button id="epuipItemMenuPopUpBtn" class="btn w-full text-black whitespace-nowrap hover:text-gray-200" onclick="equipItemSubMenuOpen()"><i class="fa-solid fa-hammer"></i>장착 아이템</button>
+			<button id="epuipItemMenuPopUpBtn" class="btn w-full text-black whitespace-nowrap hover:text-gray-200" onclick="equipItemSubMenuOpen()"><i class="fa-solid fa-vest-patches"></i>장착 아이템</button>
 		</li>
 		<li class="p-2 menuBtn"><a href="../home/main" onclick="return finishGame()" class="btn w-full text-black whitespace-nowrap hover:text-gray-200"><i class="fa-solid fa-house"></i>메인페이지</a>
 		</li>
@@ -1184,13 +1248,10 @@
 </div>
 
 <!-- 2차 메뉴 -->
-<div id="itemSubmenu"
-	class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-white shadow-lg border border-gray-300 z-40 overflow-auto">
+<div id="itemSubmenu" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-white shadow-lg border border-gray-300 z-40 overflow-auto">
 	<!-- 비어 있는 2차 메뉴 -->
 </div>
-<div id="craftSubmenu"
-	class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-white shadow-lg border border-gray-300 z-40 overflow-auto">
-	<!-- 비어 있는 2차 메뉴 -->
+<div id="craftSubmenu" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-white shadow-lg border border-gray-300 z-40 overflow-auto">
 </div>
 <div id="settingSubmenu"
 	class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-white shadow-lg border border-gray-300 z-40 overflow-auto">
@@ -1203,33 +1264,28 @@
     <div class="relative w-full h-full">
         <!-- 네모칸 예시 (반복 구조) -->
         <!-- 상단 네모칸 -->
-        <div id="head" class="absolute top-0 left-1/2 transform -translate-x-1/2 w-16 h-16 flex items-center justify-center">
-<!--             <span class="text-gray-500" id="top-box-text">머리</span> -->
-            <img src="/usr/imgFile/getImgPath?imgName=다재다능 모자" alt="Image" id="top-box-img" class="w-full h-full object-cover">
+        <div id="head" class="absolute top-0 left-1/2 transform -translate-x-1/2 w-16 h-16 bg-gray-300 flex items-center justify-center">
+            <span class="text-gray-500" id="top-box-text">머리</span>
         </div>
         
         <!-- 중앙 네모칸 -->
         <div id="body"  class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-gray-300 flex items-center justify-center">
             <span class="text-gray-500" id="center-box-text">옷</span>
-            <img src="" alt="Image" id="center-box-img" class="hidden w-full h-full object-cover">
         </div>
 
         <!-- 왼쪽 네모칸 -->
         <div id="leftHand"  class="absolute top-1/2 left-0 transform -translate-y-1/2 w-16 h-16 flex bg-gray-300  items-center justify-center">
             <span class="text-gray-500" id="left-box-text">방패</span>
-            <img src="/usr/imgFile/getImgPath?imgName=waterSword" alt="Image" id="left-box-img" class="hidden w-full h-full object-cover">
         </div>
 
         <!-- 오른쪽 네모칸 -->
         <div id="rightHand"  class="absolute top-1/2 right-0 transform -translate-y-1/2 w-16 h-16 bg-gray-300  flex items-center justify-center">
             <span class="text-gray-500" id="right-box-text">무기</span>
-            <img src="/usr/imgFile/getImgPath?imgName=fireSword" alt="Image" id="right-box-img" class="hidden w-full h-full object-cover">
         </div>
 
         <!-- 하단 네모칸 -->
         <div id="foot"  class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-16 h-16 bg-gray-300 flex items-center justify-center">
             <span class="text-gray-500" id="bottom-box-text">신발</span>
-            <img src="" alt="Image" id="bottom-box-img" class="hidden w-full h-full object-cover">
         </div>
     </div>
 </div>

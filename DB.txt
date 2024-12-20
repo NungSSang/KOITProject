@@ -446,3 +446,151 @@ INSERT INTO itemInfo
 -- 장착된 아이템		
 INSERT INTO characterEquippedItem
 		SET characterId = 1;				
+INSERT INTO imgFile
+		SET imgName = '마력이 깃든 칼'
+			,savedPath = 'C:/kwj/projectImages/마력이 깃든 칼.png';
+INSERT INTO item
+		SET itemName = 'body'
+			,itemType = '장비 아이템'
+			,isCreate = 1
+			,needItem = '2,8'
+			,needItemInt = '1,1';
+INSERT INTO item
+		SET itemName = '방패'
+			,itemType = '장비 아이템'
+			,isCreate = 1
+			,needItem = '6,12'
+			,needItemInt = '1,1';
+			
+INSERT INTO imgFile
+		SET imgName = '방패'
+			,savedPath = 'C:/kwj/projectImages/방패.png';			
+INSERT INTO item
+		SET itemName = 'foot'
+			,itemType = '장비 아이템'
+			,isCreate = 1
+			,needItem = '2,12'
+			,needItemInt = '1,1';			
+INSERT INTO imgFile
+		SET imgName = 'foot'
+			,savedPath = 'C:/kwj/projectImages/foot.png';					
+INSERT INTO itemInfo
+		SET itemId = 19
+			,def = 20
+			,`type` = 'body';
+INSERT INTO itemInfo
+		SET itemId = 20
+			,def = 50
+			,`type` = 'leftHand';			
+INSERT INTO itemInfo
+		SET itemId = 21
+			,def = 20
+			,`type` = 'foot';	
+INSERT INTO imgFile
+		SET imgName = 'body'
+			,savedPath = 'C:/kwj/projectImages/body.png';	
+INSERT INTO imgFile
+		SET imgName = '빨간 물약'
+			,savedPath = 'C:/kwj/projectImages/빨간 물약.png';	
+INSERT INTO imgFile
+		SET imgName = '괴물의 이빨'
+			,savedPath = 'C:/kwj/projectImages/괴물의 이빨.png';
+INSERT INTO imgFile
+		SET imgName = '용의 심장'
+			,savedPath = 'C:/kwj/projectImages/용의 심장.png';
+INSERT INTO imgFile
+		SET imgName = '마법사의 지팡이'
+			,savedPath = 'C:/kwj/projectImages/마법사의 지팡이.png';
+INSERT INTO imgFile
+		SET imgName = '마법사의 로브'
+			,savedPath = 'C:/kwj/projectImages/마법사의 로브.png';
+INSERT INTO imgFile
+		SET imgName = '마법사의 모자'
+			,savedPath = 'C:/kwj/projectImages/마법사의 모자.png';
+INSERT INTO imgFile
+		SET imgName = '마법사의 모자'
+			,savedPath = 'C:/kwj/projectImages/마법사의 모자.png';
+INSERT INTO imgFile
+SET imgName = '전사의 투구'
+,savedPath = 'C:/kwj/projectImages/전사의 투구.png';		
+INSERT INTO imgFile
+SET imgName = '전사의 방패'
+,savedPath = 'C:/kwj/projectImages/전사의 방패.png';		
+INSERT INTO imgFile
+SET imgName = '전사의 칼'
+,savedPath = 'C:/kwj/projectImages/전사의 칼.png';
+INSERT INTO imgFile
+SET imgName = '괴물의 가죽'
+,savedPath = 'C:/kwj/projectImages/괴물의 가죽.png';
+INSERT INTO imgFile
+SET imgName = '괴물의 이빨'
+,savedPath = 'C:/kwj/projectImages/괴물의 이빨.png';
+INSERT INTO imgFile
+SET imgName = '엔트의 사과'
+,savedPath = 'C:/kwj/projectImages/엔트의 사과.png';
+INSERT INTO imgFile
+SET imgName = '엔트의 나뭇가지'
+,savedPath = 'C:/kwj/projectImages/엔트의 나뭇가지.png';
+INSERT INTO imgFile
+SET imgName = '용의 심장'
+,savedPath = 'C:/kwj/projectImages/용의 심장.png';
+INSERT INTO imgFile
+SET imgName = '용의 비늘'
+,savedPath = 'C:/kwj/projectImages/용의 비늘.png';	
+UPDATE skills
+	SET skillName = 'fireSword'
+		WHERE id = 1;
+UPDATE skills
+	SET skillName = 'waterSword'
+		WHERE id = 2;
+UPDATE skills
+	SET skillName = 'plantSword'
+		WHERE id = 3;	
+INSERT INTO imgFile
+SET imgName = 'fireSword'
+,savedPath = 'C:/kwj/projectImages/fireSword.png';	
+
+INSERT INTO imgFile
+SET imgName = 'waterSword'
+,savedPath = 'C:/kwj/projectImages/fireSword.png';	
+
+INSERT INTO imgFile
+SET imgName = 'plantSword'
+,savedPath = 'C:/kwj/projectImages/plantSword.png';
+INSERT INTO imgFile
+SET imgName = 'earthSword'
+,savedPath = 'C:/kwj/projectImages/earthSword.png';
+	
+INSERT INTO imgFile
+SET imgName = 'fireEffect'
+,savedPath = 'C:/kwj/projectImages/fireEffect.png';	
+
+INSERT INTO imgFile
+SET imgName = 'waterEffect'
+,savedPath = 'C:/kwj/projectImages/waterEffect.png';	
+
+INSERT INTO imgFile
+SET imgName = 'plantEffect'
+,savedPath = 'C:/kwj/projectImages/plantEffect.png';
+INSERT INTO imgFile
+SET imgName = 'fire'
+,savedPath = 'C:/kwj/projectImages/fire.png';
+UPDATE imgfile
+		SET savedPath = 'C:/kwj/projectImages/fireMountain.jpg'
+		WHERE id = 69;
+UPDATE imgfile
+SET savedPath = 'C:/kwj/projectImages/waterSword.png'
+WHERE id = 89;
+UPDATE skills
+	SET skillEffectName = 'fireEffect'
+	WHERE id = 1;
+UPDATE skills
+	SET skillEffectName = 'waterEffect'
+	WHERE id = 2;
+UPDATE skills
+	SET skillEffectName = 'plantEffect'
+	WHERE id = 3;		
+INSERT INTO imgFile
+		SET imgName = 'gold'
+			,savedPath = 'C:/kwj/projectImages/gold.png';
+			

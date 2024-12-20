@@ -17,8 +17,10 @@ public interface ItemDao {
 				FROM itemStorage AS `is`
 				LEFT JOIN item AS i
 				ON `is`.itemId = i.id
-				WHERE characterId = #{characterId}
-				ORDER BY itemId
+				LEFT JOIN itemInfo AS ii
+				ON `is`.itemId = ii.itemId
+				WHERE characterId = 1
+				ORDER BY `is`.itemId
 			""")
 	List<Item> getItemsByCharacterId(int characterId);
     
@@ -153,4 +155,27 @@ public interface ItemDao {
 					WHERE characterId = #{characterId}
 			""")
 	Item showEquippedItemsByCharacterId(int characterId);
+	
+	@Select("""
+			SELECT *
+				FROM item AS i
+				INNER JOIN itemInfo AS ii
+				ON i.id = ii.itemId
+				WHERE id = #{itemId}
+			""")
+	Item getItemByItemId(int itemId);
+
+	@Delete("""
+			DELETE FROM itemStorage
+						WHERE characterId = #{characterId}
+							 AND id = #{id}
+							 AND itemId = #{itemId}
+			""")
+	void useItem(int characterId, int id, int itemId);
+	
+	@Select("""
+			SELECT * FROM itemInfo
+				WHERE itemId = #{itemId}
+			""")
+	Item getItemInfoByItemId(int itemId);
 }
