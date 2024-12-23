@@ -281,7 +281,7 @@
 				.then((response) => {
 					    content += `
 						    <div id="changeSkillItem" class="flex flex-col items-center space-y-2">
-						        <div class="text-white text-sm inline-block">속성 : <img src="/usr/imgFile/getImgPath?imgName=fire" class="w-6 h-8 inline-block"></div>
+						        <div class="text-white text-sm inline-block">속성 : <img src="/usr/imgFile/getImgPath?imgName=\${response.data[i].skillEffectName}" class="w-6 h-8 inline-block"></div>
 						        <button id="skill" class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-green-100" onClick="updateSkills(\${response.data[i].id})">
 						            <img src="/usr/imgFile/getImgPath?imgName=\${response.data[i].skillName}" class="w-24 h-28">
 						        </button>
@@ -304,7 +304,7 @@
 			        success: function (data) {
 			        	const random = randomNum(data.length -1 , 0);
 			        	let content = `
-			                <div class="text-white text-sm inline-block">속성 : <img src="/usr/imgFile/getImgPath?imgName=fire" class="w-6 h-8 inline-block"></div>
+			                <div class="text-white text-sm inline-block">속성 : <img src="/usr/imgFile/getImgPath?imgName=\${data[random].skillAttr}" class="w-16 h-16 inline-block"></div>
 			                <button id="skill"  class="popup-btn w-32 h-32 rounded-lg flex items-center justify-center hover:bg-green-100" onClick="getSkills(\${data[random].id})">
 			                    <img src="/usr/imgFile/getImgPath?imgName=\${data[random].skillName }" class="w-24 h-28">
 			                </button>
@@ -321,10 +321,10 @@
 	 		const skillItem = document.getElementById('skillItem');
 	 		const itemPopUp = document.getElementById('itemPopUp');
 	 		const overlay = document.getElementById('overlay');
-	 		if(randomNum(10,1) < 6){
+// 	 		if(randomNum(10,1) < 6){
 		 		skillItem.classList.remove('hidden');
 		 		getSkillInfo();
-	 		}
+// 	 		}
 	 		itemPopUp.classList.remove('hidden');
 	 		itemPopUpOverlay.classList.remove('hidden');
 	 	}
@@ -630,7 +630,7 @@
 			isAttack = false;
 			}
 		};
-		// === battle 스크립트 ====
+		// === 캐릭터공격 스크립트 ====
  		const attack = async function (attackAttr) {
 			if(isAttack) return;
 			let damage = 0;
@@ -750,54 +750,46 @@
 		    document.getElementById('underAttackBtn').classList.add('flex');
 
 		    showMySkills()
-		        .then((response) => {
-		            content = `
-		                <div id="underAttackBtn"
-		                    class="fixed bottom-0 left-0 w-full h-1/5 bg-gray-800 flex flex-wrap">
-		                    <!-- 상단 버튼 두 개 -->
-		                    <button id="showSkills"
+		    .then((response) => {
+		        let content = `
+		            <div id="underAttackBtn"
+		                class="fixed bottom-0 left-0 w-full h-1/5 bg-gray-800 flex flex-wrap">
+		        `;
+		        for (let i = 0; i < 3; i++) {
+		            if (response.data && response.data[i]) {
+		                content += `
+		                    <button id="skill${i + 1}"
 		                        class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center gap-2 hover:bg-gray-200 hover:text-black"
-		                        onclick="attack('\${response.data[0].skillAttr}');">
-		                        <img src="/usr/imgFile/getImgPath?imgName=\${response.data[0].skillEffectName}" 
+		                        onclick="attack('\${response.data[i].skillAttr}');">
+		                        <img src="/usr/imgFile/getImgPath?imgName=\${response.data[i].skillEffectName}" 
 		                            class="h-8 w-8 object-contain -mt-6"> 
 		                        <div class="text-left">
-		                            <span class="font-bold">\${response.data[0].skillName}</span><br />
-		                            <span class="text-sm">\${response.data[0].skillInfo}</span>
+		                            <span class="font-bold">\${response.data[i].skillName}</span><br />
+		                            <span class="text-sm">\${response.data[i].skillInfo}</span>
 		                        </div>
 		                    </button>
-		                    <button id="skill2"
-		                        class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center gap-2 hover:bg-gray-200 hover:text-black"
-		                        onclick="attack('\${response.data[1].skillAttr}');">
-		                        <img src="/usr/imgFile/getImgPath?imgName=\${response.data[1].skillEffectName}" 
-		                            class="h-8 w-8 object-contain -mt-6"> 
-		                        <div class="text-left">
-		                            <span class="font-bold">\${response.data[1].skillName}</span><br />
-		                            <span class="text-sm">\${response.data[1].skillInfo}</span>
-		                        </div>
+		                `;
+		            } else {
+		                content += `
+		                    <button id="skill${i + 1}"
+		                        class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black">
+		                        스킬이 없습니다.
 		                    </button>
-		                    <!-- 하단 버튼 두 개 -->
-		                    <button id="skill3"
-		                        class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center gap-2 hover:bg-gray-200 hover:text-black"
-		                        onclick="attack('\${response.data[2].skillAttr}');">
-		                        <img src="/usr/imgFile/getImgPath?imgName=\${response.data[2].skillEffectName}" 
-		                            class="h-8 w-8 object-contain -mt-6"> 
-		                        <div class="text-left">
-		                            <span class="font-bold">\${response.data[2].skillName}</span><br />
-		                            <span class="text-sm">\${response.data[2].skillInfo}</span>
-		                        </div>
-		                    </button>
-		                    <button id="back"
-		                        class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center gap-2 hover:bg-gray-200 hover:text-black"
-		                        onclick="finishSkillAttack()">
-		                        <i class="fa-solid fa-rotate-left"></i>
-		                        <span>돌아가기</span>
-		                    </button>
-		                </div>
-		            `;
-		            $('#underAttackBtn').empty().append(content);
-		        });
+		                `;
+		            }
+		        }
+		        content += `
+		            <button id="back"
+		                class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center gap-2 hover:bg-gray-200 hover:text-black"
+		                onclick="finishSkillAttack()">
+		                <i class="fa-solid fa-rotate-left"></i>
+		                <span>돌아가기</span>
+		            </button>
+		        `;
+		        content += `</div>`;
+		        $('#underAttackBtn').empty().append(content);
+		    })
 		}
-	
 		
 		function finishSkillAttack(){
 		    document.getElementById('underAttackBtn').classList.add('hidden');
@@ -1194,7 +1186,7 @@
 	<!-- 상단 버튼 두 개 -->
 	<button id="skill1"
 		class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black"
-		onclick=""><img src="/usr/imgFile/getImgPath?imgName=fireEffect" class="h-full object-contain max-h-6"> 스킬1</button>
+		onclick=""><img src="" class="h-full object-contain max-h-6"> 스킬1</button>
 	<button id="skill2" class=" w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" >스킬2</button>
 	<!-- 하단 버튼 두 개 -->
 	<button id="skill3" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="" >스킬3</button>

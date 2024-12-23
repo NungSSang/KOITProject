@@ -54,5 +54,4 @@ public class CharacterController {
 	public void insertCharacter(int characterId, String userName) {
 		characterService.insertCharacter(characterId, userName);
 	}
-	
 }
