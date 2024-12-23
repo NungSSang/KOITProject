@@ -55,4 +55,21 @@ public interface CharacterDao {
 			""")
 	List<CharacterDto> getSkillsCount(int id);
 	
+	@Insert("""
+			INSERT INTO `character`
+					SET characterName = #{userName}
+						,memberId = #{characterId}
+						,characterHp = 100
+						,characterAttackPower = 50
+						,characterBerrior = 0
+						,stageNum = 0
+			""")
+	void insertCharacter(int characterId, String userName);
+	
+	@Insert("""
+			INSERT INTO characterEquippedItem
+				SET characterId = #{characterId}
+					,itemType = #{itemType};
+			""")
+	void insertcharacterEquippedItem(int characterId, String itemType);
 }

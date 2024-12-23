@@ -185,7 +185,7 @@ public interface ItemDao {
 				ON i.id = c.itemId
 				INNER JOIN itemInfo AS ii
 				ON i.id = ii.itemId
-				WHERE c.characterId = 1
+				WHERE c.characterId = #{characterId}
 			""")
 	List<Item> getItemByCharacterIdFOREquippedItem(int characterId);
 }

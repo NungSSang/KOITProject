@@ -15,9 +15,10 @@ import jakarta.servlet.http.HttpServletRequest;
 @Controller
 public class UsrMemberController {
 	MemberService memberService;
-
-	public UsrMemberController(MemberService memberService) {
+	CharacterController characterController;
+	public UsrMemberController(MemberService memberService, CharacterController characterController) {
 		this.memberService = memberService;
+		this.characterController = characterController;
 	}
 
 	@GetMapping("/usr/member/join")
@@ -32,6 +33,8 @@ public class UsrMemberController {
 
 		int id = memberService.getLastInsertId();
 		memberService.getMemberById(id);
+		characterController.insertCharacter(memberService.getMemberById(id).getId(), userName);
+		characterController.insertcharacterEquippedItem(memberService.getMemberById(id).getId());
 		return Util.jsReturn(String.format("%s 님이 가입되었습니다.", loginId), "../home/main");
 	}
 

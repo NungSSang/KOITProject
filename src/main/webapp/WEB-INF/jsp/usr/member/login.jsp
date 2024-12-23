@@ -60,6 +60,11 @@
 				</table>
 			</div>
 		</form>
+		<div class="w-9/12 mx-auto mt-3 text-sm flex justify-between">
+			<div>	
+				<button class="btn btn-active btn-sm" onclick="history.back();">뒤로가기</button>
+			</div>
+		</div>
 	</div>
 </section>
 

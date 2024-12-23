@@ -35,5 +35,11 @@ public class CharacterService {
 		return characterDao.getSkillsCount(id);
 	}
 
-
+	public void insertcharacterEquippedItem(int characterId, String itemType) {
+		characterDao.insertcharacterEquippedItem(characterId, itemType);
+	}
+	
+	public void insertCharacter(int characterId, String userName) {
+		characterDao.insertCharacter(characterId, userName);
+	}
 }

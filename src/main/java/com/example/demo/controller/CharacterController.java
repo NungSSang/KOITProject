@@ -42,5 +42,17 @@ public class CharacterController {
 			return 0;
 		}
 	}
-
+	
+	public void insertcharacterEquippedItem(int characterId) {
+		characterService.insertcharacterEquippedItem(characterId, "head");
+		characterService.insertcharacterEquippedItem(characterId, "body");
+		characterService.insertcharacterEquippedItem(characterId, "foot");
+		characterService.insertcharacterEquippedItem(characterId, "leftHand");
+		characterService.insertcharacterEquippedItem(characterId, "rightHand");
+	}
+	
+	public void insertCharacter(int characterId, String userName) {
+		characterService.insertCharacter(characterId, userName);
+	}
+	
 }

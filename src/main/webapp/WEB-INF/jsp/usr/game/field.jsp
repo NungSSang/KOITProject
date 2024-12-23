@@ -145,7 +145,6 @@
 // 2차 메뉴 열기
 
 			function handlePotionClick(potionCost, hpIncrease) {
-				console.log("전투 끝난 후 포션 선택");
 			    // 전역 변수 cost 업데이트
 			    cost = potionCost;
 
@@ -174,7 +173,6 @@
 			    // 텍스트 박스와 HP 바 업데이트
 			    $('#battleTextBox').empty().append(content);
 			    $('#characterHPBar').empty().append(hpBar);
-			    console.log("텍스트 박스 및 HP 바 업데이트");
 			    // 아이템 구매 처리
 		    	buyItem();
 			    setTimeout(() => {
@@ -202,7 +200,6 @@
 
 		const insertGold = () => {
 			const randomGold = randomNum(80,30);
-			console.log(randomGold + "전투 후 골드 획득");
 			$.ajax({
 			       url: "/usr/item/insertGold",
 			       type: "GET",
@@ -217,8 +214,6 @@
 		}
 		
 		const updateSkills = async (skillId) => {
-			console.log("업데이트 스킬 들어옴");
-			console.log(skillId);
 			await $.ajax({
 				       url: "/usr/skill/updateSkills",
 				       type: "GET",
@@ -255,7 +250,6 @@
 				},
 				dataType: 'json',
     			success: function (data) {
-					console.log(data);
 			 		if(data == 1){
 						itemPopUp.classList.add('hidden');
  				 		itemPopUpOverlay.classList.add('hidden');
@@ -267,7 +261,6 @@
 					    	startBattleBtnClick();
 					    }, 3000); // 딜레이 후 애니메이션 실행
 			 		}else if(data == 0){
-			 			console.log("데이터의 값은 0 입니다.")
 			 			updateSkill();
 			 		}
     			},
@@ -279,7 +272,6 @@
 		}
 		
 		const updateSkill = () => {
-			console.log("업데이트 스킬");
 	 		document.getElementById('itemPopUp').classList.add('hidden');
 			document.getElementById('skillItem').classList.add('hidden');
 	 		document.getElementById('skillChangePopUp').classList.remove('hidden');
@@ -287,7 +279,6 @@
 			for (let i = 0; i < 3; i++){
 		 		showMySkills()
 				.then((response) => {
-					console.log(response.data);
 					    content += `
 						    <div id="changeSkillItem" class="flex flex-col items-center space-y-2">
 						        <div class="text-white text-sm inline-block">속성 : <img src="/usr/imgFile/getImgPath?imgName=fire" class="w-6 h-8 inline-block"></div>
@@ -555,7 +546,7 @@
 			                <div id="enemyStatus" class="relative w-full flex flex-col items-center justify-center space-y-2">
 			                    <!-- 적 이름 -->
 			                    
-			                    <div class="text-center text-white font-bold text-lg text-black"><img src="/usr/imgFile/getImgPath?imgName=fire" class="w-6 h-8 inline"> \${data[i].enemyName}</div>
+			                    <div class="text-center text-white font-bold text-lg text-black"><img src="/usr/imgFile/getImgPath?imgName=\${data[i].weakAttr}" class="w-14 h-14 inline"> \${data[i].enemyName}</div>
 			                    
 			                    <!-- HP Bar -->
 			                    <div class="relative w-36 h-3 bg-gray-300 rounded-full">
@@ -594,10 +585,8 @@
 			let damage = enemyAttackPower - characterBerrior;
 			await addCharacterStatusAndItem()
 			.then((response) => {
-				console.log(response);
 				for(let i = 0; i < response.length; i++){
 					if(response[i].type != null && response[i].type != 'rightHand'){
-						console.log(response[i].def);
 						damage = damage - response[i].def;
 					}
 				}		
@@ -606,7 +595,6 @@
 				damage = 1;
 			}
 			characterHp = characterHp - damage;
-			console.log(characterHp);
 			if(characterHp <= 0){
 				content = `
 	                <div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center">
@@ -621,6 +609,7 @@
 				await dieAnimation('hero');
 				$('#characterHPBar').empty().append(hpBar);
 	            $('#battleTextBox').empty().append(content);
+	            dieCharacter();
 			}else if(characterHp >= 0){
 				updateHPBars();
 				attackAnimation('enemy');
@@ -660,15 +649,13 @@
         		}
         		await addCharacterStatusAndItem()
     			.then((response) => {
-    				console.log(response);
-    				console.log("잘 들어 오나요?====================");
     				for(let i = 0; i < response.length; i++){
     					if(response[i].type != null && response[i].type == 'rightHand'){
-    						console.log(response[i].attack);
     						damage = damage + response[i].attack;
     					}
     				}		
     			});
+				
 	        	enemyHp = enemyHp - damage;
 	        		if(enemyHp <= 0){
 	        			attackAnimation('hero');
@@ -676,7 +663,7 @@
 	        			await insertGold()
 	        			content = `
 			                <div id="ballteTextBox" class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center">
-								<div>\${enemyName}이(가) \${damage}만큼의 데미지를 입어 HP가 0이되었습니다. , \${dropedItem}을 획득했습니다.</div> 	                    
+								<div>\${enemyName}이(가) \${damage}만큼의 데미지를 입어 HP가 0이되었습니다.  \${dropedItem}을 획득했습니다.</div> 	                    
 			                </div>
 			            `;
 			            hpBar = `
@@ -756,40 +743,61 @@
 		}	
 			
 
-		function characterSkillAttack(){
-			document.getElementById('underBattleBtn').classList.add('hidden');
+		function characterSkillAttack() {
+		    document.getElementById('underBattleBtn').classList.add('hidden');
 		    document.getElementById('underBattleBtn').classList.remove('flex');
 		    document.getElementById('underAttackBtn').classList.remove('hidden');
 		    document.getElementById('underAttackBtn').classList.add('flex');
-			showMySkills()
-			.then((response) => {
-			    content = `
-	                <div id="underAttackBtn"
-                    class="fixed bottom-0 left-0 w-full h-1/5 bg-gray-800 flex flex-wrap">
-                    <!-- 상단 버튼 두 개 -->
-                    <button id="showSkills"
-                        class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="attack('\${response.data[0].skillAttr}');">
-                        <img src="/usr/imgFile/getImgPath?imgName=\${response.data[0].skillEffectName}" class="h-full object-contain max-h-8"> \${response.data[0].skillName}<br />\${response.data[0].skillInfo}
-                    </button>
-                    <button id="skill2"
-                        class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="attack('\${response.data[1].skillAttr}');">
-                        <img src="/usr/imgFile/getImgPath?imgName=\${response.data[1].skillEffectName}" class="h-full object-contain max-h-8"> \${response.data[1].skillName}<br />\${response.data[1].skillInfo}
-                    </button>
-                    <!-- 하단 버튼 두 개 -->
-                    <button id="skill3"
-                        class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black" onclick="attack('\${response.data[2].skillAttr}');">
-                        <img src="/usr/imgFile/getImgPath?imgName=\${response.data[2].skillEffectName}" class="h-full object-contain max-h-8"> \${response.data[2].skillName}<br />\${response.data[2].skillInfo}
-                    </button>
-                    <button id="back"
-                        class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center hover:bg-gray-200 hover:text-black"
-                        onclick="finishSkillAttack()">
-                        <i class="fa-solid fa-rotate-left"></i>돌아가기
-                    </button>
-                </div>
-			    `;
-			    $('#underAttackBtn').empty().append(content);
-			});
-		}	
+
+		    showMySkills()
+		        .then((response) => {
+		            content = `
+		                <div id="underAttackBtn"
+		                    class="fixed bottom-0 left-0 w-full h-1/5 bg-gray-800 flex flex-wrap">
+		                    <!-- 상단 버튼 두 개 -->
+		                    <button id="showSkills"
+		                        class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center gap-2 hover:bg-gray-200 hover:text-black"
+		                        onclick="attack('\${response.data[0].skillAttr}');">
+		                        <img src="/usr/imgFile/getImgPath?imgName=\${response.data[0].skillEffectName}" 
+		                            class="h-8 w-8 object-contain -mt-6"> 
+		                        <div class="text-left">
+		                            <span class="font-bold">\${response.data[0].skillName}</span><br />
+		                            <span class="text-sm">\${response.data[0].skillInfo}</span>
+		                        </div>
+		                    </button>
+		                    <button id="skill2"
+		                        class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center gap-2 hover:bg-gray-200 hover:text-black"
+		                        onclick="attack('\${response.data[1].skillAttr}');">
+		                        <img src="/usr/imgFile/getImgPath?imgName=\${response.data[1].skillEffectName}" 
+		                            class="h-8 w-8 object-contain -mt-6"> 
+		                        <div class="text-left">
+		                            <span class="font-bold">\${response.data[1].skillName}</span><br />
+		                            <span class="text-sm">\${response.data[1].skillInfo}</span>
+		                        </div>
+		                    </button>
+		                    <!-- 하단 버튼 두 개 -->
+		                    <button id="skill3"
+		                        class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center gap-2 hover:bg-gray-200 hover:text-black"
+		                        onclick="attack('\${response.data[2].skillAttr}');">
+		                        <img src="/usr/imgFile/getImgPath?imgName=\${response.data[2].skillEffectName}" 
+		                            class="h-8 w-8 object-contain -mt-6"> 
+		                        <div class="text-left">
+		                            <span class="font-bold">\${response.data[2].skillName}</span><br />
+		                            <span class="text-sm">\${response.data[2].skillInfo}</span>
+		                        </div>
+		                    </button>
+		                    <button id="back"
+		                        class="w-1/2 h-1/2 bg-gray text-white text-lg font-medium flex items-center justify-center gap-2 hover:bg-gray-200 hover:text-black"
+		                        onclick="finishSkillAttack()">
+		                        <i class="fa-solid fa-rotate-left"></i>
+		                        <span>돌아가기</span>
+		                    </button>
+		                </div>
+		            `;
+		            $('#underAttackBtn').empty().append(content);
+		        });
+		}
+	
 		
 		function finishSkillAttack(){
 		    document.getElementById('underAttackBtn').classList.add('hidden');
@@ -805,8 +813,6 @@
 				        data: { enemyType : enemyType }, 
 				        dataType: "json",
 				        success: function (data) {
-				        	console.log(data);
-				        	console.log(data[0].id);
 				        	const random = randomNum(data.length,1);
 				        	if(random === 1){
 				        		dropedItem = data[0].itemName;
@@ -828,7 +834,6 @@
 		}
 		
 		function getDropItem() {
-			console.log(dropedItemId);
 			return $.ajax({
 		        url: "/usr/item/itemInsertToCharacter",
 		        type: "GET",
@@ -850,14 +855,12 @@
 				data: { characterId: ${rq.getLoginedMemberId() },
 				},
 				success: function(data) {
-					console.log(data);
 					for(let i = 0; i < data.length; i ++){
 						if(data[i] != null){
 					        const content = `
 	                            <img src="/usr/imgFile/getImgPath?imgName=\${data[i].itemName}" alt="Image" class="w-full h-full object-cover">
 					        `;
-					        $('#'+data[i].itemType).empty().append(content);
-					        console.log(data[i].itemType);
+					        $('#'+data[i].type).empty().append(content);
 						}   
 					}
 				},
@@ -868,9 +871,6 @@
 		} 
 		
 		function insertItemToCharacterEquip(id,itemId,itemType) {
-			console.log(id);
-			console.log(itemId);
-			console.log(itemType);
 			let isTrue = confirm("이미 장착중인 아이템이 있다면 기존 아이템은 삭제됩니다. 아이템을 장착 하시겠습니까?");
 			if(isTrue){
 				$.ajax({
@@ -932,7 +932,6 @@
 				data: { characterId: ${rq.getLoginedMemberId() } }, 
 				dataType: 'json',
 				success: function(data) {
-					console.log(data);
 					if(data.length > 0){
 						const content = `
 							<button class="btn w-full mb-2">제작 가능한 아이템 목록</button>
@@ -963,7 +962,6 @@
 		}
 		
 		function craftItem(itemName){
-			console.log(itemName);
 			$.ajax({
 				url: "/usr/item/craftItem",
 				type: 'GET',
@@ -990,10 +988,7 @@
 					dataType: 'json',
 					success: function(data) {
 						$('#itemSubmenu').empty();
-						console.log(data);
-						console.log(data.length);
 						for (let i = 0; i < data.length; i++) {
-						console.log(data[i].type);
 						    if (data[i].itemId == 0) {
 						        const content = `
 						            <a class="btn w-full mb-2"><img src="/usr/imgFile/getImgPath?imgName=gold" class="h-full object-contain max-h-6"> 보유중인 골드: \${data[i].itemCount}</a>
@@ -1065,7 +1060,6 @@
 		
         //데미지 입는 애니메이션
 		function shake(name) {
-			console.log("데미지 입는 애니메이션");
 		    let enemyImg;
 		    if (name === 'enemy') {
 		        enemyImg = document.getElementById("enemyImg");
@@ -1084,7 +1078,6 @@
 	    
 	    //죽는 애니메이션
 	    const dieAnimation = (name) => {
-	    	console.log("적군 HP 0 될시 죽는 애니메이션");
 	    	$('#enemyImg').empty();
 	        let img; 
 			if(name === 'enemy'){
@@ -1107,7 +1100,6 @@
 	    
 	    //공격하는 애니메이션
 	    const attackAnimation = function(name){
-	    	console.log("공격 애니메이션");
 	    	let img 
 	    	if(name === 'enemy'){
 	    		img = document.getElementById("enemyImg");
@@ -1170,6 +1162,11 @@
 			alert("데이터가 저장되었습니다.");
 		};
 		
+		const dieCharacter = function(){
+			alert("로비로 돌아갑니다.")
+			finishGame();
+			window.location.href = "/usr/home/main";
+		}
 			 
 
 </script>

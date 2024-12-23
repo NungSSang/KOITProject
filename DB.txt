@@ -600,6 +600,12 @@ ALTER TABLE characterEquippedItem DROP COLUMN leftHand;
 ALTER TABLE characterEquippedItem DROP COLUMN rightHand;	
 ALTER TABLE characterEquippedItem ADD COLUMN itemType VARCHAR(20);
 ALTER TABLE characterEquippedItem ADD COLUMN itemId INT;
+UPDATE enemy
+SET weakAttr = CONCAT(weakAttr, 'Effect');
+UPDATE enemy
+SET strongAttr = CONCAT(strongAttr, 'Effect');
+UPDATE skills
+SET skillAttr = CONCAT(skillAttr, 'Effect');
 INSERT INTO characterEquippedItem
 			SET itemType = 'head'
 				,characterId = 1;		
