@@ -1,618 +1,361 @@
-DROP DATABASE project;
-CREATE DATABASE project;
-USE project;
-CREATE TABLE `member`(
-id INT AUTO_INCREMENT NOT NULL PRIMARY KEY
-,loginId VARCHAR(50) NOT NULL
-,loginPw VARCHAR(50) NOT NULL
-,stageNum INT NOT NULL DEFAULT 0
-,userName VARCHAR(50) NOT NULL
-);
+/*
+SQLyog Community v13.3.0 (64 bit)
+MySQL - 10.4.32-MariaDB : Database - project
+*********************************************************************
+*/
 
-CREATE TABLE `character`(
-id INT AUTO_INCREMENT NOT NULL PRIMARY KEY
-,characterName VARCHAR(50) NOT NULL
-,memberId INT NOT NULL
-,characterHP INT NOT NULL
-,characterAttackPower INT NOT NULL
-,characterBerrior INT NOT NULL
-);
-CREATE TABLE stage(
-id INT AUTO_INCREMENT NOT NULL PRIMARY KEY
-,enemyId INT NOT NULL
-,bgmId INT DEFAULT NULL
-,mapName VARCHAR(50) NOT NULL
-);
-CREATE TABLE enemy(
-id INT AUTO_INCREMENT NOT NULL PRIMARY KEY
-,enemyName VARCHAR(50) NOT NULL
-,enemyHp INT NOT NULL
-,enemyAttackPower INT NOT NULL
-,enemyBerrior INT NOT NULL
-);
-CREATE TABLE enemyAttackPattern(
-id INT AUTO_INCREMENT NOT NULL PRIMARY KEY
-,firstAttack VARCHAR(50) NOT NULL
-,secondAttack VARCHAR(50) NOT NULL
-,thirdAttack VARCHAR(50) NOT NULL
-,defaultAttack VARCHAR(50) NOT NULL DEFAULT 'Basic Attack' 
-,enemyId INT NOT NULL
-);
-CREATE TABLE itemStorage(
-id INT AUTO_INCREMENT NOT NULL PRIMARY KEY
-,itemName VARCHAR(50) NOT NULL
-,characterId INT NOT NULL
-,itemCount INT UNSIGNED
-);
-CREATE TABLE item(
-id INT AUTO_INCREMENT NOT NULL PRIMARY KEY
-,itemName VARCHAR(50)
-,itemType VARCHAR(50)
-,enemyType VARCHAR(50)
-);
-CREATE TABLE imgFile(
-id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT
-, imgName VARCHAR(50) NOT NULL
-, savedPath VARCHAR(100) NOT NULL
-);	
-CREATE TABLE map(
-id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT
-,stageNum INT NOT NULL
-,enemyType VARCHAR(50) NOT NULL
-,mapName VARCHAR(50) NOT NULL
-);	
-CREATE TABLE skills(
-id INT AUTO_INCREMENT NOT NULL PRIMARY KEY
-,skillName VARCHAR(50)
-,skillAttr VARCHAR(50)
-,skillDamage INT NOT NULL
-,skillEffectName VARCHAR(50)
-,skillInfo TEXT
-);		
-CREATE TABLE characterSkill(
-id INT AUTO_INCREMENT NOT NULL PRIMARY KEY
-,characterId INT NOT NULL
-,skillId INT NOT NULL
-);
-CREATE TABLE characterEquippedItem(
-		characterId INT NOT NULL
-		,head INT 
-		,`body` INT 
-		,foot INT
-		,rightHand INT 
-		,leftHand INT 
-);
-CREATE TABLE itemInfo(
-	itemId INT NOT NULL
-	,attack INT
-	,def INT
-	,hp INT
-	,`type` VARCHAR(50) NOT NULL
-);
-ALTER TABLE enemy ADD COLUMN enemyType VARCHAR(20) NOT NULL;
-ALTER TABLE characterSkill CHANGE COLUMN characterId characterId INT UNSIGNED;
-ALTER TABLE itemStorage DROP COLUMN itemName;
-ALTER TABLE itemStorage ADD COLUMN itemId INT; 
-UPDATE itemStorage SET itemCount = 0 WHERE characterId = 1;	
-ALTER TABLE enemy ADD COLUMN strongAttr VARCHAR(20) NOT NULL;
-ALTER TABLE enemy ADD COLUMN weakAttr VARCHAR(50) DEFAULT 'none';
-ALTER TABLE enemyAttackPattern ADD COLUMN enemyType VARCHAR(50);
-ALTER TABLE item ADD COLUMN itemInfo TEXT; 
-ALTER TABLE `member` DROP COLUMN stageNum;
-ALTER TABLE `character` ADD COLUMN stageNum INT NOT NULL DEFAULT 0;
-ALTER TABLE enemyAttackPattern DROP COLUMN enemyId;
-ALTER TABLE item DROP COLUMN itemInfo;
-ALTER TABLE item ADD COLUMN isCreate BOOLEAN DEFAULT 0;
-ALTER TABLE item ADD COLUMN needItem VARCHAR(20);
-ALTER TABLE item ADD COLUMN needItemInt VARCHAR(20);
+/*!40101 SET NAMES utf8 */;
 
--- 적군
-INSERT INTO enemy
-		SET enemyName = '마법사'
-			,enemyHp = 100
-			,enemyAttackPower = 10
-			,enemyBerrior = 0
-			,enemyType = 'majic'
-			,weakAttr = 'fire'
-			,strongAttr = 'plant';
-INSERT INTO enemy
-		SET enemyName = '전사'
-			,enemyHp = 100
-			,enemyAttackPower = 10
-			,enemyBerrior = 0
-			,enemyType = 'warrior'
-			,weakAttr = 'none'
-			,strongAttr = 'none';
-INSERT INTO enemy
-		SET enemyName = '괴물'
-			,enemyHp = 100
-			,enemyAttackPower = 10
-			,enemyBerrior = 0
-			,enemyType = 'monster'
-			,weakAttr = 'plant'
-			,strongAttr = 'none';
-INSERT INTO enemy
-		SET enemyName = '엔트'
-			,enemyHp = 100
-			,enemyAttackPower = 10
-			,enemyBerrior = 0
-			,enemyType = 'plant'
-			,weakAttr = 'fire'
-			,strongAttr = 'water';
-INSERT INTO enemy
-		SET enemyName = '용'
-			,enemyHp = 100
-			,enemyAttackPower = 10
-			,enemyBerrior = 0
-			,enemyType = 'dragon'
-			,weakAttr = 'water'
-			,strongAttr = 'plant';
-INSERT INTO enemy
-		SET enemyName = '불마법사'
-			,enemyHp = 100
-			,enemyAttackPower = 10
-			,enemyBerrior = 0
-			,enemyType = 'majic'
-			,weakAttr = 'none'
-			,strongAttr = 'plant';
-INSERT INTO enemy
-		SET enemyName = '해머전사'
-			,enemyHp = 100
-			,enemyAttackPower = 10
-			,enemyBerrior = 0
-			,enemyType = 'warrior'
-			,weakAttr = 'none'
-			,strongAttr = 'none';
-INSERT INTO enemy
-		SET enemyName = '몬스터2'
-			,enemyHp = 100
-			,enemyAttackPower = 10
-			,enemyBerrior = 0
-			,enemyType = 'monster'
-			,weakAttr = 'plant'
-			,strongAttr = 'none';
-INSERT INTO enemy
-		SET enemyName = '엔트2'
-			,enemyHp = 100
-			,enemyAttackPower = 10
-			,enemyBerrior = 0
-			,enemyType = 'plant'
-			,weakAttr = 'fire'
-			,strongAttr = 'water';
-INSERT INTO enemy
-		SET enemyName = '용2'
-			,enemyHp = 100
-			,enemyAttackPower = 10
-			,enemyBerrior = 0
-			,enemyType = 'dragon'
-			,weakAttr = 'water'
-			,strongAttr = 'plant';
--- 멤버
-INSERT INTO `member`
-SET id = 1
-,loginId = 'test1'
-,loginPw = 'test1'
-,userName = '원준';
--- 캐릭터
-INSERT INTO `character`
-SET id = 1
-,characterName = '기사'
-,memberId = 1
-,characterHp = 100
-,characterAttackPower = 10
-,characterBerrior = 10
-,stageNum = 0;
--- 적 패턴
-SELECT * FROM enemyAttackPattern;
-INSERT INTO enemyAttackPattern
-SET firstAttack = 'Fireball'
-,secondAttack = 'Lightning Bolt'
-,thirdAttack = 'Magic Shield'
-,enemyType = 'majic';
-INSERT INTO enemyAttackPattern
-SET firstAttack = 'Sword Slash'
-,secondAttack = 'Shield Block'
-,thirdAttack = 'Berserk'
-,enemyType = 'warrior';				
-INSERT INTO enemyAttackPattern
-SET firstAttack = 'Claw Swipe'
-,secondAttack = 'Roar'
-,thirdAttack = 'Tail Whip'
-,enemyType = 'monster';
-INSERT INTO enemyAttackPattern
-SET firstAttack = 'Root Entangle'
-    ,secondAttack = 'Branch Smash'
-    ,thirdAttack = 'Healing Sap'
-    ,enemyType = 'plant';
-INSERT INTO enemyAttackPattern
-	SET firstAttack = 'Dragon Bress'
-        ,secondAttack = 'Tail Whip'
-        ,thirdAttack = 'Whing Attack'
-        ,enemyType = 'dragon';
-SELECT * FROM enemyAttackPattern;
--- 맵 
-INSERT INTO map
-		SET stageNum = '1'
-			,enemyType = 'majic'
-			,mapName = 'castle';
-INSERT INTO map
-		SET stageNum = '5'
-			,enemyType = 'plant'
-			,mapName = 'forest';						
-INSERT INTO map
-		SET stageNum = '10'
-			,enemyType = 'warrior'
-			,mapName = 'temple';
-INSERT INTO map
-		SET stageNum = '15'
-			,enemyType = 'monster'
-			,mapName = 'dark';	
-INSERT INTO map
-		SET stageNum = '20'
-			,enemyType = 'dragon'
-			,mapName = 'fireMountain';
--- 이미지 파일
-INSERT INTO imgFile
-			SET imgName = 'character'
-				,savedPath = 'C:/kwj/projectImages/character.png';
-INSERT INTO imgFile
-			SET imgName = '마법사'
-				,savedPath = 'C:/kwj/projectImages/majic.png';
-INSERT INTO imgFile
-			SET imgName = 'forest'
-				,savedPath = 'C:/kwj/projectImages/forest.jpg';
-INSERT INTO imgFile
-			SET imgName = 'potion30'
-				,savedPath = 'C:/kwj/projectImages/potion30.png';
-INSERT INTO imgFile
-			SET imgName = 'potion50'
-				,savedPath = 'C:/kwj/projectImages/potion50.png';
-INSERT INTO imgFile
-			SET imgName = 'potion100'
-				,savedPath = 'C:/kwj/projectImages/potion100.png';
-INSERT INTO imgFile
-			SET imgName = '전사'
-				,savedPath = 'C:/kwj/projectImages/warrior.png';
-INSERT INTO imgFile
-			SET imgName = '괴물'
-				,savedPath = 'C:/kwj/projectImages/monster.png';
-INSERT INTO imgFile
-			SET imgName = '엔트'
-				,savedPath = 'C:/kwj/projectImages/ent.png';
-INSERT INTO imgFile
-			SET imgName = '용'
-				,savedPath = 'C:/kwj/projectImages/dragon.png';
-INSERT INTO imgFile
-			SET imgName = 'attack'
-				,savedPath = 'C:/kwj/projectImages/attack.png';
-INSERT INTO imgFile
-			SET imgName = '불마법사'
-				,savedPath = 'C:/kwj/projectImages/fireMagition.png';
-INSERT INTO imgFile
-			SET imgName = '해머전사'
-				,savedPath = 'C:/kwj/projectImages/HammerWarrior.png';
-INSERT INTO imgFile
-			SET imgName = 'castle'
-				,savedPath = 'C:/kwj/projectImages/castle.png';	
-INSERT INTO imgFile
-			SET imgName = '몬스터2'
-				,savedPath = 'C:/kwj/projectImages/monster2.png';
-INSERT INTO imgFile
-			SET imgName = '엔트2'
-				,savedPath = 'C:/kwj/projectImages/ent2.png';
-INSERT INTO imgFile
-			SET imgName = '용2'
-				,savedPath = 'C:/kwj/projectImages/dragon2.png';
-INSERT INTO imgFile
-			SET imgName = 'temple'
-				,savedPath = 'C:/kwj/projectImages/temple.png';
-INSERT INTO imgFile
-			SET imgName = 'dark'
-				,savedPath = 'C:/kwj/projectImages/dark.png';
-INSERT INTO imgFile
-			SET imgName = 'fireMountain'
-				,savedPath = 'C:/kwj/projectImages/fireMountain.png';	
-INSERT INTO imgFile
-		SET imgName = '다재다능 모자'
-			,savedPath = 'C:/kwj/projectImages/다재다능 모자.png';					
--- 아이템
-INSERT INTO item
-	SET itemName = '마법사의 지팡이'
-		,itemType = '재료아이템'
-		,enemyType = 'majic'
-		,isCreate = 0;
-INSERT INTO item
-	SET itemName = '마법사의 로브'
-		,itemType = '재료아이템'
-		,enemyType = 'majic'
-		,isCreate = 0;
-INSERT INTO item
-	SET itemName = '마법사의 모자'
-		,itemType = '재료아이템'
-		,enemyType = 'majic'
-		,isCreate = 0;
-INSERT INTO item
-	SET itemName = '전사의 칼'
-		,itemType = '재료아이템'
-		,enemyType = 'warrior'
-		,isCreate = 0;
-INSERT INTO item
-	SET itemName = '전사의 투구'
-		,itemType = '재료아이템'
-		,enemyType = 'warrior'
-		,isCreate = 0;
-INSERT INTO item
-	SET itemName = '전사의 방패'
-		,itemType = '재료아이템'
-		,enemyType = 'warrior'
-		,isCreate = 0;
-INSERT INTO item
-	SET itemName = '괴물의 이빨'
-		,itemType = '재료아이템'
-		,enemyType = 'monster'
-		,isCreate = 0;				
-INSERT INTO item
-	SET itemName = '괴물의 가죽'
-		,itemType = '재료아이템'
-		,enemyType = 'monster'
-		,isCreate = 0;
-INSERT INTO item
-	SET itemName = '엔트의 사과'
-		,itemType = '재료아이템'
-		,enemyType = 'plant'
-		,isCreate = 0;
-INSERT INTO item
-	SET itemName = '엔트의 나뭇가지'
-		,itemType = '재료아이템'
-		,enemyType = 'plant'
-		,isCreate = 0;
-INSERT INTO item
-	SET itemName = '용의 심장'
-		,itemType = '재료아이템'
-		,enemyType = 'dragon'
-		,isCreate = 0;
-INSERT INTO item
-	SET itemName = '용의 비늘'
-		,itemType = '재료아이템'
-		,enemyType = 'dragon'
-		,isCreate = 0;
--- 수정할것		
-INSERT INTO item
-		SET itemName = '다재다능 모자'
-			,itemType = '장비 아이템'
-			,isCreate = 1
-			,needItem = '3,5'
-			,needItemInt = '1,1'
-INSERT INTO item
-	SET itemName = '마력이 깃든 칼'
-		,itemType = '장비 아이템'
-		,isCreate = 1
-		,needItem = '1,4'
-		,needItemInt ='1,1';
--- 수정완료
-INSERT INTO item
-	SET itemName = '빨간 물약'
-		,itemType = '소비 아이템'
-		,isCreate = 1
-		,needItem = '9,11'
-		,needItemInt = '1,1';	
--- 아이템 스토리지
-INSERT INTO itemStorage
-			SET itemId = 0
-				,characterId = 1
-				,itemCount = 100;
-			
--- 스킬
-INSERT INTO skills
-		SET skillName = 'fire Attack'
-			,skillAttr = 'fire'
-			,skillDamage = 20
-			,skillEffectName = 'fire'
-			,skillInfo = '풀타입 속성의 적에게 20%의 추가 데미지를 줍니다.';		
-INSERT INTO skills
-		SET skillName = 'plant Attack'
-			,skillAttr = 'plant'
-			,skillDamage = 20
-			,skillEffectName = 'plant'
-			,skillInfo = '물타입 속성의 적에게 20%의 추가 데미지를 줍니다.';
-INSERT INTO skills
-		SET skillName = 'water Attack'
-			,skillAttr = 'water'
-			,skillDamage = 20
-			,skillEffectName = 'water'
-			,skillInfo = '불타입 속성의 적에게 20%의 추가 데미지를 줍니다.';		
--- 아이템 정보			
-INSERT INTO itemInfo
-	SET itemId = 13
-		,attack = 50
-		,`type` = 'rightHand';	
-INSERT INTO itemInfo
-	SET itemId = 14
-		,hp = 100
-		,`type` = 'potion';	
--- 장착된 아이템		
-INSERT INTO characterEquippedItem
-		SET characterId = 1;				
-INSERT INTO imgFile
-		SET imgName = '마력이 깃든 칼'
-			,savedPath = 'C:/kwj/projectImages/마력이 깃든 칼.png';
-INSERT INTO item
-		SET itemName = 'body'
-			,itemType = '장비 아이템'
-			,isCreate = 1
-			,needItem = '2,8'
-			,needItemInt = '1,1';
-INSERT INTO item
-		SET itemName = '방패'
-			,itemType = '장비 아이템'
-			,isCreate = 1
-			,needItem = '6,12'
-			,needItemInt = '1,1';
-			
-INSERT INTO imgFile
-		SET imgName = '방패'
-			,savedPath = 'C:/kwj/projectImages/방패.png';			
-INSERT INTO item
-		SET itemName = 'foot'
-			,itemType = '장비 아이템'
-			,isCreate = 1
-			,needItem = '2,12'
-			,needItemInt = '1,1';			
-INSERT INTO imgFile
-		SET imgName = 'foot'
-			,savedPath = 'C:/kwj/projectImages/foot.png';					
-INSERT INTO itemInfo
-		SET itemId = 19
-			,def = 20
-			,`type` = 'body';
-INSERT INTO itemInfo
-		SET itemId = 20
-			,def = 50
-			,`type` = 'leftHand';			
-INSERT INTO itemInfo
-		SET itemId = 21
-			,def = 20
-			,`type` = 'foot';	
-INSERT INTO imgFile
-		SET imgName = 'body'
-			,savedPath = 'C:/kwj/projectImages/body.png';	
-INSERT INTO imgFile
-		SET imgName = '빨간 물약'
-			,savedPath = 'C:/kwj/projectImages/빨간 물약.png';	
-INSERT INTO imgFile
-		SET imgName = '괴물의 이빨'
-			,savedPath = 'C:/kwj/projectImages/괴물의 이빨.png';
-INSERT INTO imgFile
-		SET imgName = '용의 심장'
-			,savedPath = 'C:/kwj/projectImages/용의 심장.png';
-INSERT INTO imgFile
-		SET imgName = '마법사의 지팡이'
-			,savedPath = 'C:/kwj/projectImages/마법사의 지팡이.png';
-INSERT INTO imgFile
-		SET imgName = '마법사의 로브'
-			,savedPath = 'C:/kwj/projectImages/마법사의 로브.png';
-INSERT INTO imgFile
-		SET imgName = '마법사의 모자'
-			,savedPath = 'C:/kwj/projectImages/마법사의 모자.png';
-INSERT INTO imgFile
-		SET imgName = '마법사의 모자'
-			,savedPath = 'C:/kwj/projectImages/마법사의 모자.png';
-INSERT INTO imgFile
-SET imgName = '전사의 투구'
-,savedPath = 'C:/kwj/projectImages/전사의 투구.png';		
-INSERT INTO imgFile
-SET imgName = '전사의 방패'
-,savedPath = 'C:/kwj/projectImages/전사의 방패.png';		
-INSERT INTO imgFile
-SET imgName = '전사의 칼'
-,savedPath = 'C:/kwj/projectImages/전사의 칼.png';
-INSERT INTO imgFile
-SET imgName = '괴물의 가죽'
-,savedPath = 'C:/kwj/projectImages/괴물의 가죽.png';
-INSERT INTO imgFile
-SET imgName = '괴물의 이빨'
-,savedPath = 'C:/kwj/projectImages/괴물의 이빨.png';
-INSERT INTO imgFile
-SET imgName = '엔트의 사과'
-,savedPath = 'C:/kwj/projectImages/엔트의 사과.png';
-INSERT INTO imgFile
-SET imgName = '엔트의 나뭇가지'
-,savedPath = 'C:/kwj/projectImages/엔트의 나뭇가지.png';
-INSERT INTO imgFile
-SET imgName = '용의 심장'
-,savedPath = 'C:/kwj/projectImages/용의 심장.png';
-INSERT INTO imgFile
-SET imgName = '용의 비늘'
-,savedPath = 'C:/kwj/projectImages/용의 비늘.png';	
-UPDATE skills
-	SET skillName = 'fireSword'
-		WHERE id = 1;
-UPDATE skills
-	SET skillName = 'waterSword'
-		WHERE id = 2;
-UPDATE skills
-	SET skillName = 'plantSword'
-		WHERE id = 3;	
-INSERT INTO imgFile
-SET imgName = 'fireSword'
-,savedPath = 'C:/kwj/projectImages/fireSword.png';	
+/*!40101 SET SQL_MODE=''*/;
 
-INSERT INTO imgFile
-SET imgName = 'waterSword'
-,savedPath = 'C:/kwj/projectImages/fireSword.png';	
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/`project` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;
 
-INSERT INTO imgFile
-SET imgName = 'plantSword'
-,savedPath = 'C:/kwj/projectImages/plantSword.png';
-INSERT INTO imgFile
-SET imgName = 'earthSword'
-,savedPath = 'C:/kwj/projectImages/earthSword.png';
-	
-INSERT INTO imgFile
-SET imgName = 'fireEffect'
-,savedPath = 'C:/kwj/projectImages/fireEffect.png';	
+USE `project`;
 
-INSERT INTO imgFile
-SET imgName = 'waterEffect'
-,savedPath = 'C:/kwj/projectImages/waterEffect.png';	
+/*Table structure for table `character` */
 
-INSERT INTO imgFile
-SET imgName = 'plantEffect'
-,savedPath = 'C:/kwj/projectImages/plantEffect.png';
-INSERT INTO imgFile
-SET imgName = 'fire'
-,savedPath = 'C:/kwj/projectImages/fire.png';
-UPDATE imgfile
-		SET savedPath = 'C:/kwj/projectImages/fireMountain.jpg'
-		WHERE id = 69;
-UPDATE imgfile
-SET savedPath = 'C:/kwj/projectImages/waterSword.png'
-WHERE id = 89;
-UPDATE skills
-	SET skillEffectName = 'fireEffect'
-	WHERE id = 1;
-UPDATE skills
-	SET skillEffectName = 'waterEffect'
-	WHERE id = 2;
-UPDATE skills
-	SET skillEffectName = 'plantEffect'
-	WHERE id = 3;		
-INSERT INTO imgFile
-		SET imgName = 'gold'
-			,savedPath = 'C:/kwj/projectImages/gold.png';
-ALTER TABLE characterEquippedItem DROP COLUMN head;
-ALTER TABLE characterEquippedItem DROP COLUMN `body`;
-ALTER TABLE characterEquippedItem DROP COLUMN foot;
-ALTER TABLE characterEquippedItem DROP COLUMN leftHand;
-ALTER TABLE characterEquippedItem DROP COLUMN rightHand;	
-ALTER TABLE characterEquippedItem ADD COLUMN itemType VARCHAR(20);
-ALTER TABLE characterEquippedItem ADD COLUMN itemId INT;
-UPDATE enemy
-SET weakAttr = CONCAT(weakAttr, 'Effect');
-UPDATE enemy
-SET strongAttr = CONCAT(strongAttr, 'Effect');
-UPDATE skills
-SET skillAttr = CONCAT(skillAttr, 'Effect');
-INSERT INTO characterEquippedItem
-			SET itemType = 'head'
-				,characterId = 1;		
-INSERT INTO characterEquippedItem
-			SET itemType = 'body'
-				,characterId = 1;
-INSERT INTO characterEquippedItem
-			SET itemType = 'foot'
-				,characterId = 1;
-INSERT INTO characterEquippedItem
-			SET itemType = 'leftHand'
-				,characterId = 1;
-INSERT INTO characterEquippedItem
-			SET itemType = 'rightHand'
-				,characterId = 1;	
-SELECT * FROM  `character`;
-SELECT * FROM itemStorage;
-SELECT * FROM enemy;
-SELECT * FROM characterSkill;
-INSERT INTO characterSkill
-    SET characterId = 1
-        ,skillId = 1;
-SELECT * FROM skills;
+DROP TABLE IF EXISTS `character`;
+
+CREATE TABLE `character` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `characterName` varchar(50) NOT NULL,
+  `memberId` int(11) NOT NULL,
+  `characterHP` int(11) NOT NULL,
+  `characterAttackPower` int(11) NOT NULL,
+  `characterBerrior` int(11) NOT NULL,
+  `stageNum` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+/*Data for the table `character` */
+
+insert  into `character`(`id`,`characterName`,`memberId`,`characterHP`,`characterAttackPower`,`characterBerrior`,`stageNum`) values 
+(1,'기사',1,100,50,0,17),
+(2,'123',30,100,50,0,0),
+(3,'test2',31,100,50,0,0);
+
+/*Table structure for table `characterEquippedItem` */
+
+DROP TABLE IF EXISTS `characterEquippedItem`;
+
+CREATE TABLE `characterEquippedItem` (
+  `characterId` int(11) NOT NULL,
+  `itemType` varchar(20) DEFAULT NULL,
+  `itemId` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+/*Data for the table `characterEquippedItem` */
+
+insert  into `characterEquippedItem`(`characterId`,`itemType`,`itemId`) values 
+(1,'head',NULL),
+(1,'body',19),
+(1,'foot',NULL),
+(1,'leftHand',20),
+(1,'rightHand',13),
+(31,'head',NULL),
+(31,'body',NULL),
+(31,'foot',NULL),
+(31,'leftHand',NULL),
+(31,'rightHand',NULL);
+
+/*Table structure for table `characterSkill` */
+
+DROP TABLE IF EXISTS `characterSkill`;
+
+CREATE TABLE `characterSkill` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `characterId` int(10) unsigned DEFAULT NULL,
+  `skillId` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=76 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+/*Data for the table `characterSkill` */
+
+insert  into `characterSkill`(`id`,`characterId`,`skillId`) values 
+(72,1,3),
+(74,1,2),
+(75,1,3);
+
+/*Table structure for table `enemy` */
+
+DROP TABLE IF EXISTS `enemy`;
+
+CREATE TABLE `enemy` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `enemyName` varchar(50) NOT NULL,
+  `enemyHp` int(11) NOT NULL,
+  `enemyAttackPower` int(11) NOT NULL,
+  `enemyBerrior` int(11) NOT NULL,
+  `enemyType` varchar(50) DEFAULT NULL,
+  `weakAttr` varchar(50) DEFAULT 'none',
+  `strongAttr` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+/*Data for the table `enemy` */
+
+insert  into `enemy`(`id`,`enemyName`,`enemyHp`,`enemyAttackPower`,`enemyBerrior`,`enemyType`,`weakAttr`,`strongAttr`) values 
+(1,'마법사',100,10,0,'majic','fireEffect','plantEffect'),
+(2,'전사',100,10,0,'warrior','none','none'),
+(3,'괴물',100,10,0,'monster','plantEffect','none'),
+(4,'엔트',100,10,0,'plant','fireEffect','waterEffect'),
+(5,'용',100,10,0,'dragon','waterEffect','plantEffect'),
+(6,'불마법사',100,10,0,'majic','none','plantEffect'),
+(7,'해머전사',100,10,0,'warrior','none','none'),
+(8,'몬스터2',100,10,0,'monster','plantEffect','none'),
+(9,'엔트2',100,10,0,'plant','fireEffect','waterEffect'),
+(10,'용2',100,10,0,'dragon','waterEffect','plantEffect');
+
+/*Table structure for table `enemyAttackPattern` */
+
+DROP TABLE IF EXISTS `enemyAttackPattern`;
+
+CREATE TABLE `enemyAttackPattern` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `firstAttack` varchar(50) NOT NULL,
+  `secondAttack` varchar(50) NOT NULL,
+  `thirdAttack` varchar(50) NOT NULL,
+  `defaultAttack` varchar(50) NOT NULL DEFAULT 'Basic Attack',
+  `enemyType` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+/*Data for the table `enemyAttackPattern` */
+
+insert  into `enemyAttackPattern`(`id`,`firstAttack`,`secondAttack`,`thirdAttack`,`defaultAttack`,`enemyType`) values 
+(1,'Fireball','Lightning Bolt','Magic Shield','Basic Attack','majic'),
+(2,'Sword Slash','Shield Block','Berserk','Basic Attack','warrior'),
+(3,'Claw Swipe','Roar','Tail Whip','Basic Attack','monster'),
+(4,'Root Entangle','Branch Smash','Healing Sap','Basic Attack','plant'),
+(5,'Dragon Bress','Tail Whip','Whing Attack','Basic Attack','dragon');
+
+/*Table structure for table `imgFile` */
+
+DROP TABLE IF EXISTS `imgFile`;
+
+CREATE TABLE `imgFile` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `imgName` varchar(50) NOT NULL,
+  `savedPath` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+/*Data for the table `imgFile` */
+
+insert  into `imgFile`(`id`,`imgName`,`savedPath`) values 
+(50,'character','C:/kwj/projectImages/character.png'),
+(51,'마법사','C:/kwj/projectImages/majic.png'),
+(52,'forest','C:/kwj/projectImages/forest.jpg'),
+(53,'potion30','C:/kwj/projectImages/potion30.png'),
+(54,'potion50','C:/kwj/projectImages/potion50.png'),
+(55,'potion100','C:/kwj/projectImages/potion100.png'),
+(56,'전사','C:/kwj/projectImages/warrior.png'),
+(57,'괴물','C:/kwj/projectImages/monster.png'),
+(58,'엔트','C:/kwj/projectImages/ent.png'),
+(59,'용','C:/kwj/projectImages/dragon.png'),
+(60,'attack','C:/kwj/projectImages/attack.png'),
+(61,'불마법사','C:/kwj/projectImages/fireMagition.png'),
+(62,'해머전사','C:/kwj/projectImages/HammerWarrior.png'),
+(63,'castle','C:/kwj/projectImages/castle.png'),
+(64,'몬스터2','C:/kwj/projectImages/monster2.png'),
+(65,'엔트2','C:/kwj/projectImages/ent2.png'),
+(66,'용2','C:/kwj/projectImages/dragon2.png'),
+(67,'temple','C:/kwj/projectImages/temple.png'),
+(68,'dark','C:/kwj/projectImages/dark.png'),
+(69,'fireMountain','C:/kwj/projectImages/fireMountain.jpg'),
+(70,'다재다능 모자','C:/kwj/projectImages/다재다능 모자.png'),
+(71,'body','C:/kwj/projectImages/body.png'),
+(72,'빨간 물약','C:/kwj/projectImages/빨간 물약.png'),
+(73,'괴물의 이빨','C:/kwj/projectImages/괴물의 이빨.png'),
+(74,'용의 심장','C:/kwj/projectImages/용의 심장.png'),
+(75,'마법사의 지팡이','C:/kwj/projectImages/마법사의 지팡이.png'),
+(76,'마법사의 로브','C:/kwj/projectImages/마법사의 로브.png'),
+(78,'마법사의 모자','C:/kwj/projectImages/마법사의 모자.png'),
+(79,'전사의 투구','C:/kwj/projectImages/전사의 투구.png'),
+(80,'전사의 방패','C:/kwj/projectImages/전사의 방패.png'),
+(81,'전사의 칼','C:/kwj/projectImages/전사의 칼.png'),
+(82,'괴물의 가죽','C:/kwj/projectImages/괴물의 가죽.png'),
+(84,'엔트의 사과','C:/kwj/projectImages/엔트의 사과.png'),
+(85,'엔트의 나뭇가지','C:/kwj/projectImages/엔트의 나뭇가지.png'),
+(87,'용의 비늘','C:/kwj/projectImages/용의 비늘.png'),
+(88,'fireSword','C:/kwj/projectImages/fireSword.png'),
+(89,'waterSword','C:/kwj/projectImages/waterSword.png'),
+(91,'earthSword','C:/kwj/projectImages/earthSword.png'),
+(92,'fireEffect','C:/kwj/projectImages/fireEffect.png'),
+(93,'waterEffect','C:/kwj/projectImages/waterEffect.png'),
+(94,'plantEffect','C:/kwj/projectImages/plantEffect.png'),
+(95,'plantSword','C:/kwj/projectImages/plantSword.png'),
+(96,'fire','C:/kwj/projectImages/fire.png'),
+(97,'gold','C:/kwj/projectImages/gold.png'),
+(98,'방패','C:/kwj/projectImages/방패.png'),
+(99,'foot','C:/kwj/projectImages/foot.png'),
+(100,'마력이 깃든 칼','C:/kwj/projectImages/마력이 깃든 칼.png');
+
+/*Table structure for table `item` */
+
+DROP TABLE IF EXISTS `item`;
+
+CREATE TABLE `item` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `itemName` varchar(50) DEFAULT NULL,
+  `itemType` varchar(50) DEFAULT NULL,
+  `enemyType` varchar(50) DEFAULT NULL,
+  `isCreate` tinyint(1) NOT NULL DEFAULT 0,
+  `needItem` varchar(20) DEFAULT NULL,
+  `needItemInt` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+/*Data for the table `item` */
+
+insert  into `item`(`id`,`itemName`,`itemType`,`enemyType`,`isCreate`,`needItem`,`needItemInt`) values 
+(1,'마법사의 지팡이','재료아이템','majic',0,NULL,NULL),
+(2,'마법사의 로브','재료아이템','majic',0,NULL,NULL),
+(3,'마법사의 모자','재료아이템','majic',0,NULL,NULL),
+(4,'전사의 칼','재료아이템','warrior',0,NULL,NULL),
+(5,'전사의 투구','재료아이템','warrior',0,NULL,NULL),
+(6,'전사의 방패','재료아이템','warrior',0,NULL,NULL),
+(7,'괴물의 이빨','재료아이템','monster',0,NULL,NULL),
+(8,'괴물의 가죽','재료아이템','monster',0,NULL,NULL),
+(9,'엔트의 사과','재료아이템','plant',0,NULL,NULL),
+(10,'엔트의 나뭇가지','재료아이템','plant',0,NULL,NULL),
+(11,'용의 심장','재료아이템','dragon',0,NULL,NULL),
+(12,'용의 비늘','재료아이템','dragon',0,NULL,NULL),
+(13,'마력이 깃든 칼','장비 아이템',NULL,1,'1,4','1,1'),
+(14,'빨간 물약','소비 아이템',NULL,1,'9,11','1,1'),
+(18,'다재다능 모자','장비 아이템',NULL,1,'3,5','1,1'),
+(19,'body','장비 아이템',NULL,1,'2,8','1,1'),
+(20,'방패','장비 아이템',NULL,1,'6,12','1,1'),
+(21,'foot','장비 아이템',NULL,1,'2,12','1,1');
+
+/*Table structure for table `itemInfo` */
+
+DROP TABLE IF EXISTS `itemInfo`;
+
+CREATE TABLE `itemInfo` (
+  `itemId` int(11) NOT NULL,
+  `attack` int(11) DEFAULT NULL,
+  `def` int(11) DEFAULT NULL,
+  `hp` int(11) DEFAULT NULL,
+  `type` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+/*Data for the table `itemInfo` */
+
+insert  into `itemInfo`(`itemId`,`attack`,`def`,`hp`,`type`) values 
+(13,10,NULL,NULL,'rightHand'),
+(14,NULL,NULL,100,'potion'),
+(18,NULL,20,NULL,'head'),
+(19,NULL,20,NULL,'body'),
+(20,NULL,50,NULL,'leftHand'),
+(21,NULL,20,NULL,'foot');
+
+/*Table structure for table `itemStorage` */
+
+DROP TABLE IF EXISTS `itemStorage`;
+
+CREATE TABLE `itemStorage` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `characterId` int(11) NOT NULL,
+  `itemCount` int(10) unsigned DEFAULT NULL,
+  `itemId` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=119 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+/*Data for the table `itemStorage` */
+
+insert  into `itemStorage`(`id`,`characterId`,`itemCount`,`itemId`) values 
+(19,1,90,1),
+(21,1,18302,0),
+(27,1,3,10),
+(33,1,6,9),
+(34,1,10,4),
+(35,1,33,11),
+(37,1,3,5),
+(44,1,20,7),
+(45,1,18,12),
+(108,1,20,8),
+(118,1,1,13);
+
+/*Table structure for table `map` */
+
+DROP TABLE IF EXISTS `map`;
+
+CREATE TABLE `map` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `stageNum` int(11) NOT NULL,
+  `enemyType` varchar(50) NOT NULL,
+  `mapName` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+/*Data for the table `map` */
+
+insert  into `map`(`id`,`stageNum`,`enemyType`,`mapName`) values 
+(1,1,'majic','castle'),
+(2,5,'plant','forest'),
+(3,10,'warrior','temple'),
+(4,15,'monster','dark'),
+(5,20,'dragon','fireMountain');
+
+/*Table structure for table `member` */
+
+DROP TABLE IF EXISTS `member`;
+
+CREATE TABLE `member` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `loginId` varchar(50) NOT NULL,
+  `loginPw` varchar(50) NOT NULL,
+  `userName` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+/*Data for the table `member` */
+
+insert  into `member`(`id`,`loginId`,`loginPw`,`userName`) values 
+(1,'test1','test1','원준'),
+(31,'test2','test2','test2');
+
+/*Table structure for table `skills` */
+
+DROP TABLE IF EXISTS `skills`;
+
+CREATE TABLE `skills` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `skillName` varchar(50) DEFAULT NULL,
+  `skillAttr` varchar(50) DEFAULT NULL,
+  `skillDamage` int(11) NOT NULL,
+  `skillEffectName` varchar(50) DEFAULT NULL,
+  `skillInfo` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+/*Data for the table `skills` */
+
+insert  into `skills`(`id`,`skillName`,`skillAttr`,`skillDamage`,`skillEffectName`,`skillInfo`) values 
+(1,'fireSword','fireEffect',20,'fireEffect','풀타입 속성의 적에게 20%의 추가 데미지를 줍니다.'),
+(2,'waterSword','waterEffect',20,'waterEffect','불타입 속성의 적에게 20%의 추가 데미지를 줍니다.'),
+(3,'plantSword','plantEffect',20,'plantEffect','물타입 속성의 적에게 20%의 추가 데미지를 줍니다.');
+
+/*Table structure for table `stage` */
+
+DROP TABLE IF EXISTS `stage`;
+
+CREATE TABLE `stage` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `enemyId` int(11) NOT NULL,
+  `bgmId` int(11) DEFAULT NULL,
+  `mapName` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+/*Data for the table `stage` */
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;

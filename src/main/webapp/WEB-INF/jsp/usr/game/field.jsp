@@ -713,13 +713,6 @@
 			        data: {	
 			        	characterId: ${rq.getLoginedMemberId()},
 					}
-// 			        dataType: "json",
-// 			        success: function (data) {
-// 			        	console.log(data);
-// 			        },
-// 			        error: function (xhr, status, error) {
-// 				 		console.log(error);
-// 			        }
 			    });
 		}
 		
@@ -732,13 +725,6 @@
 			        data: {	
 			        	id: ${rq.getLoginedMemberId()},
 					}
-// 			        dataType: "json"
-//  			        success: function (data) {
-//  			        	console.log(data);
-// 			        },
-//  			        error: function (xhr, status, error) {
-//  				 		console.log(error);
-//  			        }
 			    });
 		}	
 			
