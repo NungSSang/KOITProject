@@ -542,22 +542,44 @@
 						enemyType = data[i].enemyType;
 						enemyWeakAttr = data[i].weakAttr;
 						enemyStrongAttr = data[i].strongAttr;
-			            let content = `
-			                <div id="enemyStatus" class="relative w-full flex flex-col items-center justify-center space-y-2">
-			                    <!-- 적 이름 -->
-			                    
-			                    <div class="text-center text-white font-bold text-lg text-black"><img src="/usr/imgFile/getImgPath?imgName=\${data[i].weakAttr}" class="w-14 h-14 inline"> \${data[i].enemyName}</div>
-			                    
-			                    <!-- HP Bar -->
-			                    <div class="relative w-36 h-3 bg-gray-300 rounded-full">
-			                        <div id="enemyHPBar" class="h-full bg-red-500 rounded-full transition-all duration-300 ease-out" style="width: \${data[0].enemyHp}%;"></div>
-			                    </div>
-			                </div>
-			            `;
+						if(enemyWeakAttr != 'none'){
+							let content = `
+				                <div id="enemyStatus" class="relative w-full flex flex-col items-center justify-center space-y-2">
+				                    <!-- 적 이름 -->
+				                    
+				                    <div class="text-center text-white font-bold text-lg text-black"><img src="/usr/imgFile/getImgPath?imgName=\${data[i].weakAttr}" class="w-14 h-14 inline"> \${data[i].enemyName}</div>
+				                    
+				                    <!-- HP Bar -->
+				                    <div class="relative w-36 h-3 bg-gray-300 rounded-full">
+				                        <div id="enemyHPBar" class="h-full bg-red-500 rounded-full transition-all duration-300 ease-out" style="width: \${data[0].enemyHp}%;"></div>
+				                    </div>
+				                </div>
+				            `;	
+							isAttack = false;
+									            // 기존 적 정보 제거 후 새로 추가
+				            $('#enemyInfo').empty().append(content);
+						}else{
+							let content2 = `
+					                <div id="enemyStatus" class="relative w-full flex flex-col items-center justify-center space-y-2">
+					                    <!-- 적 이름 -->
+					                    
+					                    <div class="text-center text-white font-bold text-lg text-black">\${data[i].enemyName}</div>
+					                    
+					                    <!-- HP Bar -->
+					                    <div class="relative w-36 h-3 bg-gray-300 rounded-full">
+					                        <div id="enemyHPBar" class="h-full bg-red-500 rounded-full transition-all duration-300 ease-out" style="width: \${data[0].enemyHp}%;"></div>
+					                    </div>
+					                </div>
+					            `;	
+							isAttack = false;
+				            // 기존 적 정보 제거 후 새로 추가
+				            $('#enemyInfo').empty().append(content2);
+						}
+			            
 	
-					    isAttack = false;
-			            // 기존 적 정보 제거 후 새로 추가
-			            $('#enemyInfo').empty().append(content);
+<!--					    isAttack = false;-->
+<!--			            // 기존 적 정보 제거 후 새로 추가-->
+<!--			            $('#enemyInfo').empty().append(content2);-->
 			        },
 			        error: function (xhr, status, error) {
 			            console.error(error);
