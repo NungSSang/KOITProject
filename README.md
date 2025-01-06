@@ -27,7 +27,7 @@ Skull Rogue를 소개하기 위해 만들었습니다.
 ### 화면 구성
 |Screen #1|Screen #2|
 |:---:|:---:|
-|<img src="C:\kwj\workspace\KOITProject\readmeImgs/skullRogue1.png" width="400"/>|<img src="C:\kwj\workspace\KOITProject\readmeImgs/skullRogue2.png" width="400"/>|
+|<img src="https://github.com/NungSSang/KOITProject/blob/master/readmeImgs/skullRogue1.png?raw=true" width="400"/>|<img src="https://github.com/NungSSang/KOITProject/blob/master/readmeImgs/skullRogue2png.png?raw=true" width="400"/>|
 
 
 <br />
