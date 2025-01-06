@@ -11,7 +11,6 @@
 </div> 
 
 ## 📝 소개
-Skull Rogue를 소개하기 위해 만들었습니다.
 
 다음과 같은 내용으로 이루어져 있습니다.
 - 프로젝트 소개
@@ -22,20 +21,34 @@ Skull Rogue를 소개하기 위해 만들었습니다.
 - 프로젝트 팀원
 
 <br />
+## 📝 소개
 
+Skull Rogue는 포켓로그의 게임 시스템을 기반으로 만든 웹 게임 입니다. 
+
+스컬 더 히어로 슬레이어 라는 게임의 스토리에 기반하였고 기존의 포켓로그와는 아이템 제작과 장착이라는 점으로 차별화를 하였습니다.
+
+추후 스토리 라인 추가와 퀘스트 추가로 게임의 당위성을 부여하고 스킬 이펙트와 이미지 파일들을 추가하여 발전시킬 계획에 있습니다.
+
+<br />
 
 ### 화면 구성
 |Screen #1|Screen #2|
 |:---:|:---:|
-|<img src="https://github.com/NungSSang/KOITProject/blob/master/readmeImgs/skullRogue1.png?raw=true" width="400"/>|<img src="https://github.com/NungSSang/KOITProject/blob/master/readmeImgs/skullRogue2png.png?raw=true" width="400"/>|
-
-
+|<img src="https://github.com/NungSSang/KOITProject/blob/master/readmeImgs/skullRogue1.png?raw=true" width="400"/>|<img src="https://github.com/NungSSang/KOITProject/blob/master/readmeImgs/skullRogue2.png?raw=true" width="400"/>|
+|skull Rogue 실행 화면 |몬스터 처치시 아이템 선택 화면|
+|Screen #3|Screen #4|
+|<img src="https://github.com/NungSSang/KOITProject/blob/master/readmeImgs/skullRogue8.png?raw=true" width="400"/>|<img src="https://github.com/NungSSang/KOITProject/blob/master/readmeImgs/skullRogue3.png?raw=true" width="400"/>|
+|스킬 아이템 선택시|몬스터 공격시 스킬 선택 화면|
+|Screen #5|Screen #6|
+|<img src="https://github.com/NungSSang/KOITProject/blob/master/readmeImgs/skullRogue4.png?raw=true" width="400"/>|<img src="https://github.com/NungSSang/KOITProject/blob/master/readmeImgs/skullRogue5.png?raw=true" width="400"/>|
+|인벤토리 화면|아이템 제작 화면|
+|Screen #7|
+|<img src="https://github.com/NungSSang/KOITProject/blob/master/readmeImgs/skullRogue6.png?raw=true" width="400"/>|
+|인벤토리 아이템 장착 시 장착 아이템 화면|
 <br />
 
 
-
 ## ⚙ 기술 스택
-> skills 폴더에 있는 아이콘을 이용할 수 있습니다.
 ### Back-end
 <div>
 <img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Java.png?raw=true" width="80">
@@ -61,7 +74,7 @@ Skull Rogue를 소개하기 위해 만들었습니다.
 
 <br />
 
-## 🛠️ 프로젝트 아키텍쳐
+## 🛠️ 데이터베이스 ERD
 ![no-image](https://user-images.githubusercontent.com/80824750/208294567-738dd273-e137-4bbf-8307-aff64258fe03.png)
 
 
@@ -69,7 +82,7 @@ Skull Rogue를 소개하기 위해 만들었습니다.
 <br />
 
 ## 💁‍♂️ 프로젝트 팀원
-|Backend|Frontend|
-|:---:|:---:|
-| ![](https://github.com/yewon-Noh.png?size=120) | ![](https://github.com/SeongHo-C.png?size=120) |
-|[노예원](https://github.com/yewon-Noh)|[이성호](https://github.com/SeongHo-C)|
+|개발자|
+|:---:|
+| ![](https://github.com/NungSSang/KOITProject/blob/master/readmeImgs/wonjun.jpg?size=120) |
+|[김원준](https://github.com/NungSSang)|
