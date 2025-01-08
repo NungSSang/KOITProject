@@ -16,8 +16,7 @@
 - 프로젝트 소개
 - 프로젝트 화면 구성
 - 사용한 기술 스택
-- 프로젝트 아키텍쳐
-- 기술적 이슈와 해결 과정
+- 데이터베이스 ERD
 - 프로젝트 팀원
 
 <br />
@@ -75,8 +74,7 @@ Skull Rogue는 포켓로그의 게임 시스템을 기반으로 만든 웹 게�
 <br />
 
 ## 🛠️ 데이터베이스 ERD
-![no-image](https://user-images.githubusercontent.com/80824750/208294567-738dd273-e137-4bbf-8307-aff64258fe03.png)
-
+![](https://github.com/NungSSang/KOITProject/blob/master/readmeImgs/DBERD.jpg?size=60)
 
 
 <br />
@@ -84,5 +82,5 @@ Skull Rogue는 포켓로그의 게임 시스템을 기반으로 만든 웹 게�
 ## 💁‍♂️ 프로젝트 팀원
 |개발자|
 |:---:|
-| ![](https://github.com/NungSSang/KOITProject/blob/master/readmeImgs/wonjun.jpg?size=120) |
+| ![](https://github.com/NungSSang/KOITProject/blob/master/readmeImgs/wonjun.jpg?size=60) |
 |[김원준](https://github.com/NungSSang)|
