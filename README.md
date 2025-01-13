@@ -52,7 +52,7 @@ Skull Rogue는 포켓로그의 게임 시스템을 기반으로 만든 웹 게�
 <div>
 <img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Java.png?raw=true" width="80">
 <img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/SpringBoot.png?raw=true" width="80">
-<img src="https://github.com/NungSSang/KOITProject/blob/master/readmeImgs/mybatis2.png?raw=true" width="80">
+<img src="https://github.com/NungSSang/KOITProject/blob/master/readmeImgs/mybatis.png?raw=true" width="80" height="100">
 <img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Mysql.png?raw=true" width="80">
 <img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Ajax.png?raw=true" width="80">
 
